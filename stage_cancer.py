@@ -15,7 +15,7 @@ def hasString(s,ss):
     This function checks if s has one of ss in it. 
     Args:
         s: a list of tokens of the input string
-        ss: a list of strings to be checked. 
+        ss: a list of list of strings to be checked. 
     Returns: 
         True if at least 1 word from ss is found in s
         False otherwise
@@ -30,7 +30,7 @@ def getString(s,ss):
     This function returns a list of words appear in s
     Args:
         s: a list of tokens of the input string
-        ss: a list of strings to be checked. 
+        ss: a list of list of strings to be checked. 
     Returns: 
         A list of words in ss thats in s
         empty list if none. 
@@ -219,9 +219,10 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
     #sNum is the line number for string. 
     sNum=0
     for s in text:
-        if hasString(s.split(),cancers):
+        if hasString(s,cancers):
             
-            for organ in getString(s.split(),organs):
+            for organ in getString(s,organs):
+                
                 if result.get(organ)==None:
                     result[organ]=[]
                 result[organ].append(sNum)
