@@ -29,8 +29,8 @@ if __name__ == '__main__':
         result[row]['p'][1].update(get_stage_num(pNote,'stage'))
         result[row]['pa'][1].update(get_stage_num(paNote,'stage'))
         result[row]['pa'][1].update(get_stage_num(paNote,'grade'))
-        result[row]['pa'][0].update(get_cancer_type(pNote))
-        result[row]['p'][0].update(get_cancer_type(paNote))
+        result[row]['pa'][0].update(get_cancer_type(paNote))
+        result[row]['p'][0].update(get_cancer_type(pNote))
         row+=1
     count=0;
     for pid in result.keys():
