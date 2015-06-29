@@ -94,7 +94,7 @@ def get_stage_num(text,stageKey):
         #in here stageKeys serve as a counter. 
         #It does not have anything to work on for later work
         for match in stage_matches:
-            stage_text = line_text[match.end():]
+            stage_text = line_text[match.end():match.end()+5]
             stage_text = stage_text.replace("iv","4")  
             stage_text = stage_text.replace("iii","3")  
             stage_text = stage_text.replace("ii","2")  
