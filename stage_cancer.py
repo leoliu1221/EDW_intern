@@ -65,75 +65,49 @@ def surround(text,index,threshold=500):
     return text[start:stop]
 
 
-def cancer_capture(text,regex,threshold=30):
+
+def get_stage_num(text,stageKey):
     '''
     This function check whether cancer keyword is contained within the text
     If it does, return the stage of that cancer
     
     Args:
         text String of text to be captured (input)
-        regex: regular expression used to capture
-        threshold: int of distance for the surrounding text to search for number after keyword appears
-            Defaults to 15
+        stageKey: regular expression used to capture, either 'grade' or 'stage'
     Returns:
-        out.group(): an integer representing stage of the cancer
-        out.end()-1: the index at which the stage number was found
+        result: a dictionary of stage_num->[lineNum1, lineNum2 ...]
     '''
-    index = text.find(regex)
-    surr_text= surround(text,surr_threshold)
-    # regex used to capture colon cancer - for now we will do for particular "colon cancer" problem
-    regex_cancer = '((colon|rectal|rectosigmoid|colorectal) (cancer|carcinoma))|(cancer|enocarcinoma.*colon|sigmoid)|colon neoplasm'
-    out_cancer = re.findall(re.compile(regex_cancer),surr_text)
-    if len(out_cancer)<=0:
-        return None,index+len(regex)
-
-    stage_text = text[index:index+threshold].replace("iv","4")
-    stage_text = stage_text.replace("iii","3")
-    stage_text = stage_text.replace("ii","2")
-    stage_text = stage_text.replace("i","1")
-    out = re.search(re.compile("\d"),stage_text)
-
-    if out is None:
-        #print 'out is None for ',regex
-        return None,index+threshold
-    #print 'out is:',out.group()
-    return out.group(),int(out.end())-1  
-
-def findStages(reg,text):
-    '''
-    find the stage and its number in the text based on the regex. 
-    The regex can be stage or grade. 
-    Args:
-        reg: 'stage' or 'grade' it is the keyword we look for. 
-        text: string of text we want to find reg in. 
-    Returns:
-        output: a list of stage number found in the given text.
-    Note: 
-        if there is no match, then output is a empty list
-    '''
-    if text is None:
-        return []
-    if reg!='stage' and reg!='grade':
-        return []
-    if len(text)==0:
-        return []
-    output = []
-    regex=reg
+    #result is an empty dictionary 
+    result = {}
+    #just incase the text is not in lower case
     text = text.lower()
-    pattern=re.compile(regex)
-    out=re.findall(pattern,text)
-    current_text = text
-    if len(out)>0:
-        for t in out:
-            stage,ind = cancer_capture(current_text,'stage')
-            if stage is not None:
-                output.append(stage)
-            #print 'stage is:',stage
-            #print 'index is :',ind
-            current_text = current_text[ind+1:]
-        return output
-    else:
-        return []
+    #not sure if we need this
+    index = text.find(stageKey)
+    #surr_text= surround(text,surr_threshold)
+    # regex used to capture colon cancer - for now we will do for particular "colon cancer" problem
+    #regex_cancer = '((colon|rectal|rectosigmoid|colorectal) (cancer|carcinoma))|(cancer|enocarcinoma.*colon|sigmoid)|colon neoplasm'
+    #get the sentenses that contains the keyword 
+    #lines are a list of sentenses where the keyword is in
+    lines = text.split('.')
+    for lineNum in xrange(len(lines)):
+        stage_text = lines[lineNum]
+        if stageKey in line:
+            stage_text = stage_text[stage_text.find(stageKey)+len(stageKey):]
+            stage_text = stage_text.replace("iv","4")  
+            stage_text = stage_text.replace("iii","3")  
+            stage_text = stage_text.replace("ii","2")  
+            stage_text = stage_text.replace("i","1")  
+            out = re.search(re.compile("\d"),stage_text)
+            if out is None:
+                print 'out is None for ',stageKey,stage_text
+            else:
+                stage_num = out.group()
+                if result.get(stage_num)==None:
+                    result[stage_num] = []
+                result[stage_num].append(lineNum) 
+    #print 'out is:',out.group()
+    return result  
+
 def meetReq(keys,reqs):
     '''
     Check if the given key meet the requirement from reqs list. 
@@ -252,41 +226,3 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
             
     #now we have a complete list of all organs
     #we look for cancer keyword
-
-    
-    
-       
-    
-    
-    
-
-'''
-Example main usage
-from collections import defaultdict
-output_stage = defaultdict(list)
-output_grade = defaultdict(list)
-check = defaultdict(list)
-inputfile = open("input_test.txt")
-input = inputfile.read()
-
-text_in = input.split("\n")
-
-import os
-os.system('del outfile.txt')
-os.system('del outfile_err.txt')
-
-outfile=open("outfile.txt","a")
-outfile_err=open("outfile_err.txt","a")
-#i is the number of document we currently working on
-i=0
-while i<len(text_in):
-    stageResult = findStages('stage',text_in[i])
-    gradeResult = findStages('grade',text_in[i])
-    for stage in stageResult:    
-        output_stage[i].append(stage)
-        check[i].append(text_in[i])
-    for stage in gradeResult:    
-        output_grade[i].append(stage)
-    i+=1
-'''
-

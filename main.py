@@ -48,9 +48,10 @@ if __name__ == '__main__':
             result[row]['pa']=[{},{}]
             result[row]['stage'] = []
             result[row]['pid'] = pid
-        result[row]['stage'].extend(getAllStages(pNote))
-        result[row]['stage'].extend(getAllStages(paNote))
-        result[row]['stage'].extend(getStageFromPa(paNote))
+        result[row]['p'][1].update(get_stage_num(pNote,'grade'))
+        result[row]['p'][1].update(get_stage_num(pNote,'stage'))
+        result[row]['pa'][1].update(get_stage_num(paNote,'stage'))
+        result[row]['pa'][1].update(get_stage_num(paNote,'grade'))
         result[row]['pa'][0].update(get_cancer_type(pNote))
         result[row]['p'][0].update(get_cancer_type(paNote))
         row+=1
