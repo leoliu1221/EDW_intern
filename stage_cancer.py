@@ -91,7 +91,7 @@ def get_stage_num(text,stageKey):
     lines = text.split('.')
     for lineNum in xrange(len(lines)):
         stage_text = lines[lineNum]
-        if stageKey in line:
+        if stageKey in stage_text:
             stage_text = stage_text[stage_text.find(stageKey)+len(stageKey):]
             stage_text = stage_text.replace("iv","4")  
             stage_text = stage_text.replace("iii","3")  
