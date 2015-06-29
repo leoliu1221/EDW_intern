@@ -1,0 +1,6 @@
+cancer
+carcinoma
+sarcoma
+melanoma
+lymphoma
+leukemia
