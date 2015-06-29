@@ -46,7 +46,7 @@ if __name__ == '__main__':
             result[row]['pid'] = pid
         update(result[row]['p'][1],get_stage_num(pNote,'grade'))
         update(result[row]['p'][1],get_stage_num(pNote,'stage'))
-        update([row]['pa'][1],get_stage_num(paNote,'stage'))
+        update(result[row]['pa'][1],get_stage_num(paNote,'stage'))
         update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))

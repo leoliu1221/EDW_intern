@@ -1,4 +1,5 @@
 cancer
+cancers
 carcinoma
 sarcoma
 melanoma

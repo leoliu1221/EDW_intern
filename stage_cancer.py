@@ -20,16 +20,11 @@ def hasString(s,ss):
         True if at least 1 word from ss is found in s
         False otherwise
     '''
-    if len(ss)<=len(s):
-        for word in ss:
+    for wordl in ss:
+        for word in wordl:
             if word in s:
                 return True
-        return False
-    else:
-        for word in s:
-            if word in ss:
-                return True
-        return False
+    return False
 def getString(s,ss):
     '''
     This function returns a list of words appear in s
@@ -41,10 +36,13 @@ def getString(s,ss):
         empty list if none. 
         
     '''
-    if len(ss)<=len(s):
-        return [word for word in ss if word in s]
-    else:
-        return [word for word in s if word in ss]
+    result = []
+    for wordl in ss:
+        for word in wordl:
+            if word in s:
+                result.append(word)
+    return result
+
 def surround(text,index,threshold=500):
     '''
     This function cuts of the surrounding of the text, return appropriate surround text
@@ -82,17 +80,21 @@ def get_stage_num(text,stageKey):
     #just incase the text is not in lower case
     text = text.lower()
     #not sure if we need this
-    index = text.find(stageKey)
+    #index = text.find(stageKey)
     #surr_text= surround(text,surr_threshold)
     # regex used to capture colon cancer - for now we will do for particular "colon cancer" problem
     #regex_cancer = '((colon|rectal|rectosigmoid|colorectal) (cancer|carcinoma))|(cancer|enocarcinoma.*colon|sigmoid)|colon neoplasm'
     #get the sentenses that contains the keyword 
     #lines are a list of sentenses where the keyword is in
     lines = text.split('.')
+    stageKey = re.escape(stageKey)
     for lineNum in xrange(len(lines)):
-        stage_text = lines[lineNum]
-        if stageKey in stage_text:
-            stage_text = stage_text[stage_text.find(stageKey)+len(stageKey):]
+        line_text = lines[lineNum]
+        stage_matches = re.finditer(re.compile(r'\b'+stageKey+r'\b'),line_text)
+        #in here stageKeys serve as a counter. 
+        #It does not have anything to work on for later work
+        for match in stage_matches:
+            stage_text = line_text[match.end():]
             stage_text = stage_text.replace("iv","4")  
             stage_text = stage_text.replace("iii","3")  
             stage_text = stage_text.replace("ii","2")  
@@ -104,7 +106,7 @@ def get_stage_num(text,stageKey):
                 stage_num = out.group()
                 if result.get(stage_num)==None:
                     result[stage_num] = []
-                result[stage_num].append(lineNum) 
+                result[stage_num].append(lineNum)
     #print 'out is:',out.group()
     return result  
 
@@ -130,17 +132,6 @@ def meetReq(keys,reqs):
             if req not in keys:
                 return False
     return True
-        
-def getAllStages(text):
-    '''
-    Args: 
-        Text : String of text input
-    Returns:
-        stages: a list of numbers as stages
-    '''
-    stages = findStages('stage',text)
-    stages.extend(findStages('grade',text))
-    return stages
     
 def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
     '''
@@ -150,8 +141,11 @@ def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
     Returns: 
         result: 
             a dictionary of stage -> line number
-            '''
+    '''
     #text = data[2009670][0][4]    
+    if text.find('ajcc')==-1 and text.find('tnm')==-1:
+        print 'cannot find keyword ajcc or tnm'
+        return {}
     import yaml
     with open(confFile,'r') as f:
         cfg = yaml.load(f)
@@ -163,27 +157,33 @@ def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
     lines = text.split('.')
     lineNum=0
     for line in lines:
-        if 'ajcc' in line:
+        #we are guessing tnm or ajcc is the keyword
+        if 'tnm' in line or 'ajcc' in line:
             text = line
+            
             break
         lineNum+=1
     #find all the keywords available
+    if(lineNum+1<len(lines)):
+        text += ' '+lines[lineNum+1]
+    
     textKeys = []
     resultStages = []
     for key in keywords:
         if key in text:
             textKeys.append(key)
-    
+   
+
     for stage in stages.keys():
         req = stages[stage].values()
         #print testKeys,stages[stage].values()
         #print 'comparing',testKeys,req,meetReq(testKeys,req)
-        if meetReq(testKeys,req):
+        if meetReq(textKeys,req):
             #print 'met req!'
             resultStages.append(stage)
     result = {}
     for stage in resultStages:
-        result[stage] = lineNum
+        result[stage] = [lineNum]
     return result
     
 #the test data is data[852359][0][4]

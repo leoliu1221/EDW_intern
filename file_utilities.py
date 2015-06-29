@@ -137,7 +137,7 @@ def readLines(file = 'organList.txt',threshold=2):
         for line in f:
             #some of the words are less than length of 2 and we dont care about those
             if(len(line)>threshold):
-                result.append(line.lower().strip())
+                result.append(line.lower().strip().split(','))
     return result
     
     

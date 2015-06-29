@@ -6,7 +6,7 @@ bone
 brain
 breast
 cervical
-colon
+colon,colorectal,appendiceal 
 endometrial
 eye
 gallbladder
