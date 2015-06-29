@@ -12,7 +12,26 @@ Dependencies: file_utilities.py, stage_cancer.py
 '''
 
 from file_utilities import getData
-from stage_cancer import get_stage_num,getStageFromPa,get_cancer_type
+from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
+def update(dic1, dic2):
+    '''
+    Args:
+        dic1: first dictionary  1-> 2,3,4  1-> 3,4,5
+        dic2: second dictionary
+    Returns: 
+        dic1: first and second dictionary with key and value combined. 
+    '''
+    for key in dic2.keys():
+        if dic1.get(key)==None:
+            dic1[key] = []
+        dic1[key].extend(dic2[key])
+    for key in dic1.keys():
+        dic1[key] = list(set(dic1[key]))
+    return dic1
+
+
+
+
 #('stage',text_in[i])
 if __name__ == '__main__':
     result = {}
@@ -25,12 +44,13 @@ if __name__ == '__main__':
             result[row]['pa']=[{},{}]
             result[row]['stage'] = []
             result[row]['pid'] = pid
-        result[row]['p'][1].update(get_stage_num(pNote,'grade'))
-        result[row]['p'][1].update(get_stage_num(pNote,'stage'))
-        result[row]['pa'][1].update(get_stage_num(paNote,'stage'))
-        result[row]['pa'][1].update(get_stage_num(paNote,'grade'))
-        result[row]['pa'][0].update(get_cancer_type(paNote))
-        result[row]['p'][0].update(get_cancer_type(pNote))
+        update(result[row]['p'][1],get_stage_num(pNote,'grade'))
+        update(result[row]['p'][1],get_stage_num(pNote,'stage'))
+        update([row]['pa'][1],get_stage_num(paNote,'stage'))
+        update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
+        update(result[row]['pa'][1],get_stage_from_pa(paNote))
+        update(result[row]['pa'][0],get_cancer_type(paNote))
+        update(result[row]['p'][0],get_cancer_type(pNote))
         row+=1
     count=0;
     for pid in result.keys():

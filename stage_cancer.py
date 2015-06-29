@@ -142,16 +142,15 @@ def getAllStages(text):
     stages.extend(findStages('grade',text))
     return stages
     
-def getStageFromPa(text,confFile = 'stageKeys.yaml'):
+def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
     '''
     Check if a pa note has a stage associate with colon cancer
     Args: 
         text: a string of input text
     Returns: 
-        resultStage: 
-            a list containing all identified stages in string
-            If not found, return emptry list of string
-    '''
+        result: 
+            a dictionary of stage -> line number
+            '''
     #text = data[2009670][0][4]    
     import yaml
     with open(confFile,'r') as f:
@@ -161,15 +160,19 @@ def getStageFromPa(text,confFile = 'stageKeys.yaml'):
     keywords = cfg['keys']
     
     #1. try to get the ajcc from the text
-    ind = text.find('ajcc')
-    text = text[ind:]
-    text = text[:text.find('.')]
+    lines = text.split('.')
+    lineNum=0
+    for line in lines:
+        if 'ajcc' in line:
+            text = line
+            break
+        lineNum+=1
     #find all the keywords available
-    testKeys = []
+    textKeys = []
     resultStages = []
     for key in keywords:
         if key in text:
-            testKeys.append(key)
+            textKeys.append(key)
     
     for stage in stages.keys():
         req = stages[stage].values()
@@ -178,7 +181,10 @@ def getStageFromPa(text,confFile = 'stageKeys.yaml'):
         if meetReq(testKeys,req):
             #print 'met req!'
             resultStages.append(stage)
-    return resultStages 
+    result = {}
+    for stage in resultStages:
+        result[stage] = lineNum
+    return result
     
 #the test data is data[852359][0][4]
 #get_cancer_type(data[852359][0][4])
