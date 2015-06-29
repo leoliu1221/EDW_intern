@@ -12,31 +12,8 @@ Dependencies: file_utilities.py, stage_cancer.py
 '''
 
 from file_utilities import getData
-from stage_cancer import getAllStages,getStageFromPa,get_cancer_type
+from stage_cancer import get_stage_num,getStageFromPa,get_cancer_type
 #('stage',text_in[i])
-def hasColon2(note):
-    '''
-    check if the note says colon cancer II or not. 
-    Args: 
-        Note:A string represnetation of note. 
-    Returns:
-        True if colon cancer II
-        False otherwise. 
-    '''
-    maxStage=0;
-    stageResult = findStages('stage',note)
-    gradeResult = findStages('grade',note)
-    if len(stageResult)==0 and len(gradeResult)==0:
-        return False
-    for stage in stageResult:
-        stage = int(stage)
-        if stage>2:
-            return False
-        if stage>maxStage:
-            maxStage = stage;
-    return maxStage == 2
-
-
 if __name__ == '__main__':
     result = {}
     data = getData()
