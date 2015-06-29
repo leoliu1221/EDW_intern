@@ -236,6 +236,7 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
     text = text.split('.')
     #print text
     result = {}
+    #sNum is the line number for string. 
     sNum=0
     for s in text:
         if hasString(s.split(),cancers):

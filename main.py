@@ -38,26 +38,25 @@ def hasColon2(note):
 
 
 if __name__ == '__main__':
-    result = []
+    result = {}
     data = getData()
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
-        
-        
-            if result.get(pid)==None:
-                result[pid]= {}
-                
-                result[pid]['pNote'] = {}
-                result[pid]['paNote']={}
-            result[pid]['stage'].extend(getAllStages(pNote))
-            result[pid]['stage'].extend(getAllStages(paNote))
-            result[pid]['stage'].extend(getStageFromPa(paNote))
-            result[pid]['type'].update(get_cancer_type(pNote))
-            result[pid]['type'].update(get_cancer_type(paNote))
+        if result.get(row)==None:
+            result[row]= {}
+            result[row]['p'] = [{},{}]
+            result[row]['pa']=[{},{}]
+            result[row]['stage'] = []
+            result[row]['pid'] = pid
+        result[row]['stage'].extend(getAllStages(pNote))
+        result[row]['stage'].extend(getAllStages(paNote))
+        result[row]['stage'].extend(getStageFromPa(paNote))
+        result[row]['pa'][0].update(get_cancer_type(pNote))
+        result[row]['p'][0].update(get_cancer_type(paNote))
         row+=1
     count=0;
     for pid in result.keys():
-        if len(result[pid]['type'])==0:
+        if len(result[pid]['pa'][0].keys())==0:
             count+=1
     print count,len(result.keys())
     '''
