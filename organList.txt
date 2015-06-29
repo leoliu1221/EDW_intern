@@ -1,1 +1,35 @@
-a
+adrenal
+anal
+bile duct
+bladder
+bone
+brain
+breast
+cervical
+colon
+endometrial
+eye
+gallbladder
+kidney
+laryngeal
+hypopharyngeal
+liver
+lung
+nasal cavity 
+paranasal sinus
+nasopharyngeal
+oral cavity
+oropharyngeal
+ovarian
+pancreatic
+penile
+prostate
+salivary gland
+skin
+intestine
+stomach
+testicular
+thymus
+thyroid
+vaginal
+vulvar
