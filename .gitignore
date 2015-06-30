@@ -1,7 +1,7 @@
 # CSV data files sometimes they are confidential #
 #############
 *.csv
-
+.pyc
 # Compiled source #
 ###################
 *.com
