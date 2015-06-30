@@ -4,4 +4,6 @@ carcinoma
 sarcoma
 melanoma
 lymphoma
-leukemia
+neoplasm
+malignant tumors
+adenocarcinoma
