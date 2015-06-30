@@ -21,6 +21,7 @@ class Stagegui(Frame):
         index = int(w.curselection()[0])
         value = int(w.get(index))
         temp = self.result[value]['stage'].items()
+        print 'temp is: ' + temp
         temp2 = [(str(item[0]) + ' ' + str(item[1][0]) + ' ' + str(item[1][1])+ ' '+ str(item[1][2])) for item in temp]
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
@@ -63,7 +64,8 @@ class Stagegui(Frame):
 
     def readFile(self, filename):
         self.data,self.result = get_result(filename)
-        self.insert_to_listbox(self.data.keys(),self.list1)
+        print 'read file finished, len of data:', len(data), 'len of result ',len(result.keys())
+        self.insert_to_listbox(self.result.keys(),self.list1)
          
         f = open(filename, "r")
         text = f.read()
