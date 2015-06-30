@@ -11,23 +11,10 @@ Dependencies: file_utilities.py, stage_cancer.py
 
 '''
 
-from file_utilities import getData
+from file_utilities import getData,update
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
-def update(dic1, dic2):
-    '''
-    Args:
-        dic1: first dictionary  1-> 2,3,4  1-> 3,4,5
-        dic2: second dictionary
-    Returns: 
-        dic1: first and second dictionary with key and value combined. 
-    '''
-    for key in dic2.keys():
-        if dic1.get(key)==None:
-            dic1[key] = []
-        dic1[key].extend(dic2[key])
-    for key in dic1.keys():
-        dic1[key] = list(set(dic1[key]))
-    return dic1
+from matching import match_result
+
 
 
 
@@ -42,7 +29,6 @@ if __name__ == '__main__':
             result[row]= {}
             result[row]['p'] = [{},{}]
             result[row]['pa']=[{},{}]
-            result[row]['stage'] = []
             result[row]['pid'] = pid
         update(result[row]['p'][1],get_stage_num(pNote,'grade'))
         update(result[row]['p'][1],get_stage_num(pNote,'stage'))
@@ -51,6 +37,13 @@ if __name__ == '__main__':
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
+        matchResult = update(match_result(result[row]['p']),match_result(result[row]['pa']))
+        result[row]['stage'] = matchResult
+        
+        
+        
+        
+        
         row+=1
     count=0;
     for pid in result.keys():

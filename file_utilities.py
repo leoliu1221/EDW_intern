@@ -5,7 +5,23 @@ Created on Wed Jun 24 10:22:37 2015
 @author: Liu and Papis
 """
 
-
+def update(dic1, dic2):
+    '''
+    Args:
+        dic1: first dictionary  1-> [2,3,4]  2-> [3,4,5]
+        dic2: second dictionary   1-> [5,6,7] 2-> [9]
+    Returns: 
+        dic1: first and second dictionary with key and value combined.  
+        e.g. 1-> [2,3,4,5,6,7] 2-> [3,4,5,9]
+    '''
+    for key in dic2.keys():
+        if dic1.get(key)==None:
+            dic1[key] = []
+        dic1[key].extend(dic2[key])
+    for key in dic1.keys():
+        dic1[key] = list(set(dic1[key]))
+    return dic1
+    
 def readNote(s,d=None):
     '''
     Read from the begining of note to the end of the note

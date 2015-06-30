@@ -180,7 +180,7 @@ def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
         #print 'comparing',testKeys,req,meetReq(testKeys,req)
         if meetReq(textKeys,req):
             #print 'met req!'
-            resultStages.append(stage)
+            resultStages.append(str(stage))
     result = {}
     for stage in resultStages:
         result[stage] = [lineNum]
@@ -230,6 +230,6 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
     for key in result.keys():
         result[key] = list(set(result[key]))
     return result
-            
-    #now we have a complete list of all organs
-    #we look for cancer keyword
+
+
+
