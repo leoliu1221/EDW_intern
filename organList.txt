@@ -1,35 +1,25 @@
-adrenal
-anal
-bile duct
-bladder
-bone
-brain
-breast
-cervical
-colon,colorectal,appendiceal 
-endometrial
-eye
-gallbladder
-kidney
-laryngeal
-hypopharyngeal
-liver
-lung
-nasal cavity 
-paranasal sinus
-nasopharyngeal
-oral cavity
-oropharyngeal
-ovarian
-pancreatic
-penile
-prostate
-salivary gland
-skin
+bladder,transitional cell
+bone,osteo,chodro,ewing's 
+brain,intracranial
+breast,ductal,lobular
+cervix,cervical
+colon,colorectal,appendiceal,sigmoid,rectum
+endocrine glands
+esophagus,esophageal
 intestine
-stomach
-testicular
-thymus
-thyroid
-vaginal
-vulvar
+kaposi
+kidney,renal
+leukemia
+lip
+liver,hepatocellular,cholangio 
+lung
+lymphoma
+ovarian,ovary,oviduct
+pancreatic,pancreas
+peritoneum,peritoneal 
+prostate
+skin,actinic keratosis,basal cell,dysplastic nevi
+stomach,gastric,adeno
+testicular,testis
+tongue
+uterus,uterine,endometrial
