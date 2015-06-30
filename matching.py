@@ -4,10 +4,11 @@ Created on Tue Jun 30 09:09:55 2015
 
 @author: sqltest
 """
-def match_result(pResult):
+def match_result(pResult,name):
     '''
     Args:
         pResult: an array of 2 dictionaries. 1st is for organs, 2nd is for line numbers
+        name: a string representing which note the result come from. 
     Returns:
         [(organ1,stageNum1,lineNum1),(organ2,stageNum2,lineNum2) .... ]
         organs: string. organ that finds correlation
@@ -23,6 +24,6 @@ def match_result(pResult):
                         #then we have a match! 
                         if result.get(organ)==None:
                             result[organ] = []
-                        result[organ].append((stage,lineNum))
+                        result[organ].append((stage,lineNum,name))
     return result
 
