@@ -1,0 +1,9 @@
+entry_dev_batch_1
+ods: original data structure
+data marts: stuff we have changed from odses.
+toolbox to control flow
+naming convention: database.schema.table
+class on cousera https://lagunita.stanford.edu/courses/DB/2014/SelfPaced/about
+
+
+

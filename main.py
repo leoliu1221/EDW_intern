@@ -18,7 +18,7 @@ from matching import match_result
 
 def get_result(fileName):
     result = {}
-    data = getData(fileNae)
+    data = getData(fileName)
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
         if result.get(row)==None:
