@@ -57,11 +57,6 @@ if __name__ == '__main__':
         update(result[row]['p'][0],get_cancer_type(pNote))
         matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
         result[row]['stage'] = matchResult
-        
-        
-        
-        
-        
         row+=1
     count=0;
     for pid in result.keys():

@@ -20,9 +20,6 @@ def get_tnm(text,confFile = 'stageKeys.yaml'):
             a dictionary of stage -> line number
     '''
     #text = data[2009670][0][4]
-    if text.find('ajcc')==-1 and text.find('tnm')==-1:
-        print 'cannot find keyword ajcc or tnm'
-        return {}
     import yaml
     with open(confFile,'r') as f:
         cfg = yaml.load(f)
