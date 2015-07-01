@@ -155,7 +155,43 @@ def readLines(file = 'organList.txt',threshold=2):
             if(len(line)>threshold):
                 result.append(line.lower().strip().split(','))
     return result
-    
+def getData2(fName=None):
+    '''
+    Get data from file. 
+    Args:
+        fName: optional. Provides the filename to the csv data file. Format: each column is separated by "|"
+    Returns:
+        Data: a dictionary of [patientid,First_diagnosis_date,Physician_note_date,Physician_note,Pathology_note_date,Pathology_note]
+    '''
+    import re
+    fName = None
+    if fName is None:
+        fName = 'cancer_notes.csv'
+    f = open(fName,'r')
+    #burn the first line
+    header = f.readline();
+    print "header:",header
+    raw = f.read()
+    # find pid 
+    pid = re.findall(re.compile('"\d{7}"'),raw)
+    # split between each row by capturing "pid" where pid is 7 digit number
+    text = re.split('"\d{7}"',raw)
+    data=[]
+    i=0
+    while i<len(pid):
+        pid[i] = pid[i].replace('"','')
+        print pid[i]
+        line = text[i+1].split("|")
+        fDate = line[1].replace('"','')
+        pDate = line[2].replace('"','')
+        pNote = line[3].replace('"','')
+        paDate = line[4].replace('"','')
+        paNote = line[5].replace('"','').replace('\n','')
+
+        data.append([int(pid[i]),fDate,pDate,pNote.lower(),paDate,paNote.lower()])
+        i+=1
+  
+    return data    
     
     
     
