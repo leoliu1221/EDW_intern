@@ -90,7 +90,10 @@ def get_stage_num(text,stageKey):
     stageKey = re.escape(stageKey)
     for lineNum in xrange(len(lines)):
         line_text = lines[lineNum]
-        stage_matches = re.finditer(re.compile(r'\b'+stageKey+r'\b'),line_text)
+        # using word boundary regex
+#        stage_matches = re.finditer(re.compile(r'\b'+stageKey+r'\b'),line_text)
+        # using pre-defined regex
+        stage_matches = re.finditer(re.compile(r'[\s+.(]'+stageKey+'[\s+.:)]'),line_text)
         #in here stageKeys serve as a counter. 
         #It does not have anything to work on for later work
         for match in stage_matches:
