@@ -34,6 +34,12 @@ class Stagegui(Frame):
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
         print 'onselect1: ', value
+        #if the temp2 is empty, then output the whole text to txt
+        if temp2==[]:
+            text = self.data[value]
+            self.clear_text(self.txt)
+            self.insert_to_text(text,self.txt)
+        
     def onselect2(self,evt):
         w = evt.widget
         if len(w.curselection())==0:
@@ -69,7 +75,7 @@ class Stagegui(Frame):
         
     def initUI(self):
       
-        self.parent.title("File dialog")
+        self.parent.title("staging GUI")
         self.pack(fill=BOTH, expand=1)
         
         menubar = Menu(self.parent)
@@ -77,10 +83,12 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
+        fileMenu.add_comand(label='search',command=self.searchTxt)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
         self.textBox()
+        
     def onOpen(self):
         ftypes = [('csv files', '*.csv'), ('All files', '*')]
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
