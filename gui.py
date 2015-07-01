@@ -11,7 +11,7 @@ class Stagegui(Frame):
         self.frame2 = Frame(self)
         self.frame2.pack(side=LEFT,fill=Y)
         self.frame3 = Frame(self)
-        self.frame3.pack(side=LEFT,fill=Y)
+        self.frame3.pack(side=RIGHT,fill=Y)
          
         self.parent = parent        
         self.centerWindow()
@@ -30,7 +30,7 @@ class Stagegui(Frame):
             print 'start printing items'
             print 'item1',item[0]
             print 'item2',item[1]
-        temp2 = [(str(item[0]) + ' ' + str(item[1][0][0]) + ' ' + str(item[1][0][1])+ ' '+ str(item[1][0][2])) for item in temp]
+        temp2 = [(str(item[0]) + ' ' + str(item[1][0][0]) + ' ID: ' +str(value)+' L#: '+ str(item[1][0][1])+ ' T: '+ str(item[1][0][2])) for item in temp]
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
         print 'onselect1: ', value
@@ -40,16 +40,32 @@ class Stagegui(Frame):
             return
         index = w.curselection()[0]
         value = w.get(index)
-        index = value.split()[2]
-        note = value.split()[3]
+        index = value.split()[3]
+        lineNum = int(value.split()[5])
+        note = value.split()[7]
         text = ''
         if note == 'p':
-            text = data[int(index)][3]
+            start = lineNum-1
+            end = lineNum+1
+            lines = data[int(index)][3].split('.')
+            if len(lines)>end:
+                end = len(lines)
+            if start<0:
+                start = 0
+            text = lines[start:end]
         if note == 'pa':
-            text = data[int(index)][5]
+            start = lineNum-1
+            end = lineNum+2
+            lines = data[int(index)][5].split('.')
+            if len(lines)>end:
+                end = len(lines)
+            if start<0:
+                start = 0
+            text = lines[start:end]
+        print 'text',text,'index',index
         print 'you selected item %s' % str(value)
-        self.clear_listbox(self.txt)
-        self.txt.insert(END,text)
+        self.clear_text(self.txt)
+        self.insert_to_text(text,self.txt)
         
     def initUI(self):
       
@@ -94,7 +110,7 @@ class Stagegui(Frame):
         self.parent.geometry('%dx%d+%d+%d' % (w, h, x, y))
     
     def textBox(self):
-        self.txt = Text(self.frame3,bg='red',wrap=WORD)
+        self.txt = Text(self.frame3,bg='white',wrap=WORD)
         self.txt.pack(side=LEFT,fill=BOTH)
         scrollbar3 = Scrollbar(self.frame3)
         scrollbar3.pack(side=RIGHT,fill=Y)
@@ -109,10 +125,12 @@ class Stagegui(Frame):
         scrollbar1.pack(side=RIGHT,fill=Y)
         self.list1.config(yscrollcommand=scrollbar1.set)
         scrollbar1.config(command=self.list1.yview)
+        self.list1.config(width=5)
         self.list1.bind('<<ListboxSelect>>',self.onselect1)
         #self.list1.insert(END,1) 
         self.list2 = Listbox(self.frame2)
         self.list2.pack(side=LEFT,fill=BOTH,padx=5)
+        self.list2.config(width=30)
         scrollbar2 = Scrollbar(self.frame2)
         scrollbar2.pack(side=RIGHT,fill=Y)
         self.list2.config(yscrollcommand=scrollbar2.set)
