@@ -16,9 +16,9 @@ from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
-def get_result(fileName):
+def get_result2(fileName):
     result = {}
-    data = getData(fileName)
+    data = getData2(fileName)
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
         if result.get(row)==None:
