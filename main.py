@@ -11,14 +11,14 @@ Dependencies: file_utilities.py, stage_cancer.py
 
 '''
 
-from file_utilities import getData,update
+from file_utilities import getData,update,getData2
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
 def get_result(fileName='data.csv'):
     result = {}
-    data = getData(fileName)
+    data = getData2(fileName)
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
         if result.get(row)==None:

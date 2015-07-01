@@ -166,7 +166,7 @@ def getData2(fName=None):
     import re
     fName = None
     if fName is None:
-        fName = 'cancer_notes.csv'
+        fName = 'cancer_notes_lung.csv'
     f = open(fName,'r')
     #burn the first line
     header = f.readline();
