@@ -7,6 +7,7 @@ colon,colorectal,appendiceal,sigmoid,rectum
 endocrine glands
 esophagus,esophageal
 intestine
+head
 kaposi
 kidney,renal
 leukemia
@@ -14,6 +15,7 @@ lip
 liver,hepatocellular,cholangio 
 lung
 lymphoma
+neck
 ovarian,ovary,oviduct
 pancreatic,pancreas
 peritoneum,peritoneal 
