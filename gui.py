@@ -11,7 +11,7 @@ class Stagegui(Frame):
         self.frame2 = Frame(self)
         self.frame2.pack(side=LEFT,fill=Y)
         self.frame3 = Frame(self)
-        self.frame3.pack(side=RIGHT,fill=Y)
+        self.frame3.pack(side=LEFT,fill=Y)
          
         self.parent = parent        
         self.centerWindow()
@@ -47,7 +47,7 @@ class Stagegui(Frame):
         if note == 'p':
             start = lineNum-1
             end = lineNum+1
-            lines = data[int(index)][3].split('.')
+            lines = self.data[int(index)][3].split('.')
             if len(lines)>end:
                 end = len(lines)
             if start<0:
@@ -56,7 +56,7 @@ class Stagegui(Frame):
         if note == 'pa':
             start = lineNum-1
             end = lineNum+2
-            lines = data[int(index)][5].split('.')
+            lines = self.data[int(index)][5].split('.')
             if len(lines)>end:
                 end = len(lines)
             if start<0:
