@@ -18,16 +18,26 @@ class Stagegui(Frame):
         self.initUI()
     def onselect1(self,evt):
         w = evt.widget
+        
+        if len(w.curselection())==0:
+            return
         index = int(w.curselection()[0])
         value = int(w.get(index))
         temp = self.result[value]['stage'].items()
-        print 'temp is: ' + temp
-        temp2 = [(str(item[0]) + ' ' + str(item[1][0]) + ' ' + str(item[1][1])+ ' '+ str(item[1][2])) for item in temp]
+        print 'temp is: ' + str(temp)
+        temp2 = []
+        for item in temp:
+            print 'start printing items'
+            print 'item1',item[0]
+            print 'item2',item[1]
+        temp2 = [(str(item[0]) + ' ' + str(item[1][0][0]) + ' ' + str(item[1][0][1])+ ' '+ str(item[1][0][2])) for item in temp]
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
-        print value
+        print 'onselect1: ', value
     def onselect2(self,evt):
         w = evt.widget
+        if len(w.curselection())==0:
+            return
         index = w.curselection()[0]
         value = w.get(index)
         index = value.split()[2]
@@ -40,6 +50,7 @@ class Stagegui(Frame):
         print 'you selected item %s' % str(value)
         self.clear_listbox(self.txt)
         self.txt.insert(END,text)
+        
     def initUI(self):
       
         self.parent.title("File dialog")
@@ -64,7 +75,7 @@ class Stagegui(Frame):
 
     def readFile(self, filename):
         self.data,self.result = get_result(filename)
-        print 'read file finished, len of data:', len(data), 'len of result ',len(result.keys())
+        print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
         self.insert_to_listbox(self.result.keys(),self.list1)
          
         f = open(filename, "r")
@@ -89,6 +100,7 @@ class Stagegui(Frame):
         scrollbar3.pack(side=RIGHT,fill=Y)
         self.txt.config(yscrollcommand=scrollbar3.set)
         scrollbar3.config(command=self.txt.yview)
+        self.txt.config(state=DISABLED)
 
     def listBox(self):
         self.list1 = Listbox(self.frame1)
@@ -111,7 +123,18 @@ class Stagegui(Frame):
         for item in data:
             lBox.insert(END,str(item))
     def clear_listbox(self,lBox):
-        lBox.delete(0,last=lBox.size()-1)
+        #lBox.delete(0,last=lBox.size()-1)
+        lBox.delete(0,END)
+    def insert_to_text(self,data,txt):
+        txt.config(state=NORMAL)
+        for item in data:
+            txt.insert(END,str(item))
+        txt.config(state=DISABLED)
+    def clear_text(self,txt):
+        txt.config(state=NORMAL)
+        txt.delete(1.0, END)
+        txt.config(state=DISABLED)            
+
 def main():
     root = Tk()
     ex = Stagegui(root)

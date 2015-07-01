@@ -136,7 +136,7 @@ def getData(fName=None):
         paDate,raw = readId(raw)
         paNote,raw = readNote(raw)
         data.append([int(pid),fDate,pDate,pNote.lower(),paDate,paNote.lower()])
-        
+    #print data.keys()   
     return data
     
 def readLines(file = 'organList.txt',threshold=2):

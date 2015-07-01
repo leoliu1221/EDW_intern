@@ -16,7 +16,7 @@ from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
-def get_result(fileName):
+def get_result(fileName='data.csv'):
     result = {}
     data = getData(fileName)
     row=0
@@ -35,6 +35,8 @@ def get_result(fileName):
         update(result[row]['p'][0],get_cancer_type(pNote))
         matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
         result[row]['stage'] = matchResult
+        row+=1
+    print 'finished getting result'
     return data,result
 
 #('stage',text_in[i])
