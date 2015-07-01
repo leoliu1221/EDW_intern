@@ -40,7 +40,7 @@ def get_tnm(text,confFile = 'stageKeys.yaml'):
            req = stages[stage].values()
            if meetReq(textKeys,req):
                 if result.get(stage) == None:
-                    result[stage]=[]
+                    result[str(stage)]=[]
                 result[str(stage)].append(lineNum)
         lineNum+=1
     for key in result.keys():
