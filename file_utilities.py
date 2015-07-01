@@ -164,7 +164,6 @@ def getData2(fName=None):
         Data: a dictionary of [patientid,First_diagnosis_date,Physician_note_date,Physician_note,Pathology_note_date,Pathology_note]
     '''
     import re
-    fName = None
     if fName is None:
         fName = 'cancer_notes_lung.csv'
     f = open(fName,'r')
