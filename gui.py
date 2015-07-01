@@ -6,13 +6,28 @@ class Stagegui(Frame):
   
     def __init__(self, parent):
         Frame.__init__(self, parent)   
+        self.frameTop = Frame(self)
+        
+        self.search = Text(self.frameTop,bg='white',wrap=WORD)
+        self.search.pack(side=LEFT,fill=BOTH,expand=YES)
+        self.search.config(height=1)      
+        self.searchButton = Button(self.frameTop,text='search')
+        self.searchButton.config(height=1)
+        self.searchButton.config(command=self.searchtxt)
+        #self.search.bind('<Return>',self.search)
+        print 'finished linking button'
+        self.searchButton.pack(side=LEFT,fill=X,expand=YES,padx=5)
+        self.frameTop.pack(side=TOP,expand=NO,fill=BOTH,pady=1)
+        
+        
+        
         self.frame1 = Frame(self)
-        self.frame1.pack(side=LEFT,fill=Y)
+        self.frame1.pack(side=LEFT,fill=BOTH)
         self.frame2 = Frame(self)
-        self.frame2.pack(side=LEFT,fill=Y)
+        self.frame2.pack(side=LEFT,fill=BOTH,expand=YES)
         self.frame3 = Frame(self)
-        self.frame3.pack(side=LEFT,fill=Y)
-         
+        self.frame3.pack(side=LEFT,fill=BOTH,expand=YES)
+
         self.parent = parent        
         self.centerWindow()
         self.initUI()
@@ -76,18 +91,19 @@ class Stagegui(Frame):
     def initUI(self):
       
         self.parent.title("staging GUI")
-        self.pack(fill=BOTH, expand=1)
+        
         
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_comand(label='search',command=self.searchTxt)
+        
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
         self.textBox()
+        self.pack(fill=BOTH, expand=YES)
         
     def onOpen(self):
         ftypes = [('csv files', '*.csv'), ('All files', '*')]
@@ -119,12 +135,15 @@ class Stagegui(Frame):
     
     def textBox(self):
         self.txt = Text(self.frame3,bg='white',wrap=WORD)
-        self.txt.pack(side=LEFT,fill=BOTH)
+        self.txt.pack(side=LEFT,fill=BOTH,expand=YES)
         scrollbar3 = Scrollbar(self.frame3)
         scrollbar3.pack(side=RIGHT,fill=Y)
         self.txt.config(yscrollcommand=scrollbar3.set)
         scrollbar3.config(command=self.txt.yview)
         self.txt.config(state=DISABLED)
+        #self.search = Text(self.frameTop,bg='white',wrap=WORD)
+        #self.search.pack(side=TOP,fill=BOTH)
+        #self.search.config(height=1)
 
     def listBox(self):
         self.list1 = Listbox(self.frame1)
@@ -137,7 +156,7 @@ class Stagegui(Frame):
         self.list1.bind('<<ListboxSelect>>',self.onselect1)
         #self.list1.insert(END,1) 
         self.list2 = Listbox(self.frame2)
-        self.list2.pack(side=LEFT,fill=BOTH,padx=5)
+        self.list2.pack(side=LEFT,fill=BOTH,padx=5,expand=YES)
         self.list2.config(width=30)
         scrollbar2 = Scrollbar(self.frame2)
         scrollbar2.pack(side=RIGHT,fill=Y)
@@ -159,7 +178,31 @@ class Stagegui(Frame):
     def clear_text(self,txt):
         txt.config(state=NORMAL)
         txt.delete(1.0, END)
-        txt.config(state=DISABLED)            
+        txt.config(state=DISABLED)        
+    def search2(self):
+        print 'in search2'
+    def searchtxt(self):
+        self.txt.config(state=NORMAL)
+        self.txt.tag_remove('found', '1.0', END)
+        s = self.search.get('1.0',END)[:-1]
+        print 's is: ['+s+']'
+        print s==''
+        
+        if not s=='':
+            idx = '1.0'
+            while 1:
+                idx = self.txt.search(s, idx, nocase=1, stopindex=END)
+                print idx
+                
+                if not idx:
+                    break
+                lastidx = '%s+%dc' % (idx, len(s))
+                
+                self.txt.tag_add('found', idx, lastidx)
+            
+                idx = lastidx
+            self.txt.tag_config('found', foreground='white',background='black')
+        self.txt.config(state=DISABLED)
 
 def main():
     root = Tk()
