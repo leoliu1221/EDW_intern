@@ -83,7 +83,7 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_comand(label='search',command=self.searchTxt)
+        #fileMenu.add_comand(label='search',command=self.searchTxt)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
