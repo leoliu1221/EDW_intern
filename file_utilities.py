@@ -181,12 +181,12 @@ def getData2(fName=None):
     while i<len(pid):
         pid[i] = pid[i].replace('"','')
         print pid[i]
-        line = text[i+1].split("|")
-        fDate = line[1].replace('"','')
-        pDate = line[2].replace('"','')
-        pNote = line[3].replace('"','')
-        paDate = line[4].replace('"','')
-        paNote = line[5].replace('"','').replace('\n','')
+        line = text[i+1].split('"|"')
+        fDate = line[0].replace('|"','')
+        pDate = line[1].replace('"','')
+        pNote = line[2].replace('"','')
+        paDate = line[3].replace('"','')
+        paNote = line[4].replace('"','').replace('"\n','')
 
         data.append([int(pid[i]),fDate,pDate,pNote.lower(),paDate,paNote.lower()])
         i+=1
