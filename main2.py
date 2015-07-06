@@ -36,7 +36,13 @@ def get_result2(fileName):
         update(result[row]['p'][0],get_cancer_type(pNote))
         matchResult = update(match_result(result[row]['p']),match_result(result[row]['pa']))
         result[row]['stage'] = matchResult
-    return data,result
+        result2 = {}
+    #result2 has patient as the key and all other things as values. 
+        for key in result.keys():
+            if result2.get(result[key]['pid'])==None:
+                result2[result[key]['pid']]={}
+            result2[result[key]['pid']][key] = None
+    return data,result,result2
 
 #('stage',text_in[i])
 if __name__ == '__main__':

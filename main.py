@@ -36,8 +36,14 @@ def get_result(fileName='data.csv'):
         matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
         result[row]['stage'] = matchResult
         row+=1
+        result2 = {}
+    #result2 has patient as the key and all other things as values. 
+        for key in result.keys():
+            if result2.get(result[key]['pid'])==None:
+                result2[result[key]['pid']]={}
+            result2[result[key]['pid']][key] = None
     print 'finished getting result'
-    return data,result
+    return data,result,result2
 
 #('stage',text_in[i])
 if __name__ == '__main__':

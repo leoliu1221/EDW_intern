@@ -33,18 +33,19 @@ class Stagegui(Frame):
         self.centerWindow()
         self.initUI()
     def onselectP(self,evt):
+        
         w = evt.widget
-        if len(w.curselection()):
+        if len(w.curselection())==0:
             return
         index = int(w.curselection()[0])
         value = int(w.get(index))
+        self.parent.title(str(value))
+        print 'PID selected' ,value
         temp = self.pGroup[value].keys()
         self.clear_listbox(self.list1)
         self.insert_to_listbox(temp,self.list1)
         print 'onselect1: ', value
-        text = self.data[value]
-        self.clear_text(self.txt)
-        self.insert_to_text(text,self.txt)
+
     def onselect1(self,evt):
         w = evt.widget
         

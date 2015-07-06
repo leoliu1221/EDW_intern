@@ -35,7 +35,7 @@ if __name__ == '__main__':
     for key in result.keys():
         if result2.get(result[key]['pid'])==None:
             result2[result[key]['pid']]={}
-        result2[result[key]['pid']][key] = result[key]
+        result2[result[key]['pid']][key] = None
     for pid in result.keys():
         #if len(result[pid]['pa'][0].keys())==0:
         if len(result[pid]['stage'])==0:
