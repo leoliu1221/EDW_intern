@@ -20,7 +20,8 @@ class Stagegui(Frame):
         self.frameTop.pack(side=TOP,expand=NO,fill=BOTH,pady=1)
         
         
-        
+        self.frameP = Frame(self)
+        self.frameP.pack(side=LEFT,fill=BOTH)
         self.frame1 = Frame(self)
         self.frame1.pack(side=LEFT,fill=BOTH)
         self.frame2 = Frame(self)
@@ -31,6 +32,19 @@ class Stagegui(Frame):
         self.parent = parent        
         self.centerWindow()
         self.initUI()
+    def onselectP(self,evt):
+        w = evt.widget
+        if len(w.curselection()):
+            return
+        index = int(w.curselection()[0])
+        value = int(w.get(index))
+        temp = self.pGroup[value].keys()
+        self.clear_listbox(self.list1)
+        self.insert_to_listbox(temp,self.list1)
+        print 'onselect1: ', value
+        text = self.data[value]
+        self.clear_text(self.txt)
+        self.insert_to_text(text,self.txt)
     def onselect1(self,evt):
         w = evt.widget
         
@@ -112,10 +126,15 @@ class Stagegui(Frame):
             #self.txt.insert(END, text)
 
     def readFile(self, filename):
+        self.clear_listbox(self.listP)
         self.clear_listbox(self.list1)
-        self.data,self.result = get_result(filename)
+        self.clear_listbox(self.list2)
+        self.clear_text(self.txt)
+        #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
+        # I am being lazy here. Did not change much of the code but want to achieve the same result
+        self.data,self.result,self.pGroup = get_result(filename)
         print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
-        self.insert_to_listbox(self.result.keys(),self.list1)
+        self.insert_to_listbox(self.pGroup.keys(),self.listP)
          
         f = open(filename, "r")
         text = f.read()
@@ -145,6 +164,14 @@ class Stagegui(Frame):
         #self.search.config(height=1)
 
     def listBox(self):
+        self.listP = Listbox(self.frameP)
+        self.listP.pack(side=LEFT,fill=BOTH,padx=3)
+        self.listP.config(width=7)
+        scrollbarP = Scrollbar(self.frameP)
+        scrollbarP.pack(side=RIGHT,fill=BOTH,padx=3)
+        self.listP.config(yscrollcommand=scrollbarP.set)
+        scrollbarP.config(command=self.listP.yview)
+        self.listP.bind('<<ListboxSelect>>',self.onselectP)
         self.list1 = Listbox(self.frame1)
         self.list1.pack(side=LEFT,fill=BOTH,padx=5) 
         scrollbar1 = Scrollbar(self.frame1)
