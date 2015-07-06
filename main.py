@@ -48,7 +48,7 @@ def get_result(fileName='data.csv'):
 #('stage',text_in[i])
 if __name__ == '__main__':
     result = {}
-    data = getData()
+    data = getData2()
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
         if result.get(row)==None:
