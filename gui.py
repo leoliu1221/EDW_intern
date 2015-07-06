@@ -44,7 +44,14 @@ class Stagegui(Frame):
         temp = self.pGroup[value].keys()
         self.clear_listbox(self.list1)
         self.insert_to_listbox(temp,self.list1)
-        print 'onselect1: ', value
+        self.clear_listbox(self.list2)
+        temp2 = []
+        for row in temp:
+            tempR = self.result[row]['stage'].items()
+            temp2.extend([(str(item[0]) + ' ' + str(item[1][0][0]) + ' ID: ' +str(row)+' L#: '+ str(item[1][0][1])+ ' T: '+ str(item[1][0][2])) for item in tempR])
+        self.insert_to_listbox(temp2,self.list2)
+
+        print 'onselectP: ', value
 
     def onselect1(self,evt):
         w = evt.widget
@@ -169,10 +176,12 @@ class Stagegui(Frame):
         self.listP.pack(side=LEFT,fill=BOTH,padx=3)
         self.listP.config(width=7)
         scrollbarP = Scrollbar(self.frameP)
-        scrollbarP.pack(side=RIGHT,fill=BOTH,padx=3)
+        scrollbarP.pack(side=RIGHT,fill=BOTH)
         self.listP.config(yscrollcommand=scrollbarP.set)
         scrollbarP.config(command=self.listP.yview)
         self.listP.bind('<<ListboxSelect>>',self.onselectP)
+        self.listP.config(exportselection=False)
+        
         self.list1 = Listbox(self.frame1)
         self.list1.pack(side=LEFT,fill=BOTH,padx=5) 
         scrollbar1 = Scrollbar(self.frame1)
@@ -181,6 +190,7 @@ class Stagegui(Frame):
         scrollbar1.config(command=self.list1.yview)
         self.list1.config(width=5)
         self.list1.bind('<<ListboxSelect>>',self.onselect1)
+        self.list1.config(exportselection=False)
         #self.list1.insert(END,1) 
         self.list2 = Listbox(self.frame2)
         self.list2.pack(side=LEFT,fill=BOTH,padx=5,expand=YES)
@@ -190,6 +200,7 @@ class Stagegui(Frame):
         self.list2.config(yscrollcommand=scrollbar2.set)
         scrollbar2.config(command=self.list2.yview)
         self.list2.bind('<<ListboxSelect>>',self.onselect2)
+        self.list2.config(exportselection=False)
         #self.list2.insert(END,1) 
     def insert_to_listbox(self,data,lBox):
         for item in data:

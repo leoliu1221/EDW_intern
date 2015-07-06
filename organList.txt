@@ -13,7 +13,7 @@ kidney,renal
 leukemia
 lip
 liver,hepatocellular,cholangio 
-lung
+lung,nsclc
 lymphoma
 neck
 ovarian,ovary,oviduct
