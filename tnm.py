@@ -4,42 +4,40 @@ Usage: mainly for use the function get_stage_from_pa
 Wanted to create a parser that checks for all lines in the text
 If the line has tnm system then outputs the tnm system staging
 '''
-def get_tnm(text,confFile = 'stageKeys.yaml'):
-    '''
-    Check if a pa note has a stage associate with colon cancer
-    Args:
-        text: a string of input text
-    Returns:
-        result:
-            a dictionary of stage -> line number
-    '''
-    #text = data[2009670][0][4]
-    if text.find('ajcc')==-1 and text.find('tnm')==-1:
-        print 'cannot find keyword ajcc or tnm'
-        return {}
-    import yaml
-    with open(confFile,'r') as f:
-        cfg = yaml.load(f)
-    #loading the stage and keyword from file 'stageKeys.yaml'
-    stages = cfg['stages']
-    keywords = cfg['keys']
-
-    #1. try to get the ajcc from the text
-    lines = text.split('.')
-    lineNum=0
+from file_utilities import update,getData2
+from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type,get_tnm
+from matching import match_result
+if __name__ == '__main__':
     result = {}
-    for line in lines:
-        textKeys = []
-        for key in keywords:
-            if key in text:
-                textKeys.append(key)
-        for stage in stages.keys():
-           req = stages[stage].values()
-           if meetReq(textKeys,req):
-                if result.get(stage) == None:
-                    result[stage]=[]
-                result[str(stage)].append(lineNum)
-        lineNum+=1
+    data = getData2()
+    row=0
+    for pid,fDate,pDate,pNote,paDate,paNote in data:
+        if result.get(row)==None:
+            result[row]= {}
+            result[row]['p'] = [{},{}]
+            result[row]['pa']=[{},{}]
+            result[row]['pid'] = pid
+        update(result[row]['p'][1],get_stage_num(pNote,'grade'))
+        update(result[row]['p'][1],get_stage_num(pNote,'stage'))
+        update(result[row]['p'][1],get_tnm(pNote))
+        update(result[row]['pa'][1],get_stage_num(paNote,'stage'))
+        update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
+        update(result[row]['pa'][1],get_stage_from_pa(paNote))
+        update(result[row]['pa'][0],get_cancer_type(paNote))
+        update(result[row]['p'][0],get_cancer_type(pNote))
+        matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
+        result[row]['stage'] = matchResult
+        row+=1
+    count=0;
+    
+    result2 = {}
+    #result2 has patient as the key and all other things as values. 
     for key in result.keys():
-        result[key] = list(set(result[key]))
-    return result
+        if result2.get(result[key]['pid'])==None:
+            result2[result[key]['pid']]={}
+        result2[result[key]['pid']][key] = result[key]
+    for pid in result.keys():
+        #if len(result[pid]['pa'][0].keys())==0:
+        if len(result[pid]['stage'])==0:
+            count+=1
+    print count,len(result.keys())
