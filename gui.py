@@ -8,15 +8,51 @@ class Stagegui(Frame):
         Frame.__init__(self, parent)   
         self.frameTop = Frame(self)
         
-        self.search = Text(self.frameTop,bg='white',wrap=WORD)
-        self.search.pack(side=LEFT,fill=BOTH,expand=YES)
-        self.search.config(height=1)      
+        #set the label for frameTop
+        #threshold label -- this is the matching threshold
+        mLabel = Label(self.frameTop,bg='white',text='match threshold')
+        mLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        
+        self.mText = Text(self.frameTop,bg='white')
+        self.mText.pack(side=LEFT,fill=X,padx=1,expand=NO)
+        self.mText.config(height=1) 
+        self.mText.config(width=3)
+        
+        tLabel = Label(self.frameTop,bg='white',text='tnm threshold')
+        tLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+
+        self.tText = Text(self.frameTop,bg='white')
+        self.tText.pack(side=LEFT,fill=X,padx=1,expand=NO)
+        self.tText.config(height=1)
+        self.tText.config(width=3)
+        
+        
+        sLabel = Label(self.frameTop,bg='white',text='stage threshold')
+        sLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+
+        self.sText = Text(self.frameTop,bg='white')
+        self.sText.pack(side=LEFT,fill=X,padx=1,expand=NO)
+        self.sText.config(height=1)
+        self.sText.config(width=2)
+
+        runButton = Button(self.frameTop,text='run')
+        runButton.config(height=1)
+        runButton.pack(side=LEFT,fill=X,expand=NO,padx=5)
+        runButton.config(command=self.rerun)
+
+
+
         self.searchButton = Button(self.frameTop,text='search')
         self.searchButton.config(height=1)
         self.searchButton.config(command=self.searchtxt)
         #self.search.bind('<Return>',self.search)
+        self.searchButton.pack(side=RIGHT,fill=X,expand=NO,padx=5)
         print 'finished linking button'
-        self.searchButton.pack(side=LEFT,fill=X,expand=YES,padx=5)
+
+        self.search = Text(self.frameTop,bg='white',wrap=WORD)
+        self.search.pack(side=RIGHT,fill=BOTH,expand=YES)
+        self.search.config(height=1)     
+        self.search.config(width=9)
         self.frameTop.pack(side=TOP,expand=NO,fill=BOTH,pady=1)
         
         
@@ -129,30 +165,63 @@ class Stagegui(Frame):
         self.listBox()
         self.textBox()
         self.pack(fill=BOTH, expand=YES)
-        
+
     def onOpen(self):
         ftypes = [('csv files', '*.csv'), ('All files', '*')]
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
         fl = dlg.show()
         if fl != '':
-            text = self.readFile(fl)
+            t1,t2,t3 = self.read_thresholds()
+            text = self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3)
             #self.txt.insert(END, text)
-
-    def readFile(self, filename):
-        self.clear_listbox(self.listP)
-        self.clear_listbox(self.list1)
-        self.clear_listbox(self.list2)
-        self.clear_text(self.txt)
+    def read_thresholds(self):
+        try:
+            t3 = int(read_text(self.mText))
+        except:
+            t3=50
+            self.clear_text(self.mText)
+            self.insert_to_text(str(t3),self.mText,block=False)
+        try:
+            t2 = int(read_text(self.tText))
+        except:
+            t2 = 40
+            self.clear_text(self.tText)
+            self.insert_to_text(str(t2),self.tText,block=False)
+        try:
+            t1 = int(read_text(self.sText),block=False)
+        except:
+            t1 = 5
+            self.clear_text(self.sText)
+            self.insert_to_text(str(t1),self.sText,block=False)
+        return t1,t2,t3
+    def rerun(self):
+        t1,t2,t3 = self.read_thresholds()
+        try:
+            self.readFile(data=self.data,t1=t1,t2=t2,t3=t3)
+        except AttributeError:
+            print 'no data defined. Cannot run. Please specify the input file'
+    def readFile(self, fileName=None,data=None,t1=5,t2=40,t3=50):
+        if fileName is not None:
+            self.clear_listbox(self.listP)
+            self.clear_listbox(self.list1)
+            self.clear_listbox(self.list2)
+            self.clear_text(self.txt)
         #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
         # I am being lazy here. Did not change much of the code but want to achieve the same result
-        self.data,self.result,self.pGroup = get_result(filename)
-        print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
-        self.insert_to_listbox(self.pGroup.keys(),self.listP)
-         
-        f = open(filename, "r")
-        text = f.read()
-        return text
-    
+            self.data,self.result,self.pGroup = get_result(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3)
+            print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
+            self.insert_to_listbox(self.pGroup.keys(),self.listP)
+        elif data is not None:
+            self.clear_listbox(self.listP)
+            self.clear_listbox(self.list1)
+            self.clear_listbox(self.list2)
+            self.clear_text(self.txt)
+        #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
+        # I am being lazy here. Did not change much of the code but want to achieve the same result
+            self.data,self.result,self.pGroup = get_result(fileName=None,data=data,t1=t1,t2=t2,t3=t3)
+            print 'process data finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
+            self.insert_to_listbox(self.pGroup.keys(),self.listP)
+
     def centerWindow(self):
         w = 1024
         h = 768
@@ -213,21 +282,28 @@ class Stagegui(Frame):
     def clear_listbox(self,lBox):
         #lBox.delete(0,last=lBox.size()-1)
         lBox.delete(0,END)
-    def insert_to_text(self,data,txt):
-        txt.config(state=NORMAL)
-        for item in data:
-            txt.insert(END,str(item))
-        txt.config(state=DISABLED)
+    def insert_to_text(self,data,txt,block=True):
+        if block:
+            txt.config(state=NORMAL)
+            for item in data:
+                txt.insert(END,str(item))
+            txt.config(state=DISABLED)
+        else:
+            txt.config(state=NORMAL)
+            for item in data:
+                txt.insert(END,str(item))
     def clear_text(self,txt):
         txt.config(state=NORMAL)
         txt.delete(1.0, END)
         txt.config(state=DISABLED)        
     def search2(self):
         print 'in search2'
+    def get_text(self,txt):
+        return txt.get('1.0',END)[:-1]
     def searchtxt(self):
         self.txt.config(state=NORMAL)
         self.txt.tag_remove('found', '1.0', END)
-        s = self.search.get('1.0',END)[:-1]
+        s = self.get_text(self.search)
         print 's is: ['+s+']'
         print s==''
         

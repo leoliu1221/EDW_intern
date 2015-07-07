@@ -16,9 +16,19 @@ from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
-def get_result(fileName='data.csv'):
+def get_result(fileName='data.csv',data=None,t1=5,t2=40,t3=50):
+    '''
+    Args:
+        fileName is the name of the file
+        data is the data if we already read it in
+        t1 is the threshold for finding number after keyword stage or grade
+        t2 is the threshol for finding TNM system how close TNM sholud be together after ajcc or tnm keyword
+        t3 is the matching on how close a stage number and cancer type should be in a sentence
+    '''
     result = {}
-    data = getData2(fName = fileName)
+    if data is None:
+        print 'getting data from ',fileName
+        data = getData2(fName = fileName)
     row=0
     for pid,fDate,pDate,pNote,paDate,paNote in data:
         if result.get(row)==None:
@@ -26,14 +36,14 @@ def get_result(fileName='data.csv'):
             result[row]['p'] = [{},{}]
             result[row]['pa']=[{},{}]
             result[row]['pid'] = pid
-        update(result[row]['p'][1],get_stage_num(pNote,'grade'))
-        update(result[row]['p'][1],get_stage_num(pNote,'stage'))
-        update(result[row]['pa'][1],get_stage_num(paNote,'stage'))
-        update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
-        update(result[row]['pa'][1],get_stage_from_pa(paNote))
+        update(result[row]['p'][1],get_stage_num(pNote,'grade',threshold=t1))
+        update(result[row]['p'][1],get_stage_num(pNote,'stage',threshold=t1))
+        update(result[row]['pa'][1],get_stage_num(paNote,'stage',threshold=t1))
+        update(result[row]['pa'][1],get_stage_num(paNote,'grade',threshold=t1))
+        update(result[row]['pa'][1],get_stage_from_pa(paNote,threshold=t2))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
-        matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
+        matchResult = update(match_result(result[row]['p'],'p',threshold=t3),match_result(result[row]['pa'],'pa',threshold=t3))
         result[row]['stage'] = matchResult
         row+=1
         result2 = {}
