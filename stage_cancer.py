@@ -249,7 +249,7 @@ def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
         index=0
         for keypair in textKeys:
             index+=keypair[1]
-        index/=len(textKeys)
+        #index/=len(textKeys)
         textKeys = [item[0] for item in textKeys]
 
         for stage in stages.keys():
