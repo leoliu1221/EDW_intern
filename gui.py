@@ -41,7 +41,6 @@ class Stagegui(Frame):
         runButton.config(command=self.rerun)
 
 
-
         self.searchButton = Button(self.frameTop,text='search')
         self.searchButton.config(height=1)
         self.searchButton.config(command=self.searchtxt)
@@ -159,7 +158,7 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_command(label="Save",command=self.onOpen)
+        fileMenu.add_command(label="Save",command=self.onSave)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
@@ -170,7 +169,10 @@ class Stagegui(Frame):
         dlg = tkFileDialog.SaveAs(self,filetypes = fTypes)
         fl = dlg.show()
         if fl!='':
-            self.saveFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
+            try:
+                self.saveFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
+            except AttributeError:
+                print 'please at least run once to save results'
            
     def saveFile(self,fileName,data,result,pGroup):
         import csv
@@ -235,8 +237,7 @@ class Stagegui(Frame):
         #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
         # I am being lazy here. Did not change much of the code but want to achieve the same result
             self.data,self.result,self.pGroup = get_result(fileName=None,data=data,t1=t1,t2=t2,t3=t3)
-            print 'process data finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
-            pdb()            
+            print 'process data finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())          
             self.insert_to_listbox(self.pGroup.keys(),self.listP)
 
     def centerWindow(self):
