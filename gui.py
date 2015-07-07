@@ -172,8 +172,16 @@ class Stagegui(Frame):
         if fl!='':
             self.saveFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
            
-    def saveFile(self,data,result,pGroup):
+    def saveFile(self,fileName,data,result,pGroup):
+        import csv
+        c = csv.writer(open(fileName,'wb'))
+        lineNum=0
+        for row in data:
+            temp = [row[0]]
+            temp.extend(result[lineNum]['stage'])
+            c.writerow(temp)
         
+
     def onOpen(self):
         ftypes = [('csv files', '*.csv'), ('All files', '*')]
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
