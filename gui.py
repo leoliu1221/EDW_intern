@@ -159,7 +159,7 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-
+        fileMenu.add_command(label="Save",command=self.onOpen)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
