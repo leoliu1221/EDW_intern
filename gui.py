@@ -48,8 +48,13 @@ class Stagegui(Frame):
         temp2 = []
         for row in temp:
             tempR = self.result[row]['stage'].items()
-            temp2.extend([(str(item[0]) + ' ' + str(item[1][0][0]) + ' ID: ' +str(row)+' L#: '+ str(item[1][0][1])+ ' T: '+ str(item[1][0][2])) for item in tempR])
-        self.insert_to_listbox(temp2,self.list2)
+            print tempR
+            for item in tempR:
+                if item!=[]:
+                    for item2 in item[1]:
+                        temp2.append((str(item[0])+' '+str(item2[0]+' ID: '+str(row)+' L#: '+str(item2[1])+' T: '+str(item2[2]))))
+                print temp2
+                self.insert_to_listbox(temp2,self.list2)
 
         print 'onselectP: ', value
 
@@ -86,7 +91,7 @@ class Stagegui(Frame):
         note = value.split()[7]
         text = ''
         if note == 'p':
-            start = lineNum-1
+            start = lineNum
             end = lineNum+1
             lines = self.data[int(index)][3].split('.')
             if len(lines)>end:
@@ -95,8 +100,8 @@ class Stagegui(Frame):
                 start = 0
             text = lines[start:end]
         if note == 'pa':
-            start = lineNum-1
-            end = lineNum+2
+            start = lineNum
+            end = lineNum+1
             lines = self.data[int(index)][5].split('.')
             if len(lines)>end:
                 end = len(lines)

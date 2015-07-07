@@ -33,8 +33,8 @@ def get_result(fileName='data.csv'):
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
-        #matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
-        #result[row]['stage'] = matchResult
+        matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
+        result[row]['stage'] = matchResult
         row+=1
         result2 = {}
     #result2 has patient as the key and all other things as values. 
@@ -63,12 +63,12 @@ if __name__ == '__main__':
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
-        #matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
-        #result[row]['stage'] = matchResult 
+        matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
+        result[row]['stage'] = matchResult 
         row+=1
     count=0
     for pid in result.keys():
-        if len(result[pid]['pa'][0].keys())==0:
+        if len(result[pid]['stage'].keys())==0:
             count+=1
     print count,len(result.keys())
     '''

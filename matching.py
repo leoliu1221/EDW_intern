@@ -4,7 +4,7 @@ Created on Tue Jun 30 09:09:55 2015
 
 @author: sqltest
 """
-def match_result(pResult,name):
+def match_result(pResult,name,threshold=50):
     '''
     Args:
         pResult: an array of 2 dictionaries. 1st is for organs, 2nd is for line numbers
@@ -18,12 +18,13 @@ def match_result(pResult,name):
     result = {}
     if len(pResult[0].keys())!=0 and len(pResult[1].keys())!=0:
         for organ in pResult[0].keys():
-            for lineNum in pResult[0][organ]:
+            for lineNum,pos in pResult[0][organ]:
                 for stage in pResult[1].keys():
-                    if lineNum in pResult[1][stage]:
-                        #then we have a match! 
-                        if result.get(organ)==None:
-                            result[organ] = []
-                        result[organ].append((stage,lineNum,name))
+                    for lineNum2,pos2 in pResult[1][stage]:
+                        if lineNum == lineNum2:
+                            if abs(pos2-pos)<=threshold:
+                                if result.get(organ)==None:
+                                    result[organ]=[]
+                                result[organ].append((stage,lineNum,name))
     return result
 

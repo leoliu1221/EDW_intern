@@ -124,7 +124,7 @@ def surround(text,index,threshold=500):
 
 
 
-def get_stage_num(text,stageKey):
+def get_stage_num(text,stageKey,threshold=5):
     '''
     This function check whether cancer keyword is contained within the text
     If it does, return the stage of that cancer
@@ -164,7 +164,7 @@ def get_stage_num(text,stageKey):
             stage_text = stage_text.replace("ii","2")  
             stage_text = stage_text.replace("i","1")  
             reObject = re.compile("\d")
-            out = reObject.search(stage_text,match.start(),match.end()+5)
+            out = reObject.search(stage_text,match.start(),match.end()+threshold)
             #out = re.search(re.compile("\d"),stage_text)
             if out is None:
                 print 'out is None for ',stageKey,'text: '+ stage_text
@@ -202,7 +202,7 @@ def meetReq(keys,reqs):
                 return False
     return True
     
-def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
+def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml',threshold=40):
     '''
     Check if a pa note has a stage associate with colon cancer
     Args:
@@ -227,7 +227,7 @@ def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
     #1. try to get the ajcc from the text
     lines = text.split('.')
     lineNum=0
-    locations=[]
+    
     for line in lines:
         #we are guessing tnm or ajcc is the keyword
         if 'tnm' in line or 'ajcc' in line:
@@ -237,18 +237,22 @@ def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
     tempKeys = get_all_occ(text,'tnm')
     tempKeys.extend(get_all_occ(text,'ajcc'))
     print tempKeys
-    for key in tempKeys:
-        text = surround(text,key[1],threshold=40)
+    for tempKey in tempKeys:
+        #text = surround(text,key[1],threshold=40)
       
         textKeys = []
         resultStages = []
         for key in keywords:
+            pattern = re.compile(key)
+            found_keys = pattern.finditer(text,int(tempKey[1])-threshold,int(tempKey[1])+threshold)
             found_keys = re.finditer(re.compile(key),text)
             for match in found_keys:
                 textKeys.append((match.group(),(match.start()+match.end())/2))
         index=0
         for keypair in textKeys:
             index+=keypair[1]
+        if len(textKeys)>0:
+            index/=len(textKeys)
         #index/=len(textKeys)
         textKeys = [item[0] for item in textKeys]
 
@@ -263,7 +267,7 @@ def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
         for stage in resultStages:
             if result.get(stage)==None:
                 result[stage]=[]
-            result[stage].append(lineNum)
+            result[stage].append((lineNum,index))
     return result
     
 #the test data is data[852359][0][4]
