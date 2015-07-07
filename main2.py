@@ -14,8 +14,24 @@ Dependencies: file_utilities.py, stage_cancer.py
 from file_utilities import update,getData2
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type,get_tnm
 from matching import match_result
+from extractTimedate import dateToObject
 
 
+def compare(x,y):
+    '''
+    Args:
+        x,y: items to be compared
+    return:
+        1 : if x > y
+        -1: if x < y
+        0 : otherwise
+    '''
+    if x[1] > y[1]:
+        return 1
+    if x[1] < y[1]:
+        return -1
+    return 0
+    
 def get_result2(fileName):
     result = {}
     data = getData2(fileName)
@@ -34,15 +50,11 @@ def get_result2(fileName):
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
+        
         matchResult = update(match_result(result[row]['p']),match_result(result[row]['pa']))
         result[row]['stage'] = matchResult
-        result2 = {}
-    #result2 has patient as the key and all other things as values. 
-        for key in result.keys():
-            if result2.get(result[key]['pid'])==None:
-                result2[result[key]['pid']]={}
-            result2[result[key]['pid']][key] = None
-    return data,result,result2
+    return data,result
+    
 
 #('stage',text_in[i])
 if __name__ == '__main__':
@@ -63,9 +75,39 @@ if __name__ == '__main__':
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
+        
         matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
         result[row]['stage'] = matchResult
         row+=1
+    
+    result_pid = {}
+    for key in result.keys():
+        if result_pid.get(result[key]['pid'])==None:
+            result_pid[result[key]['pid']]={}
+        result_pid[result[key]['pid']][key] = result[key]
+    
+    resultOrder_pid = {}
+    # rearrage record for each patient based on date and time
+    for key in result_pid.keys(): 
+        pid_record = result_pid[key]
+        dateList = {}
+        pid_record2 = {}
+        for key2 in pid_record.keys():
+            if result_pid[key][key2]['p'][0]!={} or result_pid[key][key2]['p'][1]!={}:
+                datetime = data[key2][2] # datetime from p note
+            else:
+                datetime = data[key2][4] # datetime from pa note
+            datetime = dateToObject(datetime)
+            dateList[key2] = datetime
+                    
+        array = dateList.items()
+        array.sort(compare,reverse=True)
+       
+        for item in array:
+           pid_record2[item[0]] = pid_record[item[0]]
+
+        resultOrder_pid[key] = pid_record2
+        
     count=0;
     for pid in result.keys():
         #if len(result[pid]['pa'][0].keys())==0:
