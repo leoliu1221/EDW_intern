@@ -165,14 +165,22 @@ class Stagegui(Frame):
         self.listBox()
         self.textBox()
         self.pack(fill=BOTH, expand=YES)
-
+    def onSave(self):
+        fTypes=[('csv files', '*.csv'), ('All files', '*')]
+        dlg = tkFileDialog.SaveAs(self,filetypes = fTypes)
+        fl = dlg.show()
+        if fl!='':
+            self.saveFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
+           
+    def saveFile(self,data,result,pGroup):
+        
     def onOpen(self):
         ftypes = [('csv files', '*.csv'), ('All files', '*')]
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
         fl = dlg.show()
         if fl != '':
             t1,t2,t3 = self.read_thresholds()
-            text = self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3)
+            self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3)
             #self.txt.insert(END, text)
     def read_thresholds(self):
         try:
