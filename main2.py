@@ -69,7 +69,7 @@ if __name__ == '__main__':
             result[row]['pid'] = pid
         update(result[row]['p'][1],get_stage_num(pNote,'grade'))
         update(result[row]['p'][1],get_stage_num(pNote,'stage'))
-        update(result[row]['p'][1],get_tnm(pNote))
+        #update(result[row]['p'][1],get_stage_from_pa(pNote))
         update(result[row]['pa'][1],get_stage_num(paNote,'stage'))
         update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
         update(result[row]['pa'][1],get_stage_from_pa(paNote))
@@ -93,10 +93,11 @@ if __name__ == '__main__':
         dateList = {}
         pid_record2 = {}
         for key2 in pid_record.keys():
-            if result_pid[key][key2]['p'][0]!={} or result_pid[key][key2]['p'][1]!={}:
+            if data[key2][2]!='':
                 datetime = data[key2][2] # datetime from p note
             else:
                 datetime = data[key2][4] # datetime from pa note
+
             datetime = dateToObject(datetime)
             dateList[key2] = datetime
                     
