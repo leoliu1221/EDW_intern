@@ -76,7 +76,7 @@ class Stagegui(Frame):
         index = int(w.curselection()[0])
         value = int(w.get(index))
         self.parent.title(str(value))
-        print 'PID selected' ,value
+        
         temp = self.pGroup[value].keys()
         self.clear_listbox(self.list1)
         self.insert_to_listbox(temp,self.list1)
@@ -176,20 +176,20 @@ class Stagegui(Frame):
             #self.txt.insert(END, text)
     def read_thresholds(self):
         try:
-            t3 = int(read_text(self.mText))
-        except:
+            t3 = int(self.get_text(self.mText))
+        except ValueError:
             t3=50
             self.clear_text(self.mText)
             self.insert_to_text(str(t3),self.mText,block=False)
         try:
-            t2 = int(read_text(self.tText))
-        except:
+            t2 = int(self.get_text(self.tText))
+        except ValueError:
             t2 = 40
             self.clear_text(self.tText)
             self.insert_to_text(str(t2),self.tText,block=False)
         try:
-            t1 = int(read_text(self.sText),block=False)
-        except:
+            t1 = int(self.get_text(self.sText))
+        except ValueError:
             t1 = 5
             self.clear_text(self.sText)
             self.insert_to_text(str(t1),self.sText,block=False)
@@ -220,6 +220,7 @@ class Stagegui(Frame):
         # I am being lazy here. Did not change much of the code but want to achieve the same result
             self.data,self.result,self.pGroup = get_result(fileName=None,data=data,t1=t1,t2=t2,t3=t3)
             print 'process data finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
+            pdb()            
             self.insert_to_listbox(self.pGroup.keys(),self.listP)
 
     def centerWindow(self):
