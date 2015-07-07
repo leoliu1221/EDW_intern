@@ -10,6 +10,25 @@ import re
 
 surr_threshold = 500
 count=0; 
+def get_all_occ(text,reg):
+    '''
+    get all occurences of reg. 
+    Args:
+        text: a string of input text
+        reg: a string to find
+    Returns:
+        result: a list of (reg,index) pairs. index is the index of reg in the document
+    '''
+    
+    matches = re.finditer(re.compile(reg),text)
+    result = [(match.group(),(match.start()+match.end())/2) for match in matches]
+    return result
+
+
+
+
+
+
 def get_tnm(text,confFile = 'stageKeys.yaml'):
     '''
     Check if a pa note has a stage associate with colon cancer
@@ -73,15 +92,15 @@ def getString(s,ss):
         s: a list of tokens of the input string
         ss: a list of list of strings to be checked. 
     Returns: 
-        A list of words in ss thats in s
+        A list of word and number pair in ss thats in s
         empty list if none. 
         
     '''
     result = []
     for wordl in ss:
         for word in wordl:
-            if word in s:
-                result.append(word)
+            temp = get_all_occ(s,word)
+            result.extend(temp)
     return result
 
 def surround(text,index,threshold=500):
@@ -114,7 +133,7 @@ def get_stage_num(text,stageKey):
         text String of text to be captured (input)
         stageKey: regular expression used to capture, either 'grade' or 'stage'
     Returns:
-        result: a dictionary of stage_num->[lineNum1, lineNum2 ...]
+        result: a dictionary of stage_num->[(lineNum1,position1) (lineNum2,position2) ...]
     '''
     #result is an empty dictionary 
     result = {}
@@ -138,19 +157,25 @@ def get_stage_num(text,stageKey):
         #in here stageKeys serve as a counter. 
         #It does not have anything to work on for later work
         for match in stage_matches:
-            stage_text = line_text[match.end():match.end()+5]
+            #stage_text = line_text[match.end():match.end()+5]
+            stage_text = line_text
             stage_text = stage_text.replace("iv","4")  
             stage_text = stage_text.replace("iii","3")  
             stage_text = stage_text.replace("ii","2")  
             stage_text = stage_text.replace("i","1")  
-            out = re.search(re.compile("\d"),stage_text)
+            reObject = re.compile("\d")
+            out = reObject.search(stage_text,match.start(),match.end()+5)
+            #out = re.search(re.compile("\d"),stage_text)
             if out is None:
-                print 'out is None for ',stageKey,stage_text
+                print 'out is None for ',stageKey,'text: '+ stage_text
             else:
                 stage_num = out.group()
+                print 'match start:', match.start()
+                print 'match end:',match.end()
+                stage_index = ((out.start()+out.end())/2+(match.start()+match.end())/2)/2
                 if result.get(stage_num)==None:
                     result[stage_num] = []
-                result[stage_num].append(lineNum)
+                result[stage_num].append((lineNum,stage_index))
     #print 'out is:',out.group()
     return result  
 
@@ -177,15 +202,17 @@ def meetReq(keys,reqs):
                 return False
     return True
     
-def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
+def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml'):
     '''
     Check if a pa note has a stage associate with colon cancer
-    Args: 
+    Args:
+        t: the string of staging to look at
         text: a string of input text
     Returns: 
         result: 
             a dictionary of stage -> line number
     '''
+    import re
     #text = data[2009670][0][4]    
     if text.find('ajcc')==-1 and text.find('tnm')==-1:
         print 'cannot find keyword ajcc or tnm'
@@ -194,40 +221,49 @@ def get_stage_from_pa(text,confFile = 'stageKeys.yaml'):
     with open(confFile,'r') as f:
         cfg = yaml.load(f)
     #loading the stage and keyword from file 'stageKeys.yaml'
-    stages = cfg['stages']
+    stages = cfg[str(t)+'stages']
     keywords = cfg['keys']
     
     #1. try to get the ajcc from the text
     lines = text.split('.')
     lineNum=0
+    locations=[]
     for line in lines:
         #we are guessing tnm or ajcc is the keyword
         if 'tnm' in line or 'ajcc' in line:
             text = line
-            
             break
         lineNum+=1
-    #find all the keywords available
-    if(lineNum+1<len(lines)):
-        text += ' '+lines[lineNum+1]
-    
-    textKeys = []
-    resultStages = []
-    for key in keywords:
-        if key in text:
-            textKeys.append(key)
-   
+    tempKeys = get_all_occ(text,'tnm')
+    tempKeys.extend(get_all_occ(text,'ajcc'))
+    print tempKeys
+    for key in tempKeys:
+        text = surround(text,key[1],threshold=40)
+      
+        textKeys = []
+        resultStages = []
+        for key in keywords:
+            found_keys = re.finditer(re.compile(key),text)
+            for match in found_keys:
+                textKeys.append((match.group(),(match.start()+match.end())/2))
+        index=0
+        for keypair in textKeys:
+            index+=keypair[1]
+        index/=len(textKeys)
+        textKeys = [item[0] for item in textKeys]
 
-    for stage in stages.keys():
-        req = stages[stage].values()
-        #print testKeys,stages[stage].values()
-        #print 'comparing',testKeys,req,meetReq(testKeys,req)
-        if meetReq(textKeys,req):
-            #print 'met req!'
-            resultStages.append(str(stage))
-    result = {}
-    for stage in resultStages:
-        result[stage] = [lineNum]
+        for stage in stages.keys():
+            req = stages[stage].values()
+            #print testKeys,stages[stage].values()
+            #print 'comparing',testKeys,req,meetReq(testKeys,req)
+            if meetReq(textKeys,req):
+                #print 'met req!'
+                resultStages.append(str(stage))
+        result = {}
+        for stage in resultStages:
+            if result.get(stage)==None:
+                result[stage]=[]
+            result[stage].append(lineNum)
     return result
     
 #the test data is data[852359][0][4]
@@ -240,7 +276,7 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
         oName: A string of filename from which you can read organs from
         cName: A string of filename from which you read cancers from
     Returns:
-        Result: a dictionary of all organs found -> sentence# in the input
+        Result: a dictionary of all organs found -> (sentence#,position) in the input
     '''
     if organs is None:
         try:
@@ -264,16 +300,13 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
     sNum=0
     for s in text:
         if hasString(s,cancers):
-            
-            for organ in getString(s,organs):
-                
+            #organ is the organ name, 
+            #num is the actual position in that line
+            for organ,num in getString(s,organs):
                 if result.get(organ)==None:
                     result[organ]=[]
-                result[organ].append(sNum)
+                result[organ].append((sNum,num))
         sNum+=1
     for key in result.keys():
         result[key] = list(set(result[key]))
     return result
-
-
-

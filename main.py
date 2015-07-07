@@ -64,14 +64,9 @@ if __name__ == '__main__':
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
         matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
-        result[row]['stage'] = matchResult
-        
-        
-        
-        
-        
+        result[row]['stage'] = matchResult 
         row+=1
-    count=0;
+    count=0
     for pid in result.keys():
         if len(result[pid]['pa'][0].keys())==0:
             count+=1

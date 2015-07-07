@@ -19,7 +19,7 @@ keys:
     - m1a
     - m1b
     - mx
-stages:
+colonstages:
     0:
         t: tis
         n: 
