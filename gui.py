@@ -10,30 +10,39 @@ class Stagegui(Frame):
         
         #set the label for frameTop
         #threshold label -- this is the matching threshold
-        mLabel = Label(self.frameTop,bg='white',text='match threshold')
+        mLabel = Label(self.frameTop,bg='white',fg='green',text='match threshold')
         mLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
         
-        self.mText = Text(self.frameTop,bg='white')
-        self.mText.pack(side=LEFT,fill=X,padx=1,expand=NO)
-        self.mText.config(height=1) 
+        self.mText = Entry(self.frameTop,bg='white')
+        self.mText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        #self.mText.config(height=1) 
         self.mText.config(width=3)
         
-        tLabel = Label(self.frameTop,bg='white',text='tnm threshold')
+        tLabel = Label(self.frameTop,bg='white',fg='green',text='tnm threshold')
         tLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
 
-        self.tText = Text(self.frameTop,bg='white')
-        self.tText.pack(side=LEFT,fill=X,padx=1,expand=NO)
-        self.tText.config(height=1)
+        self.tText = Entry(self.frameTop,bg='white')
+        self.tText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        #self.tText.config(height=1)
         self.tText.config(width=3)
         
         
-        sLabel = Label(self.frameTop,bg='white',text='stage threshold')
+        sLabel = Label(self.frameTop,bg='white',fg='green',text='stage threshold')
         sLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
 
-        self.sText = Text(self.frameTop,bg='white')
-        self.sText.pack(side=LEFT,fill=X,padx=1,expand=NO)
-        self.sText.config(height=1)
+        self.sText = Entry(self.frameTop,bg='white')
+        self.sText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        #self.sText.config(height=1)
         self.sText.config(width=2)
+        
+        oLabel = Label(self.frameTop,bg='white',fg='green',text='cancer name')
+        oLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+
+        self.oText = Entry(self.frameTop,bg='green',fg='white')
+        self.oText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        #self.oText.config(height=1)
+        self.oText.config(width=10)      
+
 
         runButton = Button(self.frameTop,text='run')
         runButton.config(height=1)
@@ -48,9 +57,8 @@ class Stagegui(Frame):
         self.searchButton.pack(side=RIGHT,fill=X,expand=NO,padx=5)
         print 'finished linking button'
 
-        self.search = Text(self.frameTop,bg='white',wrap=WORD)
-        self.search.pack(side=RIGHT,fill=BOTH,expand=YES)
-        self.search.config(height=1)     
+        self.search = Entry(self.frameTop,bg='white')
+        self.search.pack(side=RIGHT,fill=BOTH,expand=YES)    
         self.search.config(width=9)
         self.frameTop.pack(side=TOP,expand=NO,fill=BOTH,pady=1)
         
@@ -190,23 +198,23 @@ class Stagegui(Frame):
             #self.txt.insert(END, text)
     def read_thresholds(self):
         try:
-            t3 = int(self.get_text(self.mText))
+            t3 = int(self.mText.get())
         except ValueError:
             t3=50
-            self.clear_text(self.mText)
-            self.insert_to_text(str(t3),self.mText,block=False)
+            self.mText.delete(0, END)
+            self.mText.insert(0, str(t3))
         try:
-            t2 = int(self.get_text(self.tText))
+            t2 = int(self.tText.get())
         except ValueError:
             t2 = 40
-            self.clear_text(self.tText)
-            self.insert_to_text(str(t2),self.tText,block=False)
+            self.tText.delete(0,END)
+            self.tText.insert(0, str(t2))
         try:
-            t1 = int(self.get_text(self.sText))
+            t1 = int(self.sText.get())
         except ValueError:
             t1 = 5
-            self.clear_text(self.sText)
-            self.insert_to_text(str(t1),self.sText,block=False)
+            self.sText.delete(0,END)
+            self.sText.insert(0, str(t1))
         return t1,t2,t3
     def rerun(self):
         t1,t2,t3 = self.read_thresholds()
@@ -319,7 +327,7 @@ class Stagegui(Frame):
     def searchtxt(self):
         self.txt.config(state=NORMAL)
         self.txt.tag_remove('found', '1.0', END)
-        s = self.get_text(self.search)
+        s = self.search.get()
         print 's is: ['+s+']'
         print s==''
         
