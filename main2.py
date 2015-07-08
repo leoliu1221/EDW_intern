@@ -14,7 +14,7 @@ Dependencies: file_utilities.py, stage_cancer.py
 from file_utilities import update,getData2
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type,get_tnm
 from matching import match_result
-from extractTimedate import dateToObject
+from extractTimedate import dateToObject,compareTime
 
 
 def compare(x,y):

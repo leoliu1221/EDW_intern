@@ -88,13 +88,14 @@ class Stagegui(Frame):
         index = int(w.curselection()[0])
         value = int(w.get(index))
         self.parent.title(str(value))
-        
-        temp = self.pGroup[value].keys()
+        #pRows is the document IDs for which the selected pid has. 
+        #now pRows is supposed to be sorted by date. 
+        pRows = self.pGroup[value]
         self.clear_listbox(self.list1)
-        self.insert_to_listbox(temp,self.list1)
+        self.insert_to_listbox(pRows,self.list1)
         self.clear_listbox(self.list2)
         temp2 = []
-        for row in temp:
+        for row in pRows:
             tempR = self.result[row]['stage'].items()
             #print 'tempR:',tempR
             for item in tempR:
@@ -304,7 +305,6 @@ class Stagegui(Frame):
         self.list2.config(exportselection=False)
         #self.list2.insert(END,1) 
     def insert_to_listbox(self,data,lBox):
-        data = sorted(list(set(data)))
         for item in data:
             lBox.insert(END,str(item))
     def clear_listbox(self,lBox):

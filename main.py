@@ -14,7 +14,7 @@ Dependencies: file_utilities.py, stage_cancer.py
 from file_utilities import getData,update,getData2
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
-
+from extractTimedate import compareTime,dateToObject
 
 def get_result(fileName='cancer_notes_lung.csv',data=None,organ='colon',t1=5,t2=40,t3=50):
     '''
@@ -46,43 +46,33 @@ def get_result(fileName='cancer_notes_lung.csv',data=None,organ='colon',t1=5,t2=
         matchResult = update(match_result(result[row]['p'],'p',threshold=t3),match_result(result[row]['pa'],'pa',threshold=t3))
         result[row]['stage'] = matchResult
         row+=1
+        
         result2 = {}
     #result2 has patient as the key and all other things as values. 
         for key in result.keys():
             if result2.get(result[key]['pid'])==None:
                 result2[result[key]['pid']]={}
             result2[result[key]['pid']][key] = None
+            
+    #sort each value in result2 for each key based on the actual date. 
+        for pid in result2.keys():
+            rows = result2[pid]
+            dateList = {}
+            for rowNum in rows.keys():
+                if data[rowNum][2]!='':
+                    datetime = data[rowNum][2]
+                else:
+                    datetime=data[rowNum][4]
+                datetime = dateToObject(datetime)
+                dateList[rowNum] = datetime
+            dateItems = dateList.items()
+            dateItems.sort(compareTime,reverse=True)
+            result2[pid] = [item[0] for item in dateItems]
+            
+            
     print 'finished getting result'
     return data,result,result2
 
 #('stage',text_in[i])
 if __name__ == '__main__':
-    result = {}
-    data = getData2()
-    row=0
-    for pid,fDate,pDate,pNote,paDate,paNote in data:
-        if result.get(row)==None:
-            result[row]= {}
-            result[row]['p'] = [{},{}]
-            result[row]['pa']=[{},{}]
-            result[row]['pid'] = pid
-        update(result[row]['p'][1],get_stage_num(pNote,'grade'))
-        update(result[row]['p'][1],get_stage_num(pNote,'stage'))
-        update(result[row]['pa'][1],get_stage_num(paNote,'stage'))
-        update(result[row]['pa'][1],get_stage_num(paNote,'grade'))
-        update(result[row]['pa'][1],get_stage_from_pa(paNote))
-        update(result[row]['pa'][0],get_cancer_type(paNote))
-        update(result[row]['p'][0],get_cancer_type(pNote))
-        matchResult = update(match_result(result[row]['p'],'p'),match_result(result[row]['pa'],'pa'))
-        result[row]['stage'] = matchResult 
-        row+=1
-    count=0
-    for pid in result.keys():
-        if len(result[pid]['stage'].keys())==0:
-            count+=1
-    print count,len(result.keys())
-    '''
-    for pid in result.keys():
-        result[pid] = set(result[pid].sort(reverse=True))
-    '''
-                        
+    data,result,result2 = get_result()

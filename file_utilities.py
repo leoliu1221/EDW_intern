@@ -211,18 +211,17 @@ def exportFile(fileName,data,result,pGroup):
     '''
     import csv
     c = csv.writer(open(fileName,'wb'))
-    lineNum=0
-    for row in data:
-        temp = [row[0]]
+    
+    for line in xrange(len(data)):
+        temp = [line]
         #print result[lineNum]['stage']
         organResults = []
-        if len(result[lineNum]['stage'].keys())>0:
-            for organ in result[lineNum]['stage'].keys():
-                for tempResult in result[lineNum]['stage'][organ]:
+        if len(result[line]['stage'].keys())>0:
+            for organ in result[line]['stage'].keys():
+                for tempResult in result[line]['stage'][organ]:
                     organResults.append((organ,tempResult[0]))
         temp.append(list(set(organResults)))
         c.writerow(temp)
-        lineNum+=1    
     
     
     
