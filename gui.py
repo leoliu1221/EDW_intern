@@ -114,7 +114,7 @@ class Stagegui(Frame):
         index = int(w.curselection()[0])
         value = int(w.get(index))
         temp = self.result[value]['stage'].items()
-        print 'temp is: ' + str(temp)
+        #print 'temp is: ' + str(temp)
         temp2 = []
 
         for organ in temp:
@@ -155,7 +155,7 @@ class Stagegui(Frame):
             if start<0:
                 start = 0
             text = lines[start:end]
-        print 'text',text,'index',index
+        #print 'text',text,'index',index
         print 'you selected item %s' % str(value)
         self.clear_text(self.txt)
         self.insert_to_text(text,self.txt)
@@ -306,7 +306,6 @@ class Stagegui(Frame):
     def insert_to_listbox(self,data,lBox):
         data = sorted(list(set(data)))
         for item in data:
-            print 'inserting lb',item
             lBox.insert(END,str(item))
     def clear_listbox(self,lBox):
         #lBox.delete(0,last=lBox.size()-1)
