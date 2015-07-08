@@ -1,6 +1,7 @@
 from Tkinter import *
 import tkFileDialog 
 from main import get_result
+from file_utilities import getYamlKeys
 
 class Stagegui(Frame):
   
@@ -37,11 +38,15 @@ class Stagegui(Frame):
         
         oLabel = Label(self.frameTop,bg='white',fg='green',text='cancer name')
         oLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-
-        self.oText = Entry(self.frameTop,bg='green',fg='white')
-        self.oText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        
+        self.optionVar = StringVar()
+        
+        options = getYamlKeys()
+        self.optionVar.set(options[0])
+        self.oOption = OptionMenu(self.frameTop,self.optionVar,*options)
+        self.oOption.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
         #self.oText.config(height=1)
-        self.oText.config(width=10)      
+        #self.oOption.config(width=10)      
 
 
         runButton = Button(self.frameTop,text='run')
@@ -91,13 +96,13 @@ class Stagegui(Frame):
         temp2 = []
         for row in temp:
             tempR = self.result[row]['stage'].items()
-            print tempR
+            #print 'tempR:',tempR
             for item in tempR:
-                if item!=[]:
+                if len(item)>=2:
                     for item2 in item[1]:
                         temp2.append((str(item[0])+' '+str(item2[0]+' ID: '+str(row)+' L#: '+str(item2[1])+' T: '+str(item2[2]))))
-                print temp2
-                self.insert_to_listbox(temp2,self.list2)
+                #print 'temp2',temp2
+        self.insert_to_listbox(temp2,self.list2)
 
         print 'onselectP: ', value
 
@@ -111,11 +116,10 @@ class Stagegui(Frame):
         temp = self.result[value]['stage'].items()
         print 'temp is: ' + str(temp)
         temp2 = []
-        for item in temp:
-            print 'start printing items'
-            print 'item1',item[0]
-            print 'item2',item[1]
-        temp2 = [(str(item[0]) + ' ' + str(item[1][0][0]) + ' ID: ' +str(value)+' L#: '+ str(item[1][0][1])+ ' T: '+ str(item[1][0][2])) for item in temp]
+
+        for organ in temp:
+            for stage in organ[1]:
+                temp2.append(str(organ[0])+' '+str(stage[0])+' ID: '+str(value)+' L# '+str(stage[1])+' T: '+str(stage[2]))
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
         print 'onselect1: ', value
@@ -194,7 +198,7 @@ class Stagegui(Frame):
         fl = dlg.show()
         if fl != '':
             t1,t2,t3 = self.read_thresholds()
-            self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3)
+            self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3,organ = self.optionVar.get())
             #self.txt.insert(END, text)
     def read_thresholds(self):
         try:
@@ -222,7 +226,7 @@ class Stagegui(Frame):
             self.readFile(data=self.data,t1=t1,t2=t2,t3=t3)
         except AttributeError:
             print 'no data defined. Cannot run. Please specify the input file'
-    def readFile(self, fileName=None,data=None,t1=5,t2=40,t3=50):
+    def readFile(self, fileName=None,data=None,t1=5,t2=40,t3=50,organ='colon'):
         if fileName is not None:
             self.clear_listbox(self.listP)
             self.clear_listbox(self.list1)
@@ -230,7 +234,8 @@ class Stagegui(Frame):
             self.clear_text(self.txt)
         #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
         # I am being lazy here. Did not change much of the code but want to achieve the same result
-            self.data,self.result,self.pGroup = get_result(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3)
+            print 'reading from ',fileName,'cancer type:',organ
+            self.data,self.result,self.pGroup = get_result(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3,organ=organ)
             print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
             self.insert_to_listbox(self.pGroup.keys(),self.listP)
         elif data is not None:
@@ -299,8 +304,9 @@ class Stagegui(Frame):
         self.list2.config(exportselection=False)
         #self.list2.insert(END,1) 
     def insert_to_listbox(self,data,lBox):
-        data = sorted(data)
+        data = sorted(list(set(data)))
         for item in data:
+            print 'inserting lb',item
             lBox.insert(END,str(item))
     def clear_listbox(self,lBox):
         #lBox.delete(0,last=lBox.size()-1)

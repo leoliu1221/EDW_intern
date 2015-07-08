@@ -16,7 +16,7 @@ from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
-def get_result(fileName='cancer_notes_lung.csv',data=None,t1=5,t2=40,t3=50):
+def get_result(fileName='cancer_notes_lung.csv',data=None,organ='colon',t1=5,t2=40,t3=50):
     '''
     Args:
         fileName is the name of the file
@@ -40,7 +40,7 @@ def get_result(fileName='cancer_notes_lung.csv',data=None,t1=5,t2=40,t3=50):
         update(result[row]['p'][1],get_stage_num(pNote,'stage',threshold=t1))
         update(result[row]['pa'][1],get_stage_num(paNote,'stage',threshold=t1))
         update(result[row]['pa'][1],get_stage_num(paNote,'grade',threshold=t1))
-        update(result[row]['pa'][1],get_stage_from_pa(paNote,threshold=t2))
+        update(result[row]['pa'][1],get_stage_from_pa(paNote,threshold=t2,organ=organ))
         update(result[row]['pa'][0],get_cancer_type(paNote))
         update(result[row]['p'][0],get_cancer_type(pNote))
         matchResult = update(match_result(result[row]['p'],'p',threshold=t3),match_result(result[row]['pa'],'pa',threshold=t3))

@@ -191,6 +191,15 @@ def getData2(fName=None):
         i+=1
   
     return data    
+def getYamlKeys(fileName='stageKeys.yaml'):
+    import yaml
+    with open(fileName,'r') as f:
+        cfg = yaml.load(f)
+    result = []
+    for key in cfg.keys():
+        if 'stages' in key:
+            result.append(key[0:-6])
+    return result
 def exportFile(fileName,data,result,pGroup):
     '''
     export the result into csv. 

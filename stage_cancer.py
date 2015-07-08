@@ -202,7 +202,7 @@ def meetReq(keys,reqs):
                 return False
     return True
     
-def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml',threshold=40):
+def get_stage_from_pa(text,organ='colon',confFile = 'stageKeys.yaml',threshold=40):
     '''
     Check if a pa note has a stage associate with colon cancer
     Args:
@@ -221,7 +221,10 @@ def get_stage_from_pa(text,t='colon',confFile = 'stageKeys.yaml',threshold=40):
     with open(confFile,'r') as f:
         cfg = yaml.load(f)
     #loading the stage and keyword from file 'stageKeys.yaml'
-    stages = cfg[str(t)+'stages']
+    try:
+        stages = cfg[str(organ)+'stages']
+    except:
+        return {}
     keywords = cfg['keys']
     
     #1. try to get the ajcc from the text
