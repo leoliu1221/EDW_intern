@@ -172,25 +172,12 @@ class Stagegui(Frame):
             if '.csv' not in fl:
                 fl+='.csv'
             try:
-                self.exportFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
+                from file_utilities import exportFile
+                exportFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
             except AttributeError:
                 print 'please at least run once to save results'
            
-    def exportFile(self,fileName,data,result,pGroup):
-        import csv
-        c = csv.writer(open(fileName,'wb'))
-        lineNum=0
-        for row in data:
-            temp = [row[0]]
-            #print result[lineNum]['stage']
-            organResults = []
-            if len(result[lineNum]['stage'].keys())>0:
-                for organ in result[lineNum]['stage'].keys():
-                    for tempResult in result[lineNum]['stage'][organ]:
-                        organResults.append((organ,tempResult[0]))
-            temp.append(list(set(organResults)))
-            c.writerow(temp)
-            lineNum+=1
+
         
 
     def onOpen(self):

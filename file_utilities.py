@@ -191,7 +191,29 @@ def getData2(fName=None):
         i+=1
   
     return data    
-    
+def exportFile(fileName,data,result,pGroup):
+    '''
+    export the result into csv. 
+    Args:
+        fileName: string of the file
+        data: the original data in list format
+        result: the result dictionary 
+        pGroup: the dictionary of pid-> {row numbers-> None}
+    '''
+    import csv
+    c = csv.writer(open(fileName,'wb'))
+    lineNum=0
+    for row in data:
+        temp = [row[0]]
+        #print result[lineNum]['stage']
+        organResults = []
+        if len(result[lineNum]['stage'].keys())>0:
+            for organ in result[lineNum]['stage'].keys():
+                for tempResult in result[lineNum]['stage'][organ]:
+                    organResults.append((organ,tempResult[0]))
+        temp.append(list(set(organResults)))
+        c.writerow(temp)
+        lineNum+=1    
     
     
     
