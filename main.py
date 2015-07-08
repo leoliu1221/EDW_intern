@@ -16,7 +16,7 @@ from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 
 
-def get_result(fileName='data.csv',data=None,t1=5,t2=40,t3=50):
+def get_result(fileName='cancer_notes_lung.csv',data=None,t1=5,t2=40,t3=50):
     '''
     Args:
         fileName is the name of the file

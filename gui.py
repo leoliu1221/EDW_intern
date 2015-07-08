@@ -158,30 +158,39 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_command(label="Save",command=self.onSave)
+        fileMenu.add_command(label="Export to csv",command=self.onExport)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
         self.textBox()
         self.pack(fill=BOTH, expand=YES)
-    def onSave(self):
+    def onExport(self):
         fTypes=[('csv files', '*.csv'), ('All files', '*')]
         dlg = tkFileDialog.SaveAs(self,filetypes = fTypes)
         fl = dlg.show()
         if fl!='':
+            if '.csv' not in fl:
+                fl+='.csv'
             try:
-                self.saveFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
+                self.exportFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
             except AttributeError:
                 print 'please at least run once to save results'
            
-    def saveFile(self,fileName,data,result,pGroup):
+    def exportFile(self,fileName,data,result,pGroup):
         import csv
         c = csv.writer(open(fileName,'wb'))
         lineNum=0
         for row in data:
             temp = [row[0]]
-            temp.extend(result[lineNum]['stage'])
+            #print result[lineNum]['stage']
+            organResults = []
+            if len(result[lineNum]['stage'].keys())>0:
+                for organ in result[lineNum]['stage'].keys():
+                    for tempResult in result[lineNum]['stage'][organ]:
+                        organResults.append((organ,tempResult[0]))
+            temp.append(list(set(organResults)))
             c.writerow(temp)
+            lineNum+=1
         
 
     def onOpen(self):
@@ -295,12 +304,14 @@ class Stagegui(Frame):
         self.list2.config(exportselection=False)
         #self.list2.insert(END,1) 
     def insert_to_listbox(self,data,lBox):
+        data = sorted(data)
         for item in data:
             lBox.insert(END,str(item))
     def clear_listbox(self,lBox):
         #lBox.delete(0,last=lBox.size()-1)
         lBox.delete(0,END)
     def insert_to_text(self,data,txt,block=True):
+        
         if block:
             txt.config(state=NORMAL)
             for item in data:

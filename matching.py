@@ -26,5 +26,7 @@ def match_result(pResult,name,threshold=50):
                                 if result.get(organ)==None:
                                     result[organ]=[]
                                 result[organ].append((stage,lineNum,name))
+    for organ in result.keys():
+        result[organ] = list(set(result[organ]))
     return result
 
