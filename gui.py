@@ -162,6 +162,7 @@ class Stagegui(Frame):
         print 'you selected item %s' % str(value)
         self.clear_text(self.txt)
         self.insert_to_text(text,self.txt)
+        self.searchtxt(s = 'grade|stage')
         
     def initUI(self):
       
@@ -238,7 +239,7 @@ class Stagegui(Frame):
         #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
         # I am being lazy here. Did not change much of the code but want to achieve the same result
             print 'reading from ',fileName,'cancer type:',organ
-            self.data,self.result,self.pGroup = get_result(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3,organ=organ)
+            self.data,self.result,self.pGroup = get_result(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3,organ=organ) 
             print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
             self.insert_to_listbox(self.pGroup.keys(),self.listP)
         elif data is not None:
@@ -331,17 +332,18 @@ class Stagegui(Frame):
         print 'in search2'
     def get_text(self,txt):
         return txt.get('1.0',END)[:-1]
-    def searchtxt(self):
+    def searchtxt(self,s=None):
         self.txt.config(state=NORMAL)
         self.txt.tag_remove('found', '1.0', END)
-        s = self.search.get()
-        print 's is: ['+s+']'
-        print s==''
+        if s == None:
+            s = self.search.get()
+            print 's is: ['+s+']'
+            print s==''
         
         if not s=='':
             idx = '1.0'
             while 1:
-                idx = self.txt.search(s, idx, nocase=1, stopindex=END)
+                idx = self.txt.search(s, idx, nocase=1, stopindex=END,regexp=True)
                 print idx
                 
                 if not idx:

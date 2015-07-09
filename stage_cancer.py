@@ -24,52 +24,6 @@ def get_all_occ(text,reg):
     result = [(match.group(),(match.start()+match.end())/2) for match in matches]
     return result
 
-
-
-
-
-
-def get_tnm(text,confFile = 'stageKeys.yaml'):
-    '''
-    Check if a pa note has a stage associate with colon cancer
-    Args:
-        text: a string of input text
-    Returns:
-        result:
-            a dictionary of stage -> line number
-    '''
-    #text = data[2009670][0][4]
-    import yaml
-    with open(confFile,'r') as f:
-        cfg = yaml.load(f)
-    #loading the stage and keyword from file 'stageKeys.yaml'
-    stages = cfg['stages']
-    keywords = cfg['keys']
-
-    #1. try to get the ajcc from the text
-    lines = text.split('.')
-    lineNum=0
-    result = {}
-    for line in lines:
-        textKeys = []
-        for key in keywords:
-            if key in text:
-                textKeys.append(key)
-        for stage in stages.keys():
-           req = stages[stage].values()
-           if meetReq(textKeys,req):
-                if result.get(stage) == None:
-                    result[str(stage)]=[]
-                result[str(stage)].append(lineNum)
-        lineNum+=1
-    for key in result.keys():
-        result[key] = list(set(result[key]))
-    return result
-
-
-
-
-
 def hasString(s,ss):
     '''
     This function checks if s has one of ss in it. 
@@ -167,11 +121,12 @@ def get_stage_num(text,stageKey,threshold=5):
             out = reObject.search(stage_text,match.start(),match.end()+threshold)
             #out = re.search(re.compile("\d"),stage_text)
             if out is None:
-                print 'out is None for ',stageKey,'text: '+ stage_text
+                print 'no stage found however stage/grade is present'
+                #print 'out is None for ',stageKey,'text: '+ stage_text
             else:
                 stage_num = out.group()
-                print 'match start:', match.start()
-                print 'match end:',match.end()
+                #print 'match start:', match.start()
+                #print 'match end:',match.end()
                 stage_index = ((out.start()+out.end())/2+(match.start()+match.end())/2)/2
                 if result.get(stage_num)==None:
                     result[stage_num] = []
@@ -198,7 +153,7 @@ def meetReqs(keys,reqs):
             return True
     return False
     
-def get_stage_from_pa(text,organ='lung',confFile = 'stageKeys.yaml',threshold=40):
+def get_stage_from_pa(text,organ='lung',confFile = 'stageKeys.yaml',keywords=None,stages = None,threshold=40):
     '''
     Check if a pa note has a stage associate with colon cancer
     Args:
@@ -211,19 +166,21 @@ def get_stage_from_pa(text,organ='lung',confFile = 'stageKeys.yaml',threshold=40
     import re
     #text = data[2009670][0][4]    
     if text.find('ajcc')==-1 and text.find('tnm')==-1:
-        print 'cannot find keyword ajcc or tnm'
+        #print 'cannot find keyword ajcc or tnm'
         return {}
-    import yaml
-    with open(confFile,'r') as f:
-        cfg = yaml.load(f)
+    if keywords == None: 
+        import yaml
+        with open(confFile,'r') as f:
+            cfg = yaml.load(f)
+        keywords = cfg['keys']
     #loading the stage and keyword from file 'stageKeys.yaml'
+    if stages == None:
+        try:
+            from file_utilities import get_tnm
+            stages = get_tnm()[organ]
+        except:
+            return {}
     
-    try:
-        from file_utilities import get_tnm
-        stages = get_tnm()[organ]
-    except:
-        return {}
-    keywords = cfg['keys']
     
     #1. try to get the ajcc from the text
     lines = text.split('.')
@@ -273,19 +230,19 @@ def get_stage_from_pa(text,organ='lung',confFile = 'stageKeys.yaml',threshold=40
     
 #the test data is data[852359][0][4]
 #get_cancer_type(data[852359][0][4])
-def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt'):
+def get_cancer_type(text,organs=None,oName='organList.txt',cancers = None,cName='cancerList.txt'):
     '''
     Args:
         text: string of an input text
         organs:A list of strings containig all the organs
         oName: A string of filename from which you can read organs from
+        cancers: a list of cancernames 
         cName: A string of filename from which you read cancers from
     Returns:
         Result: a dictionary of all organs found -> (sentence#,position) in the input
     '''
     if organs is None:
         try:
-            
             #just to see if we already have organList in our memory
             organs = organList
         except NameError:
@@ -296,7 +253,10 @@ def get_cancer_type(text,organs=None,oName='organList.txt',cName='cancerList.txt
         else:
             print 'loaded existing organ list from organList'
     #now read in all words similar to cancer
-    cancers = readLines(cName)
+    if cancers is None:
+        from file_utilities import readLines
+        
+        cancers = readLines(cName)
     #we look for the keywords in each sentence
     text = text.split('.')
     #print text
