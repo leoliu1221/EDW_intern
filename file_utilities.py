@@ -191,15 +191,7 @@ def getData2(fName=None):
         i+=1
   
     return data    
-def getYamlKeys(fileName='stageKeys.yaml'):
-    import yaml
-    with open(fileName,'r') as f:
-        cfg = yaml.load(f)
-    result = []
-    for key in cfg.keys():
-        if 'stages' in key:
-            result.append(key[0:-6])
-    return result
+
 def exportFile(fileName,data,result,pGroup):
     '''
     export the result into csv. 
@@ -223,17 +215,49 @@ def exportFile(fileName,data,result,pGroup):
         temp.append(list(set(organResults)))
         c.writerow(temp)
     
-    
-    
-'''
+#read tnm rule file. 
+def get_tnm(fileName = 'tnm.txt'):
+    '''
+    read the tnm configuration file
+    Args: 
+        filename a string of the file name input
+    Returns: 
+        result:  a dictionary of rules read from the configuration file specified by input fileName
+        NOTE: the data structure of result is: 
+        result:dictionary:string -> dictionary: string -> list:sets
+        plain english: result is a dictionary that has string dictionary pairs, for which dictionary is string list pairs, for which list contains sets
+    '''
+    result = {}
+    current = None
+    with open(fileName,'r') as f:        
+        for line in f:
+            line = line.strip().lower().split()
+            #check if its a new catagory or not. 
+            #skip empty line            
+            if len(line)<1:
+                continue
+            if len(line) == 1:
+                current = line[0]
+                if result.get(current) == None:
+                    result[current]={}
+                continue
+            #skip until it finds an organ/type
+            if current is None:
+                continue
+            if len(line)==4:
+                if result[current].get(line[0])==None:
+                    result[current][line[0]] = []
+                result[current][line[0]].append(set(line[1:]))
+    return result
+                
+                
+
+            
+            
+
 if __name__=='__main__':
-    #GETS THE DATA
-    data = getData()
-    total = 0
-    for pid in data.keys():
-        total+=len(data[pid])
-    print 'total records loaded:',total
-'''
+    rules = read_tnm()
+
     
 
             

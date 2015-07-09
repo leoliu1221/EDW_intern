@@ -1,7 +1,7 @@
 from Tkinter import *
 import tkFileDialog 
 from main import get_result
-from file_utilities import getYamlKeys
+from file_utilities import get_tnm
 
 class Stagegui(Frame):
   
@@ -41,10 +41,12 @@ class Stagegui(Frame):
         
         self.optionVar = StringVar()
         
-        options = getYamlKeys()
+        options = get_tnm().keys()
+        print options
         self.optionVar.set(options[0])
         self.oOption = OptionMenu(self.frameTop,self.optionVar,*options)
         self.oOption.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
+        
         #self.oText.config(height=1)
         #self.oOption.config(width=10)      
 

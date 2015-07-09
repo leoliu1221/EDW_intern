@@ -11,7 +11,7 @@ Dependencies: file_utilities.py, stage_cancer.py
 
 '''
 
-from file_utilities import getData,update,getData2
+from file_utilities import update,getData2
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 from extractTimedate import compareTime,dateToObject

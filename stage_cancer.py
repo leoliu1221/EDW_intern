@@ -179,7 +179,7 @@ def get_stage_num(text,stageKey,threshold=5):
     #print 'out is:',out.group()
     return result  
 
-def meetReq(keys,reqs):
+def meetReqs(keys,reqs):
     '''
     Check if the given key meet the requirement from reqs list. 
     Args:
@@ -190,19 +190,15 @@ def meetReq(keys,reqs):
         True if all reqs satisfied
         False otherwise
     '''
-    for req in reqs:
-        if type(req) == type([]):
-            for i in xrange(len(req)):
-                if req[i] in keys:
-                    break
-                if i == len(req)-1:
-                    return False
-        else:
-            if req not in keys:
-                return False
-    return True
+    keys = set(keys)
     
-def get_stage_from_pa(text,organ='colon',confFile = 'stageKeys.yaml',threshold=40):
+    for req in reqs:
+        if keys.issuperset(req):
+            
+            return True
+    return False
+    
+def get_stage_from_pa(text,organ='lung',confFile = 'stageKeys.yaml',threshold=40):
     '''
     Check if a pa note has a stage associate with colon cancer
     Args:
@@ -221,8 +217,10 @@ def get_stage_from_pa(text,organ='colon',confFile = 'stageKeys.yaml',threshold=4
     with open(confFile,'r') as f:
         cfg = yaml.load(f)
     #loading the stage and keyword from file 'stageKeys.yaml'
+    
     try:
-        stages = cfg[str(organ)+'stages']
+        from file_utilities import get_tnm
+        stages = get_tnm()[organ]
     except:
         return {}
     keywords = cfg['keys']
@@ -260,10 +258,10 @@ def get_stage_from_pa(text,organ='colon',confFile = 'stageKeys.yaml',threshold=4
         textKeys = [item[0] for item in textKeys]
 
         for stage in stages.keys():
-            req = stages[stage].values()
+            reqs = stages[stage]
             #print testKeys,stages[stage].values()
             #print 'comparing',testKeys,req,meetReq(testKeys,req)
-            if meetReq(textKeys,req):
+            if meetReqs(textKeys,reqs):
                 #print 'met req!'
                 resultStages.append(str(stage))
         result = {}
