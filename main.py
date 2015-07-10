@@ -11,12 +11,12 @@ Dependencies: file_utilities.py, stage_cancer.py
 
 '''
 
-from file_utilities import update,getData2
+from file_utilities import update,getData2,getData3
 from stage_cancer import get_stage_num,get_stage_from_pa,get_cancer_type
 from matching import match_result
 from extractTimedate import compareTime,dateToObject
 
-def get_result(fileName='cancer_notes_lung.csv',data=None,organ='colon',oName = 'organList.txt',cName = 'cancerList.txt',confFile = 'stageKeys.yaml',organs=None,keywords=None,cancers = None,stages=None,t1=5,t2=40,t3=50):
+def get_result(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName = 'organList.txt',cName = 'cancerList.txt',confFile = 'stageKeys.yaml',organs=None,keywords=None,cancers = None,stages=None,t1=5,t2=40,t3=50):
     '''
     Args:
         fileName is the name of the file
@@ -100,6 +100,60 @@ def get_result(fileName='cancer_notes_lung.csv',data=None,organ='colon',oName = 
             count+=1
     print 'count:',count,'total:',len(result.keys())
     return data,result,result2
+def get_result2(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName = 'organList.txt',cName = 'cancerList.txt',confFile = 'stageKeys.yaml',organs=None,keywords=None,cancers = None,stages=None,t1=5,t2=40,t3=50):
+    '''
+    Args:
+        fileName is the name of the file
+        data is the data if we already read it in
+        organs is the organ list read in from file
+        keywords is the tnm keyword list read in from file
+        stages is the stage rules read in from file
+        t1 is the threshold for finding number after keyword stage or grade
+        t2 is the threshol for finding TNM system how close TNM sholud be together after ajcc or tnm keyword
+        t3 is the matching on how close a stage number and cancer type should be in a sentence
+    '''
+    result = {}
+    if data is None:
+        print 'getting data from ',fileName
+        data = getData3(fName = fileName)
+                
+    if organs is None:
+        from file_utilities import readLines
+        organs = readLines(oName)
+    if cancers is None:
+        from file_utilities import readLines
+        cancers = readLines(cName)
+    if keywords == None: 
+        import yaml
+        with open(confFile,'r') as f:
+            cfg = yaml.load(f)
+        keywords = cfg['keys']
+    #loading the stage and keyword from file 'stageKeys.yaml'
+    if stages == None:
+        try:
+            from file_utilities import get_tnm
+            stages = get_tnm()[organ]
+        except:
+            return {}
+    row=0
+    for pid,fDate,paNote in data:
+        print row
+        if result.get(row)==None:
+            result[row]['note']= [{},{}]
+        update(result[row]['note'][1],get_stage_num(paNote,'stage',threshold=t1))
+        update(result[row]['note'][1],get_stage_num(paNote,'grade',threshold=t1))
+        update(result[row]['note'][1],get_stage_from_pa(paNote,threshold=t2,organ=organ,stages = stages))
+        update(result[row]['note'][0],get_cancer_type(paNote,organs = organs,cancers = cancers))
+        matchResult = update(match_result(result[row],'pa',threshold=t3))
+        result[row]['stage'] = matchResult
+        row+=1    
+    print 'finished getting result'
+    count = 0
+    for key in result.keys():
+        if result[key]['stage']!={}:
+            count+=1
+    print 'count:',count,'total:',len(result.keys())
+    return data,result
 
 #('stage',text_in[i])
 if __name__ == '__main__':
