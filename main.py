@@ -139,6 +139,7 @@ def get_result2(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName
     for pid,paNote in data:
         print row
         if result.get(row)==None:
+            result[row] = {}
             result[row]['note']= [{},{}]
         update(result[row]['note'][1],get_stage_num(paNote,'stage',threshold=t1))
         update(result[row]['note'][1],get_stage_num(paNote,'grade',threshold=t1))
