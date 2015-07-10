@@ -155,6 +155,7 @@ def readLines(file = 'organList.txt',threshold=2):
             if(len(line)>threshold):
                 result.append(line.lower().strip().split(','))
     return result
+    
 def getData2(fName=None):
     '''
     Get data from file. 
