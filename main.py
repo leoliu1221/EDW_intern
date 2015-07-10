@@ -145,7 +145,7 @@ def get_result2(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName
         update(result[row]['note'][1],get_stage_num(paNote,'grade',threshold=t1))
         update(result[row]['note'][1],get_stage_from_pa(paNote,threshold=t2,organ=organ,stages = stages))
         update(result[row]['note'][0],get_cancer_type(paNote,organs = organs,cancers = cancers))
-        matchResult = update(match_result(result[row],'pa',threshold=t3))
+        matchResult = match_result(result[row]['note'],'pa',threshold=t3)
         result[row]['stage'] = matchResult
         row+=1    
     print 'finished getting result'

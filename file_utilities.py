@@ -304,6 +304,7 @@ def getData3(fName=None):
                 
         i = i+7
         rowNum+=1
+        print rowNum
     return data                  
 
             
