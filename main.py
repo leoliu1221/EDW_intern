@@ -136,7 +136,7 @@ def get_result2(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName
         except:
             return {}
     row=0
-    for pid,fDate,paNote in data:
+    for pid,paNote in data:
         print row
         if result.get(row)==None:
             result[row]['note']= [{},{}]
@@ -157,4 +157,4 @@ def get_result2(fileName='breast_cancer_notes.csv',data=None,organ='colon',oName
 
 #('stage',text_in[i])
 if __name__ == '__main__':
-    data,result,result2 = get_result()
+    data,result = get_result2()
