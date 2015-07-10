@@ -12,7 +12,7 @@ kaposi
 kidney,renal
 leukemia
 lip
-liver,hepatocellular,cholangio 
+liver,hepatocellular,cholangio
 lung,nsclc,pulmonary
 lymphoma
 neck
