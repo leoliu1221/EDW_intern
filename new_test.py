@@ -7,11 +7,6 @@ Created on Fri Jul 10 16:25:01 2015
 
 from file_utilities import getData3
 import re
-
-
-
-        
-
 #find the first A. in the text
 #read to the start of 'Invasive Breast Cancer Staging Summary'
 def get_section(text):
