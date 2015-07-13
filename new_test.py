@@ -10,6 +10,8 @@ import re
 
 
 def last_line_pos(text,pos):
+    if len(text)<pos:
+        pos = len(text)-1
     if pos<=0:
         return len(text)
     while pos>0:
@@ -30,19 +32,26 @@ def get_section(text):
                  'content' -> ['a','b','c']
                  'title' -> 'title'
     '''
-    indStart = text.find('A.')
+    matchA = re.compile('A[\s+\.]')
+    if matchA.search(text) is not None:
+        indStart = matchA.search(text).start()
+    else:
+        return {},{}
+    #indStart = text.find('A.')
     #print 'indStart is working good'
     if indStart=='-1':return {}
-    indEnd = text.lower().find('staging')
-    if indEnd == -1:
+    indEnd = text.lower().rfind('staging summary')
+    if indEnd == -1 or indEnd>=indStart:
         section = text[indStart:]
     else:
         section = text[indStart:indEnd]
-    alpha = re.compile('[A-Z]\.')
+    alpha = re.compile('[A-Z][\\.\s+]')
     matches = []
     prev = None
     for match in alpha.finditer(section):
         if prev is None:
+            if match.group()[0]!='A':
+                continue
             prev = match.group()[0]
         elif ord(match.group()[0])-ord(prev)!=1:
             continue
@@ -52,18 +61,18 @@ def get_section(text):
     result = {}
     for i in xrange(len(matches)):
         if i == len(matches)-1:
-            result[matches[i][0]] = text[matches[i][2]:last_line_pos(text,indEnd)]
+            result[matches[i][0]] = section[matches[i][2]:last_line_pos(section,indEnd)]
         else:
-            result[matches[i][0]] = text[matches[i][2]:matches[i+1][1]]
+            result[matches[i][0]] = section[matches[i][2]:matches[i+1][1]]
             
-    return result
+    return result,matches
             
 if __name__ == '__main__':
     result = {}
-    
+    matches={}
     #data = getData3()
     for row,text in data:
-        result[row] = get_section(text)
+        result[row],matches[row] = get_section(text)
 
         
         
