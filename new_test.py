@@ -41,7 +41,7 @@ def get_section(text):
     #print 'indStart is working good'
     if indStart=='-1':return {}
     indEnd = text.lower().rfind('staging summary')
-    if indEnd == -1 or indEnd>=indStart:
+    if indEnd == -1 or indEnd<=indStart:
         section = text[indStart:]
     else:
         section = text[indStart:indEnd]
