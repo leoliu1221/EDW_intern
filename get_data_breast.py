@@ -145,7 +145,7 @@ def get_staging_summary(data3 = None):
         data3 = getData3()
     result = defaultdict(list)
     temp = []
-    i=1
+    i=0
     while i<len(data3):
         note = data3[i][1].replace('"','')
         val = re.split('invasive breast cancer staging summary(?i)',note)
@@ -216,13 +216,15 @@ def get_staging_summary(data3 = None):
     return result
     
 if __name__ == '__main__':
-    data = getData3()
+    #data = getData3()
     result2 = {}
     matches={}
-    #data = getData3()
     result = get_staging_summary(data)
-    '''for row,text in data:
+    for row,text in data:
         result[row].append(get_section(text))
-        '''
+    #data = getData3()
+    
+    
+    
     
     
