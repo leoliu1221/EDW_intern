@@ -9,16 +9,7 @@ from file_utilities import getData3
 import re
 
 
-def last_line_pos(text,pos):
-    if len(text)<pos:
-        pos = len(text)-1
-    if pos<=0:
-        return len(text)
-    while pos>0:
-        if text[pos] == '\n':
-            return pos
-        pos-=1
-    return len(text)
+
         
 
 #find the first A. in the text
