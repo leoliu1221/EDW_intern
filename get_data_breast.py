@@ -140,6 +140,7 @@ def extractContent(regex,text):
         returnText = text
     return resultText,returnText
 def get_line_staging_summary(line):
+    print 'in line:',line
     line = line.replace('"','')
     val = re.split('invasive breast cancer staging summary(?i)',line)
     result = []
@@ -214,18 +215,21 @@ def get_staging_summary(data3 = None):
     while i<len(data3):
         note = data3[i][1]
         result[i].append(get_line_staging_summary(note))
+        i+=1
     return result
     
 if __name__ == '__main__':
     if 'data' not in locals():
         data = getData3()
+    
     result2 = {}
     matches={}
     result = get_staging_summary(data)
     for row,text in data:
         result[row].append(get_section(text))
-    import json
-    json.dump(result,open('test.json','w'))
+        print row
+    #import json
+    #json.dump(result,open('results.json','w'))
     #data = getData3()
     
     
