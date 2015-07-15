@@ -331,13 +331,13 @@ class Datapoint:
             else:
                 self.sub = []
     def find_subs(self,lineList):
-        print 'in find_subs'
+#        print 'in find_subs'
         #reduce the level by \t. 
         #if the line does not have \t then print.
         lines = []
         for line in lineList:
             if not line.startswith('\t'):
-                print 'did not process line:',line
+#                print 'did not process line:',line
             else:
                 if line.strip()=='':
                     continue

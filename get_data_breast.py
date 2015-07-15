@@ -239,8 +239,13 @@ def get_datapoint(note):
     
     text = text.split(":")
     key = text[0].rsplit("\n",1)
-    key = key[1].replace("\n","")
-    i=1
+    if len(key)==2:
+        key = key[1].replace("\n","")
+        i=1
+    else:
+        key = text[1].split("\n")[1] 
+        i=2
+  
     while i<len(text):
         if "###" in text[i]:
             content = text[i].rsplit("\n",1)
@@ -268,12 +273,13 @@ def get_staging_summary(data3 = None):
         print i
         note = data3[i][1]
         note = re.split('Cancer Staging Summary'+'(?i)',note)
-        note2 = note[1].lower()
+        note_process = note[len(note)-1]
+        note2 = note_process.lower()
         index = note2.find('tnm staging:')
         if index > 0:
-            note_process = note[1][0:index+20]
+            note_process = note_process[0:index+20]
         else:
-            note_process = note[1]
+            note_process = note_process
         resultDict[i] = get_datapoint(note_process)
         
         i+=1
