@@ -228,12 +228,9 @@ def get_datapoint(note):
         if len(line)==1:
             text = text+line[0]+"\n"
         else:
-            if '\t' in line[0]:
+            if line[0].startswith('\t'):
                 if len(line)>1:
                     text = text+line[0]+"###"+line[1]+"\n"
-                else:
-                    temp = line[0].split("\t",1)
-                    text = text+temp[0]+"###"+temp[1]+"\n"
             else:
                 text = text+line[0]+":"+line[1]+"\n"
     

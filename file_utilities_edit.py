@@ -337,6 +337,7 @@ class Datapoint:
         lines = []
         for line in lineList:
             if not line.startswith('\t'):
+                pass
 #                print 'did not process line:',line
             else:
                 if line.strip()=='':
