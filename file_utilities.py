@@ -313,16 +313,20 @@ class Datapoint:
             self.key = ''
             self.value = ''
             self.sub = []
+            self.origin = ''
         else:
             #take the first line as key-value, and then pass the rest to find subs. 
             lines = message.split('\n')
             if ':' not in lines[0]:
-                self.key = lines[0].strip()
-                self.value = ''
+                line0 = lines[0].replace('\t',':',1).split(':')
+                self.key = line0[0]
+                self.value = line0[1]
+                self.origin = lines[0]
             else:
                 line0 = lines[0].strip().split(':')
                 self.key = line0[0]
                 self.value = line0[1]
+                self.origin = lines[0]
             if len(lines)>1:
                 self.sub = self.find_subs(message.split('\n')[1:])
             else:
