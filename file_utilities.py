@@ -307,12 +307,65 @@ def getData3(fName=None):
         print rowNum
     return data                  
 
-            
+class Datapoint:
+    def __init__(self,message=None):
+        if message is None:
+            self.key = ''
+            self.value = ''
+            self.sub = []
+        else:
+            #take the first line as key-value, and then pass the rest to find subs. 
+            lines = message.split('\n')
+            if ':' not in lines[0]:
+                self.key = lines[0].strip()
+                self.value = ''
+            else:
+                line0 = lines[0].strip().split(':')
+                self.key = line0[0]
+                self.value = line0[1]
+            if len(lines)>1:
+                self.sub = self.find_subs(message.split('\n')[1:])
+            else:
+                self.sub = []
+    def find_subs(self,lineList):
+        print 'in find_subs'
+        #reduce the level by \t. 
+        #if the line does not have \t then print.
+        lines = []
+        for line in lineList:
+            if not line.startswith('\t'):
+                print 'did not process line:',line
+            else:
+                lines.append(line.replace('\t','',1))
+        result = []
+        curr = None
+        for item in lines:
+            if curr is None:
+                curr = item+'\n'
+            elif not item.startswith('\t'):
+                result.append(curr)
+                curr = item+'\n'
+            else:
+                #now deal with all those that has '\t' in front:
+                curr= curr + item+'\n'
+        #now result has all strings that can be turned into Datapoint
+        if curr is not None: result.append(curr)
+        return [Datapoint(s) for s in result]
+        
+    def __repr__(self):
+            return '<Datapoint : '+self.key+'>'
+    def __str__(self):
+            return '<Datapoint : '+self.key+'>'
             
 
 if __name__=='__main__':
-    rules = read_tnm()
-
+    if not 'data' in locals():    
+        data = getData3()
+    
+    import json
+    s = json.dumps(data[9][1])
+    s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
+    test = Datapoint(s2)
     
 
             

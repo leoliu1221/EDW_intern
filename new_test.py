@@ -113,7 +113,7 @@ def qa(result):
 if __name__ == '__main__':
     result = {}
     matches={}
-    data = getData3('colorectal.csv')
+    data = getData3('skin.csv')
     for row,text in data:
         result[row],matches[row] = get_section(text)
 
