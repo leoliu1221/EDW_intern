@@ -307,7 +307,11 @@ def getData3(fName=None):
         print rowNum
     return data                  
 
-class Datapoint:
+class Datapoint(object):
+    '''
+    className: Datapoint
+    
+    '''
     def __init__(self,message=None):
         if message is None:
             self.key = ''
@@ -340,6 +344,7 @@ class Datapoint:
             if not line.startswith('\t'):
                 print 'did not process line:',line
             else:
+                # if the line is empty, then we dont process them. 
                 if line.strip()=='':
                     continue
                 lines.append(line.replace('\t','',1))
