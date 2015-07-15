@@ -340,6 +340,8 @@ class Datapoint:
             if not line.startswith('\t'):
                 print 'did not process line:',line
             else:
+                if line.strip()=='':
+                    continue
                 lines.append(line.replace('\t','',1))
         result = []
         curr = None
