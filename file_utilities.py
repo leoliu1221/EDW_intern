@@ -321,10 +321,9 @@ class Datapoint(object):
         else:
             #take the first line as key-value, and then pass the rest to find subs. 
             lines = message.split('\n')
-            if ':' not in lines[0]:
-                line0 = lines[0].replace('\t',':',1).split(':')
-                self.key = line0[0]
-                self.value = line0[1]
+            if ':' not in lines[0]: 
+                self.key = lines[0]
+                self.value = ''
                 self.origin = lines[0]
             else:
                 line0 = lines[0].strip().split(':')
@@ -364,7 +363,7 @@ class Datapoint(object):
         return [Datapoint(s) for s in result]
         
     def __repr__(self):
-            return '<Datapoint : '+self.key+'>'
+            return  '<Datapoint : key= %s, value=%s,sub length: %d>' % (self.key,self.value,len(self.sub))
     def __str__(self):
             return '<Datapoint : '+self.key+'>'
             
@@ -374,7 +373,8 @@ if __name__=='__main__':
         data = getData3()
     
     import json
-    s = json.dumps(data[9][1])
+    s = data[9][1]
+        
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2)
     
