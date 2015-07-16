@@ -261,7 +261,7 @@ def getData3(fName=None):
     '''
     
     if fName is None:
-        fName = 'breast_cancer_notes.csv'
+        fName = 'ovarian_cancer_notes.csv'
     f = open(fName,'r')
     #burn the first line
     header = f.readline();
@@ -325,9 +325,12 @@ class Datapoint:
             if ':' not in lines[0]:
                 lines[0] = lines[0].replace('\t',':',1)
             line0 = lines[0].strip().split(':')
-            #print 'line0',line0
+            print 'line0',line0
             self.key = line0[0].strip()
-            self.value = line0[1].strip()
+            if len(line0)>1:
+                self.value = line0[1].strip()
+            else:
+                self.value=''
             self.origin = lines[0]
             if len(lines)>1:
                 self.sub = self.find_subs(message.split('\n')[1:])
