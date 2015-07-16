@@ -219,10 +219,21 @@ def get_subcontent(result,k,v,sub_content):
         j+=1
     return result
     
-def get_datapoint(note):
+def get_datapoint(note,cut=20):
+    #START with cancer staging summary (ignore case)
+    note = re.split('Cancer Staging Summary'+'(?i)',note)[-1]
+    #cut off tnm staging +20, or to the end of the line
+    try:
+        tnm_index = re.search('tnm staging(?i)', note).start()
+        note = note[0:tnm_index+cut]
+    except AttributeError:
+        pass;
+
     result = {}
     note = note.split("\n")
     text = ""
+    #change all : in sub context into ###
+    '''
     for line in note:
         line = line.split(":")
         if len(line)==1:
@@ -233,9 +244,26 @@ def get_datapoint(note):
                     text = text+line[0]+"###"+line[1]+"\n"
             else:
                 text = text+line[0]+":"+line[1]+"\n"
-    
+    '''
+     #change all : in sub context into ###
+    lines = []
+    for line in note:
+        if line.strip()=='':continue
+        if line.startswith('\t'):
+            line = line.replace(':','###')
+        else:
+            #only keep the first colon
+            #replace other colon with '.'
+            line = line.replace(':','.')
+            line = line.replace('.',':',1)
+        lines.append(line)
+    text = '\n'.join(lines)
+    text +='\n'
+
     text = text.split(":")
     key = text[0].rsplit("\n",1)
+
+    
     if len(key)==2:
         key = key[1].replace("\n","")
         i=1
@@ -244,6 +272,7 @@ def get_datapoint(note):
         i=2
   
     while i<len(text):
+        print 'text',i,text[i]
         if "###" in text[i]:
             content = text[i].rsplit("\n",1)
         else:
@@ -253,8 +282,8 @@ def get_datapoint(note):
         k = info.key; v = info.value; sub_content = info.sub
         result[k] = v.replace("\t","")
         result = get_subcontent(result,k,v,sub_content)
-    
         key = content[1].replace("\n","")
+        
         i+=1
     return result
         
@@ -269,16 +298,7 @@ def get_staging_summary(data3 = None):
     while i<len(data3):
         print i
         note = data3[i][1]
-        note = re.split('Cancer Staging Summary'+'(?i)',note)
-        note_process = note[len(note)-1]
-        note2 = note_process.lower()
-        index = note2.find('tnm staging:')
-        if index > 0:
-            note_process = note_process[0:index+20]
-        else:
-            note_process = note_process
-        resultDict[i] = get_datapoint(note_process)
-        
+        resultDict[i] = get_datapoint(note)
         i+=1
     return resultDict
     
@@ -290,7 +310,7 @@ if __name__ == '__main__':
     matches={}
     result = get_staging_summary(data)
     for row,text in data:
-        result[row].append(get_section(text))
+        result[row]['content'] = (get_section(text))
         print row
     #import json
     #json.dump(result,open('results.json','w'))
