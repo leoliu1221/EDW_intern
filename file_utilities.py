@@ -4,7 +4,7 @@ Created on Wed Jun 24 10:22:37 2015
 
 @author: Liu and Papis
 """
-import re
+import re,json
 def update(dic1, dic2):
     '''
     Args:
@@ -193,7 +193,7 @@ def getData2(fName=None):
   
     return data    
 
-def exportFile(fileName,data,result,pGroup):
+def exportFile(fileName,data,result):
     '''
     export the result into csv. 
     Args:
@@ -202,20 +202,10 @@ def exportFile(fileName,data,result,pGroup):
         result: the result dictionary 
         pGroup: the dictionary of pid-> {row numbers-> None}
     '''
-    import csv
-    c = csv.writer(open(fileName,'wb'))
-    
-    for line in xrange(len(data)):
-        temp = [line]
-        #print result[lineNum]['stage']
-        organResults = []
-        if len(result[line]['stage'].keys())>0:
-            for organ in result[line]['stage'].keys():
-                for tempResult in result[line]['stage'][organ]:
-                    organResults.append((organ,tempResult[0]))
-        temp.append(list(set(organResults)))
-        c.writerow(temp)
-    
+    #import csv
+    with open(fileName,'w') as fp:
+        json.dump(result,fp)
+        
 #read tnm rule file. 
 def get_tnm(fileName = 'tnm.txt'):
     '''

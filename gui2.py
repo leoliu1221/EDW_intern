@@ -57,7 +57,7 @@ class Stagegui(Frame):
                 for contentKey,contentC in self.result[value][k].items():
                     temp2.append(str(k)+'|'+str(contentKey)+':'+str(contentC))
         self.clear_listbox(self.list2)
-        self.insert_to_listbox(temp2,self.list2)
+        self.insert_to_listbox(sorted(temp2),self.list2)
         print 'onselect1: ', value
         text = self.data[value][1]
         self.clear_text(self.txt)
@@ -98,24 +98,24 @@ class Stagegui(Frame):
         
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open", command=self.onOpen)
-        fileMenu.add_command(label="Export to csv",command=self.onExport)
+        fileMenu.add_command(label="Export to JSON",command=self.onExport)
         menubar.add_cascade(label="File", menu=fileMenu)        
         
         self.listBox()
         self.textBox()
         self.pack(fill=BOTH, expand=YES)
     def onExport(self):
-        fTypes=[('csv files', '*.csv'), ('All files', '*')]
+        fTypes=[('json files', '*.json'), ('All files', '*')]
         dlg = tkFileDialog.SaveAs(self,filetypes = fTypes)
         fl = dlg.show()
         if fl!='':
-            if '.csv' not in fl:
-                fl+='.csv'
-            try:
-                from file_utilities import exportFile
-                exportFile(fileName=fl,data=self.data,result=self.result,pGroup=self.pGroup)
-            except AttributeError:
-                print 'please at least run once to save results'
+            if '.json' not in fl:
+                fl+='.json'
+            #try:
+            from file_utilities import exportFile
+            exportFile(fileName=fl,data=self.data,result=self.result)
+            #except AttributeError:
+             #   print 'please at least run once to save results'
            
 
         
