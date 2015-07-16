@@ -208,17 +208,16 @@ def qa(result):
 #        result.append("no info")
 #    return result
  
-def get_subcontent(result,k,v,sub_content):
+def get_subcontent(result,datapoint,sub_content):
     j=0
+    result[datapoint.key] = [datapoint.value.replace("\t",""),datapoint.origin]
     while j<len(sub_content):
-        k = k+"_"+sub_content[j].key; v = sub_content[j].value
-        result[k] = v.replace("\t","")
-        if len(sub_content[j].sub)>0:
-            get_subcontent(result,k,v,sub_content[j].sub)
-        k = k.split("_")[0] 
+        sub_content[j].key = datapoint.key+"_"+sub_content[j].key
+        print str(sub_content[j])
+        result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
         j+=1
     return result
-    
+
 def get_datapoint(note,cut=20):
     #START with cancer staging summary (ignore case)
     note = re.split('Cancer Staging Summary'+'(?i)',note)[-1]
@@ -233,19 +232,7 @@ def get_datapoint(note,cut=20):
     note = note.split("\n")
     text = ""
     #change all : in sub context into ###
-    '''
-    for line in note:
-        line = line.split(":")
-        if len(line)==1:
-            text = text+line[0]+"\n"
-        else:
-            if line[0].startswith('\t'):
-                if len(line)>1:
-                    text = text+line[0]+"###"+line[1]+"\n"
-            else:
-                text = text+line[0]+":"+line[1]+"\n"
-    '''
-     #change all : in sub context into ###
+    #change all : in sub context into ###
     lines = []
     for line in note:
         if line.strip()=='':continue
@@ -263,16 +250,18 @@ def get_datapoint(note,cut=20):
     text = text.split(":")
     key = text[0].rsplit("\n",1)
 
-    
+    #getting the first key
+    #if the first key is not valid, then take the second key as the first key
+    #i is the index
     if len(key)==2:
         key = key[1].replace("\n","")
         i=1
     else:
         key = text[1].split("\n")[1] 
         i=2
-  
+    result2 = []
     while i<len(text):
-        print 'text',i,text[i]
+        #print 'text',i,text[i]
         if "###" in text[i]:
             content = text[i].rsplit("\n",1)
         else:
@@ -281,11 +270,12 @@ def get_datapoint(note,cut=20):
         info = Datapoint(key+":"+value)
         k = info.key; v = info.value; sub_content = info.sub
         result[k] = v.replace("\t","")
-        result = get_subcontent(result,k,v,sub_content)
+        result = get_subcontent(result,info,sub_content)
+        result2.append(info)
         key = content[1].replace("\n","")
         
         i+=1
-    return result
+    return result,result2
         
     
     
@@ -294,13 +284,14 @@ def get_staging_summary(data3 = None):
     if data3 is None:
         data3 = getData3()
     resultDict = defaultdict(list)
+    result2Dict = defaultdict(list)
     i=0
     while i<len(data3):
         print i
         note = data3[i][1]
-        resultDict[i] = get_datapoint(note)
+        resultDict[i],result2Dict[i] = get_datapoint(note)
         i+=1
-    return resultDict
+    return resultDict,result2Dict
     
 if __name__ == '__main__':
     if 'data' not in locals():
@@ -308,7 +299,7 @@ if __name__ == '__main__':
     
     result2 = {}
     matches={}
-    result = get_staging_summary(data)
+    result,result2 = get_staging_summary(data)
     for row,text in data:
         result[row]['content'] = (get_section(text))
         print row
