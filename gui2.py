@@ -1,6 +1,7 @@
 from Tkinter import *
 import tkFileDialog 
 from get_data_breast import get_format_data
+import json
 
 
 class Stagegui(Frame):
@@ -84,6 +85,7 @@ class Stagegui(Frame):
 
         #print 'text',text,'index',index
         print 'you selected item %s' % str(value)
+        print 'text is:',text
         self.searchtxt(text)
         
     def initUI(self):
@@ -225,7 +227,8 @@ class Stagegui(Frame):
         if not s=='':
             idx = '1.0'
             while 1:
-                idx = self.txt.search(s, idx, nocase=1, stopindex=END,regexp=True)
+                s = s.replace('\n','')
+                idx = self.txt.search(re.escape(s), idx, nocase=1, stopindex=END,regexp=True)
                 print idx
                 
                 if not idx:
