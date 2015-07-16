@@ -124,9 +124,15 @@ def get_subcontent(result,datapoint,sub_content):
         j+=1
     return result
 
+#def checkAllcancer(note,cut=100):
+    
+
 def get_datapoint(note,cut=100):
     #START with cancer staging summary (ignore case)
-    note = re.split('Cancer Staging Summary'+'(?i)',note)[-1]
+    start = re.split('Staging Summary'+'(?i)',note)
+    note =  start[-1]  
+    cancerType = start[-2].rsplit("\n")[-1]
+   
     #cut off tnm staging +cut, or to the end of the line
     try:
         tnm_index = re.search('tnm[).] staging(?i)', note).start()
@@ -181,6 +187,7 @@ def get_datapoint(note,cut=100):
         key = content[1].replace("\n","")
         
         i+=1
+    result['Cancer type']= cancerType
     return result
         
     
@@ -193,7 +200,6 @@ def get_staging_summary(data3 = None):
    
     i=0
     while i<len(data3):
-        print i
         note = data3[i][1]
         resultDict[i] = get_datapoint(note)
         i+=1
@@ -205,7 +211,6 @@ def get_format_data(data = None,fileName=None):
     result = defaultdict(list)
     i=0
     while i<len(data):
-        print i
         result[i] = get_datapoint(data[i][1])
         result[i]['content'] = get_section(data[i][1])        
         i+=1
