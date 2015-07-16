@@ -259,7 +259,7 @@ def get_datapoint(note,cut=20):
     else:
         key = text[1].split("\n")[1] 
         i=2
-    result2 = []
+    
     while i<len(text):
         #print 'text',i,text[i]
         if "###" in text[i]:
@@ -271,11 +271,11 @@ def get_datapoint(note,cut=20):
         k = info.key; v = info.value; sub_content = info.sub
         result[k] = v.replace("\t","")
         result = get_subcontent(result,info,sub_content)
-        result2.append(info)
+        
         key = content[1].replace("\n","")
         
         i+=1
-    return result,result2
+    return result
         
     
     
@@ -284,14 +284,14 @@ def get_staging_summary(data3 = None):
     if data3 is None:
         data3 = getData3()
     resultDict = defaultdict(list)
-    result2Dict = defaultdict(list)
+   
     i=0
     while i<len(data3):
         print i
         note = data3[i][1]
-        resultDict[i],result2Dict[i] = get_datapoint(note)
+        resultDict[i] = get_datapoint(note)
         i+=1
-    return resultDict,result2Dict
+    return resultDict
     
 if __name__ == '__main__':
     if 'data' not in locals():
