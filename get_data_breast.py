@@ -241,8 +241,8 @@ def get_datapoint(note,cut=20):
         else:
             #only keep the first colon
             #replace other colon with '.'
-            line = line.replace(':','.')
-            line = line.replace('.',':',1)
+            line = line.replace(':','._')
+            line = line.replace('._',':',1)
         lines.append(line)
     text = '\n'.join(lines)
     text +='\n'
@@ -292,17 +292,22 @@ def get_staging_summary(data3 = None):
         resultDict[i] = get_datapoint(note)
         i+=1
     return resultDict
+
+def get_format_data(data = None,fileName=None):
+    if data is None:
+        data = getData3(fileName)
+    result = defaultdict(list)
+    i=0
+    while i<len(data):
+        result[i] = get_datapoint(data[i][1])
+        result[i]['content'] = get_section(data[i][1])        
+        i+=1
+    return data,result
     
 if __name__ == '__main__':
     if 'data' not in locals():
         data = getData3()
-    
-    result2 = {}
-    matches={}
-    result,result2 = get_staging_summary(data)
-    for row,text in data:
-        result[row]['content'] = (get_section(text))
-        print row
+    data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
     #data = getData3()

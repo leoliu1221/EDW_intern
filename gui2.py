@@ -1,7 +1,7 @@
 from Tkinter import *
 import tkFileDialog 
-from main import get_result2
-from file_utilities import get_tnm
+from get_data_breast import get_format_data
+
 
 class Stagegui(Frame):
   
@@ -9,54 +9,7 @@ class Stagegui(Frame):
         Frame.__init__(self, parent)   
         self.frameTop = Frame(self)
         
-        #set the label for frameTop
-        #threshold label -- this is the matching threshold
-        mLabel = Label(self.frameTop,bg='white',fg='green',text='match threshold')
-        mLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
         
-        self.mText = Entry(self.frameTop,bg='white')
-        self.mText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-        #self.mText.config(height=1) 
-        self.mText.config(width=3)
-        
-        tLabel = Label(self.frameTop,bg='white',fg='green',text='tnm threshold')
-        tLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-
-        self.tText = Entry(self.frameTop,bg='white')
-        self.tText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-        #self.tText.config(height=1)
-        self.tText.config(width=3)
-        
-        
-        sLabel = Label(self.frameTop,bg='white',fg='green',text='stage threshold')
-        sLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-
-        self.sText = Entry(self.frameTop,bg='white')
-        self.sText.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-        #self.sText.config(height=1)
-        self.sText.config(width=2)
-        
-        oLabel = Label(self.frameTop,bg='white',fg='green',text='cancer name')
-        oLabel.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-        
-        self.optionVar = StringVar()
-        
-        options = get_tnm().keys()
-        print options
-        self.optionVar.set(options[0])
-        self.oOption = OptionMenu(self.frameTop,self.optionVar,*options)
-        self.oOption.pack(side=LEFT,fill=BOTH,padx=1,expand=NO)
-        
-        #self.oText.config(height=1)
-        #self.oOption.config(width=10)      
-
-
-        runButton = Button(self.frameTop,text='run')
-        runButton.config(height=1)
-        runButton.pack(side=LEFT,fill=X,expand=NO,padx=5)
-        runButton.config(command=self.rerun)
-
-
         self.searchButton = Button(self.frameTop,text='search')
         self.searchButton.config(height=1)
         self.searchButton.config(command=self.searchtxt)
@@ -69,9 +22,6 @@ class Stagegui(Frame):
         self.search.config(width=9)
         self.frameTop.pack(side=TOP,expand=NO,fill=BOTH,pady=1)
         
-        
-        self.frameP = Frame(self)
-        self.frameP.pack(side=LEFT,fill=BOTH)
         self.frame1 = Frame(self)
         self.frame1.pack(side=LEFT,fill=BOTH)
         self.frame2 = Frame(self)
@@ -82,34 +32,6 @@ class Stagegui(Frame):
         self.parent = parent        
         self.centerWindow()
         self.initUI()
-    def onselectP(self,evt):
-        
-        w = evt.widget
-        if len(w.curselection())==0:
-            return
-        index = int(w.curselection()[0])
-        value = int(w.get(index))
-        self.parent.title(str(value))
-        #pRows is the document IDs for which the selected pid has. 
-        #now pRows is supposed to be sorted by date. 
-        pRows = [value]
-        self.clear_listbox(self.list1)
-        self.insert_to_listbox(pRows,self.list1)
-        self.clear_listbox(self.list2)
-        temp2 = []
-        for row in pRows:
-            tempR = self.result[row]['stage'].items()
-            #print 'tempR:',tempR
-            for item in tempR:
-                if len(item)>=2:
-                    for item2 in item[1]:
-                        temp2.append((str(item[0])+' '+str(item2[0]+' ID: '+str(row)+' L#: '+str(item2[1])+' T: '+str(item2[2]))))
-                #print 'temp2',temp2
-        self.insert_to_listbox(temp2,self.list2)
-        text = self.data[value][1]
-        self.clear_text(self.txt)
-        self.insert_to_text(text,self.txt)
-        print 'onselectP: ', value
 
     def onselect1(self,evt):
         w = evt.widget
@@ -118,17 +40,25 @@ class Stagegui(Frame):
             return
         index = int(w.curselection()[0])
         value = int(w.get(index))
-        temp = self.result[value]['stage'].items()
+        #result is documentid -> datapoints, 'content'
+        #datapoints -> key:value
+        #'content'-> ABCDEFG   
+        #A -> 'adlkajfejlkaljekflea'
+        temp = self.result[value].items()
         #print 'temp is: ' + str(temp)
         temp2 = []
 
-        for organ in temp:
-            for stage in organ[1]:
-                temp2.append(str(organ[0])+' '+str(stage[0])+' ID: '+str(value)+' L# '+str(stage[1])+' T: '+str(stage[2]))
+        for k,v in temp:
+            if k!='content':
+                if len(self.result[value][k])>=1:
+                    temp2.append(str(k)+':'+str(self.result[value][k][0]))
+            else:
+                for contentKey,contentC in self.result[value][k].items():
+                    temp2.append(str(k)+'|'+str(contentKey)+':'+str(contentC))
         self.clear_listbox(self.list2)
         self.insert_to_listbox(temp2,self.list2)
         print 'onselect1: ', value
-        text = self.data[value]
+        text = self.data[value][1]
         self.clear_text(self.txt)
         self.insert_to_text(text,self.txt)
         
@@ -136,35 +66,25 @@ class Stagegui(Frame):
         w = evt.widget
         if len(w.curselection())==0:
             return
+            
         index = w.curselection()[0]
         value = w.get(index)
-        index = value.split()[3]
-        lineNum = int(value.split()[5])
-        note = value.split()[7]
-        text = ''
-        if note == 'p':
-            start = lineNum
-            end = lineNum+1
-            lines = self.data[int(index)][3].split('.')
-            if len(lines)>end:
-                end = len(lines)
-            if start<0:
-                start = 0
-            text = lines[start:end]
-        if note == 'pa':
-            start = lineNum
-            end = lineNum+1
-            lines = self.data[int(index)][5].split('.')
-            if len(lines)>end:
-                end = len(lines)
-            if start<0:
-                start = 0
-            text = lines[start:end]
+        k= value.split(':')[0]
+        v = value.split(':')[1]
+        
+        index1 = self.list1.curselection()[0]
+        row_num = int(self.list1.get(index1))
+        #now value1 is our row selection. 
+        
+        
+        if not k.startswith('content'):
+            text = self.result[row_num][k][1].replace('._',':')
+        else:
+            text = v;
+
         #print 'text',text,'index',index
         print 'you selected item %s' % str(value)
-        self.clear_text(self.txt)
-        self.insert_to_text(text,self.txt)
-        self.searchtxt(s = 'grade|stage')
+        self.searchtxt(text)
         
     def initUI(self):
       
@@ -203,57 +123,25 @@ class Stagegui(Frame):
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
         fl = dlg.show()
         if fl != '':
-            t1,t2,t3 = self.read_thresholds()
-            self.readFile(fileName=fl,t1=t1,t2=t2,t3=t3,organ = self.optionVar.get())
+            self.readFile(fileName=fl)
             #self.txt.insert(END, text)
-    def read_thresholds(self):
-        try:
-            t3 = int(self.mText.get())
-        except ValueError:
-            t3=50
-            self.mText.delete(0, END)
-            self.mText.insert(0, str(t3))
-        try:
-            t2 = int(self.tText.get())
-        except ValueError:
-            t2 = 40
-            self.tText.delete(0,END)
-            self.tText.insert(0, str(t2))
-        try:
-            t1 = int(self.sText.get())
-        except ValueError:
-            t1 = 5
-            self.sText.delete(0,END)
-            self.sText.insert(0, str(t1))
-        return t1,t2,t3
     def rerun(self):
         t1,t2,t3 = self.read_thresholds()
         try:
             self.readFile(data=self.data,t1=t1,t2=t2,t3=t3)
         except AttributeError:
             print 'no data defined. Cannot run. Please specify the input file'
-    def readFile(self, fileName=None,data=None,t1=5,t2=40,t3=50,organ='colon'):
+    def readFile(self, fileName=None):
         if fileName is not None:
-            self.clear_listbox(self.listP)
             self.clear_listbox(self.list1)
             self.clear_listbox(self.list2)
             self.clear_text(self.txt)
         #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
         # I am being lazy here. Did not change much of the code but want to achieve the same result
-            print 'reading from ',fileName,'cancer type:',organ
-            self.data,self.result = get_result2(fileName=fileName,data=None,t1=t1,t2=t2,t3=t3,organ=organ) 
+            print 'reading from ',fileName
+            self.data,self.result = get_format_data(fileName=fileName) 
             print 'read file finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())
-            self.insert_to_listbox(self.result.keys(),self.listP)
-        elif data is not None:
-            self.clear_listbox(self.listP)
-            self.clear_listbox(self.list1)
-            self.clear_listbox(self.list2)
-            self.clear_text(self.txt)
-        #data is the original data, result is the result after processing for each row, pGroup is the pId grouping information. 
-        # I am being lazy here. Did not change much of the code but want to achieve the same result
-            self.data,self.result,self.pGroup = get_result(fileName=None,data=data,t1=t1,t2=t2,t3=t3)
-            print 'process data finished, len of data:', len(self.data), 'len of result ',len(self.result.keys())          
-            self.insert_to_listbox(self.pGroup.keys(),self.listP)
+            self.insert_to_listbox(self.result.keys(),self.list1)
 
     def centerWindow(self):
         w = 1024
@@ -279,15 +167,7 @@ class Stagegui(Frame):
         #self.search.config(height=1)
 
     def listBox(self):
-        self.listP = Listbox(self.frameP)
-        self.listP.pack(side=LEFT,fill=BOTH,padx=3)
-        self.listP.config(width=7)
-        scrollbarP = Scrollbar(self.frameP)
-        scrollbarP.pack(side=RIGHT,fill=BOTH)
-        self.listP.config(yscrollcommand=scrollbarP.set)
-        scrollbarP.config(command=self.listP.yview)
-        self.listP.bind('<<ListboxSelect>>',self.onselectP)
-        self.listP.config(exportselection=False)
+
         
         self.list1 = Listbox(self.frame1)
         self.list1.pack(side=LEFT,fill=BOTH,padx=5) 
