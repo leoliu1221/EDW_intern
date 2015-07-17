@@ -261,7 +261,7 @@ def getData3(fName=None):
     '''
     
     if fName is None:
-        fName = 'ovarian_cancer_notes.csv'
+        fName = 'colon_cancer_notes.csv'
     f = open(fName,'r')
     #burn the first line
     header = f.readline();
@@ -281,7 +281,7 @@ def getData3(fName=None):
             if len(pid)>0:
                 raw = raw + text[0] + "|" + pid[0] + "|"
             else:
-                print i
+#                print i
                 break
 
         i+=1
@@ -304,7 +304,7 @@ def getData3(fName=None):
                 
         i = i+7
         rowNum+=1
-        print rowNum
+#        print rowNum
     return data                  
 
 class Datapoint:
@@ -325,7 +325,7 @@ class Datapoint:
             if ':' not in lines[0]:
                 lines[0] = lines[0].replace('\t',':',1)
             line0 = lines[0].strip().split(':')
-            print 'line0',line0
+#            print 'line0',line0
             self.key = line0[0].strip()
             if len(line0)>1:
                 self.value = line0[1].strip()
@@ -342,6 +342,9 @@ class Datapoint:
         #if the line does not have \t then print.
         lines = []
         for line in lineList:
+#            print 'line is:',line
+            if len(line)>2 and line[0]==' ' and line[1].isalpha():
+                line = line.replace(' ','\t')
             if not line.startswith('\t'):
                 pass
 #                print 'did not process line:',line
@@ -362,7 +365,7 @@ class Datapoint:
                 #now deal with all those that has '\t' in front:
                 curr= curr + item+'\n'
         #now result has all strings that can be turned into Datapoint
-        if curr is not None: result.append(curr)
+        if curr is not None and curr.strip()!='': result.append(curr)
         return [Datapoint(s) for s in result]
         
     def __repr__(self):
