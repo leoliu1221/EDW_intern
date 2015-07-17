@@ -1,5 +1,6 @@
 # CSV data files sometimes they are confidential #
 #############
+*.json
 *.csv
 *.pyc
 # Compiled source #
