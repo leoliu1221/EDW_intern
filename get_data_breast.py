@@ -154,7 +154,7 @@ def get_datapoint_line(note,cut):
     
     #cut off tnm staging +cut, or to the end of the line
     try:
-        tnm_index = re.search('tnm[)]* staging(?i)', note).start()
+        tnm_index = re.search('(tnm|tmn)[)]* staging(?i)', note).start()
         note = note[0:tnm_index+cut]
     except AttributeError:
         pass;
@@ -178,7 +178,7 @@ def get_datapoint_line(note,cut):
         blockList.append(block)
         info = Datapoint(block)
         k = info.key; v = info.value; sub_content = info.sub
-        if len(k)<=110:
+        if len(k)<=100 and (k!='' or v!=''):
             result[k] = v.replace("\t","")
             result = get_subcontent(result,info,sub_content)
         i=j
@@ -192,7 +192,7 @@ def get_format_data(data = None,fileName=None):
     i=0
     while i<len(data):
         print "note",i
-        result[i] = checkAllcancer(data[i][1])
+        result[i] = checkAllcancer(data[i][1].replace('"',''))
         result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' not in locals():
-    data = getData3('melanoma_cancer_notes.csv')
+    data = getData3('uterine_cancer_notes.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
