@@ -123,7 +123,7 @@ def get_subcontent(result,datapoint,sub_content):
         j+=1
     return result
 
-def checkAllcancer(note,cut=100,pCut = 40):
+def checkAllcancer(note,cut=110,pCut = 40):
     '''
     '''
     stages = re.finditer(re.compile('staging summary(?i)'),note)
@@ -141,7 +141,11 @@ def checkAllcancer(note,cut=100,pCut = 40):
         else:
             process_note = note[starts[i][0]-pCut:]
         process_note = process_note.split("\n",1)[1]
-        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
+        # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
+        datapoint = get_datapoint_line(process_note, cut)
+        if len(datapoint)>2:
+            result[starts[i][1]] = (datapoint)
+#        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
     return result
   
     
@@ -174,7 +178,7 @@ def get_datapoint_line(note,cut):
         blockList.append(block)
         info = Datapoint(block)
         k = info.key; v = info.value; sub_content = info.sub
-        if len(k)<=110:
+        if len(k)<=110 and k!='' and v!='':
             result[k] = v.replace("\t","")
             result = get_subcontent(result,info,sub_content)
         i=j
@@ -196,8 +200,8 @@ def get_format_data(data = None,fileName=None):
 if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
-    if 'data' not in locals():
-        data = getData3('breast_cancer_notes.csv')
+    #if 'data' not in locals():
+    data = getData3('melanoma_cancer_notes.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
