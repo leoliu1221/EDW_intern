@@ -50,14 +50,13 @@ class Stagegui(Frame):
         temp2 = []
 
         for k,v in temp:
-            if k!='content':
-                if len(self.result[value][k])>=1:
-                    temp2.append(str(k)+':'+str(self.result[value][k][0]))
-            else:
-                for contentKey,contentC in self.result[value][k].items():
+            for contentKey,contentC in self.result[value][k].items():
+                if k.startswith('content'):
                     temp2.append(str(k)+'|'+str(contentKey)+':'+str(contentC))
+                else:
+                    temp2.append(str(k)+'|'+str(contentKey)+':'+str(contentC[0]))
         self.clear_listbox(self.list2)
-        self.insert_to_listbox(sorted(temp2),self.list2)
+        self.insert_to_listbox(temp2,self.list2)
         print 'onselect1: ', value
         text = self.data[value][1]
         self.clear_text(self.txt)
@@ -70,7 +69,8 @@ class Stagegui(Frame):
             
         index = w.curselection()[0]
         value = w.get(index)
-        k= value.split(':')[0]
+        c = value.split(':')[0].split('|')[0]
+        k= value.split(':')[0].split('|')[1]
         v = value.split(':')[1]
         
         index1 = self.list1.curselection()[0]
@@ -78,8 +78,8 @@ class Stagegui(Frame):
         #now value1 is our row selection. 
         
         
-        if not k.startswith('content'):
-            text = self.result[row_num][k][1].replace('._',':')
+        if not value.startswith('content'):
+            text = self.result[row_num][c][k][1].replace('._',':')
         else:
             text = v;
 
@@ -223,11 +223,11 @@ class Stagegui(Frame):
             s = self.search.get()
             print 's is: ['+s+']'
             print s==''
-        
+        highlightCount = 0
         if not s=='':
             idx = '1.0'
+            s = s.replace('\n','')
             while 1:
-                s = s.replace('\n','')
                 idx = self.txt.search(re.escape(s), idx, nocase=1, stopindex=END,regexp=True)
                 print idx
                 
@@ -236,9 +236,28 @@ class Stagegui(Frame):
                 lastidx = '%s+%dc' % (idx, len(s))
                 
                 self.txt.tag_add('found', idx, lastidx)
+                highlightCount+=1
             
                 idx = lastidx
             self.txt.tag_config('found', foreground='white',background='black')
+            if highlightCount == 0:
+                s = s.split(':')[0]
+                idx = '1.0'
+                while 1:
+                    idx = self.txt.search(re.escape(s), idx, nocase=1, stopindex=END,regexp=True)
+                    #print idx
+                    
+                    if not idx:
+                        break
+                    lastidx = '%s+%dc' % (idx, len(s))
+                    
+                    self.txt.tag_add('found', idx, lastidx)
+                    highlightCount+=1
+                
+                    idx = lastidx
+                self.txt.tag_config('found', foreground='white',background='black')
+                
+                
         self.txt.config(state=DISABLED)
 
 def main():
