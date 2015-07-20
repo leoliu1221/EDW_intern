@@ -141,6 +141,8 @@ def checkAllcancer(note,cut=110,pCut = 40):
         else:
             process_note = note[starts[i][0]-pCut:]
         process_note = process_note.split("\n",1)[1]
+        
+            
         # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
         datapoint = get_datapoint_line(process_note, cut)
         if len(datapoint)>2:
@@ -153,16 +155,48 @@ def checkAllcancer(note,cut=110,pCut = 40):
 def get_datapoint_line(note,cut):
     
     #cut off tnm staging +cut, or to the end of the line
-    try:
-        tnm_index = re.search('(tnm|tmn)[)]* staging(?i)', note).start()
-        note = note[0:tnm_index+cut]
-    except AttributeError:
-        pass;
-    lines = note.split("\n")
+#    try:
+#        tnm_index = re.search('(tnm|tmn)[)]* staging(?i)', note).start()
+#        note = note[0:tnm_index+cut]
+#    except AttributeError:
+#        pass;
     lineList = []
-    for line in lines:
-        if line.strip()!='':
-            lineList.append(line)
+    lines = note.split("\n")
+    l=0
+    while l<len(lines):
+        lineList.append(lines[l])
+        tnmTag = re.findall('(tnm|tmn)[)]* staging(?i)', lines[l])
+
+        if len(tnmTag)>0:
+            tnmTag_line = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l])
+            if len(tnmTag_line)>0:
+                break
+            
+            # check the next line that is not empty
+            l1 = l+1
+            while lines[l1].strip()=='':
+                l1+=1
+           
+            l2 = l1 
+            tnmTag_line2 = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l2])
+            
+            # if the line contain "... staging:", the line is appended and stop. Otherwise, append the following line until the next empty line
+            if len(tnmTag_line2)>0:
+                lineList.append(lines[l2])
+                break
+            else:
+                while lines[l2].strip()!='':               
+                    lineList.append(lines[l2])
+                    l2+=1               
+            break
+        l+=1
+                
+            
+#    lines = note.split("\n")
+#    lineList = []
+#    for line in lines:
+#        if line.strip()!='':
+#            lineList.append(line)
     result = {}
     blockList = []
     i=1
@@ -201,7 +235,7 @@ if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' not in locals():
-    data = getData3('uterine_cancer_notes.csv')
+    data = getData3('ovarian_cancer_notes.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
