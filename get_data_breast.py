@@ -165,30 +165,29 @@ def get_datapoint_line(note,cut):
     l=0
     while l<len(lines):
         lineList.append(lines[l])
-        tnmTag = re.findall('(tnm|tmn)[)]* staging(?i)', lines[l])
+        tnmKeys = re.findall('(tnm|tmn)[)]* staging(?i)', lines[l])
 
-        if len(tnmTag)>0:
-            tnmTag_line = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l])
-            if len(tnmTag_line)>0:
+        if len(tnmKeys)>0:
+            tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l])
+            if len(tnmKeys)>0:
                 break
             
             # check the next line that is not empty
-            l1 = l+1
-            while lines[l1].strip()=='':
-                l1+=1
+            lNext = l+1
+            while lines[lNext].strip()=='':
+                lNext+=1
            
-            l2 = l1 
-            tnmTag_line2 = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l2])
+            tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[lNext])
             
             # if the line contain "... staging:", the line is appended and stop. Otherwise, append the following line until the next empty line
-            if len(tnmTag_line2)>0:
-                lineList.append(lines[l2])
+            if len(tnmKeys)>0:
+                lineList.append(lines[lNext])
                 break
             else:
-                while lines[l2].strip()!='':               
-                    lineList.append(lines[l2])
-                    l2+=1               
-            break
+                while lines[lNext].strip()!='':               
+                    lineList.append(lines[lNext])
+                    lNext+=1               
+                break
         l+=1
                 
             
@@ -235,7 +234,7 @@ if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' not in locals():
-    data = getData3('ovarian_cancer_notes.csv')
+    data = getData3('data/ovarian.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
