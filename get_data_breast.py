@@ -119,91 +119,67 @@ def get_subcontent(result,datapoint,sub_content):
     result[datapoint.key] = [datapoint.value.replace("\t",""),datapoint.origin]
     while j<len(sub_content):
         sub_content[j].key = datapoint.key+"_"+sub_content[j].key
-#        print str(sub_content[j])
         result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
         j+=1
     return result
 
-#def checkAllcancer(note,cut=100):
+def checkAllcancer(note,cut=100,pCut = 40):
+    '''
+    '''
+    stages = re.finditer(re.compile('staging summary(?i)'),note)
+    starts = []
+    result = {}
+    for stage in stages:
+        previousText = note[:stage.start()].rsplit("\n",1)[1]
+        if 'tumor' not in note[stage.start()-7:stage.start()].lower() and len(previousText)<pCut:
+            cancerType = previousText
+            starts.append([stage.start(),cancerType])
+    i=0
+    for i in xrange(len(starts)):
+        if i != len(starts)-1:
+            process_note = note[starts[i][0]-pCut:starts[i+1][0]]
+        else:
+            process_note = note[starts[i][0]-pCut:]
+        process_note = process_note.split("\n",1)[1]
+        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
+    return result
+  
     
 
-def get_datapoint(note,cut=100):
-    #START with cancer staging summary (ignore case)
-    start = re.split('Staging Summary'+'(?i)',note)
-    note =  start[-1]  
-    cancerType = start[-2].rsplit("\n")[-1]
-   
+def get_datapoint_line(note,cut):
+    
     #cut off tnm staging +cut, or to the end of the line
     try:
-        tnm_index = re.search('tnm[).] staging(?i)', note).start()
+        tnm_index = re.search('tnm[)]* staging(?i)', note).start()
         note = note[0:tnm_index+cut]
     except AttributeError:
         pass;
-
+    lines = note.split("\n")
+    lineList = []
+    for line in lines:
+        if line.strip()!='':
+            lineList.append(line)
     result = {}
-    note = note.split("\n")
-    text = ""
-    #change all : in sub context into ###
-    #change all : in sub context into ###
-    lines = []
-    for line in note:
-        if line.strip()=='':continue
-        if line.startswith('\t'):
-            line = line.replace(':','###')
-        else:
-            #only keep the first colon
-            #replace other colon with '.'
-            line = line.replace(':','._')
-            line = line.replace('._',':',1)
-        lines.append(line)
-    text = '\n'.join(lines)
-    text +='\n'
-
-    text = text.split(":")
-    key = text[0].rsplit("\n",1)
-
-    #getting the first key
-    #if the first key is not valid, then take the second key as the first key
-    #i is the index
-    if len(key)==2:
-        key = key[1].replace("\n","")
-        i=1
-    else:
-        key = text[1].split("\n")[1] 
-        i=2
-    
-    while i<len(text):
-        #print 'text',i,text[i]
-        if "###" in text[i]:
-            content = text[i].rsplit("\n",1)
-        else:
-            content = text[i].split("\n",1)
-        value = content[0].replace("###",":")
-        info = Datapoint(key+":"+value)
+    blockList = []
+    i=1
+    while i<len(lineList):
+        block = lineList[i]+"\n"
+        j=i+1
+        while j<len(lineList):
+            if lineList[j].startswith('\t') or lineList[j].startswith(' '):
+                block = block + lineList[j]+"\n"
+            else:
+                break
+            j+=1
+        blockList.append(block)
+        info = Datapoint(block)
         k = info.key; v = info.value; sub_content = info.sub
-        result[k] = v.replace("\t","")
-        result = get_subcontent(result,info,sub_content)
+        if len(k)<=110:
+            result[k] = v.replace("\t","")
+            result = get_subcontent(result,info,sub_content)
+        i=j
         
-        key = content[1].replace("\n","")
-        
-        i+=1
-    result['Cancer type']= cancerType
     return result
-        
-    
-    
-   
-def get_staging_summary(data3 = None):
-    if data3 is None:
-        data3 = getData3()
-    resultDict = defaultdict(list)
-   
-    i=0
-    while i<len(data3):
-        note = data3[i][1]
-        resultDict[i] = get_datapoint(note)
-        i+=1
-    return resultDict
 
 def get_format_data(data = None,fileName=None):
     if data is None:
@@ -211,14 +187,17 @@ def get_format_data(data = None,fileName=None):
     result = defaultdict(list)
     i=0
     while i<len(data):
-        result[i] = get_datapoint(data[i][1])
+        print "note",i
+        result[i] = checkAllcancer(data[i][1])
         result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
     
 if __name__ == '__main__':
+#    if 'data' not in locals():
+#        data = getData3()
     if 'data' not in locals():
-        data = getData3()
+        data = getData3('breast_cancer_notes.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
