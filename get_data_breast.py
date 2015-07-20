@@ -178,7 +178,7 @@ def get_datapoint_line(note,cut):
         blockList.append(block)
         info = Datapoint(block)
         k = info.key; v = info.value; sub_content = info.sub
-        if len(k)<=110 and k!='' and v!='':
+        if len(k)<=110:
             result[k] = v.replace("\t","")
             result = get_subcontent(result,info,sub_content)
         i=j
