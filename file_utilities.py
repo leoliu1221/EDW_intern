@@ -203,6 +203,13 @@ def exportFile(fileName,data,result):
         pGroup: the dictionary of pid-> {row numbers-> None}
     '''
     #import csv
+    for key,value in result.items():
+        for k1,v1 in value.items():
+            if k1.startswith('content'):
+                continue
+            for k2, v2 in v1.items():
+                if type(v2) == type([]):
+                    result[key][k1][k2]=v2[0]
     with open(fileName,'w') as fp:
         json.dump(result,fp)
         
