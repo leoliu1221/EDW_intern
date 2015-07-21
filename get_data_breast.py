@@ -176,6 +176,8 @@ def get_datapoint_line(note,cut):
             lNext = l+1
             while lines[lNext].strip()=='':
                 lNext+=1
+                if lNext>=len(lines):
+                    break
            
             tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[lNext])
             
