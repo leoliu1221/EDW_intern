@@ -1,8 +1,0 @@
-parameters
-cohort of data:
-    for us defined by icd9 code and date range.
-    maybe a good thing is:
-        patient id, prov id, location of visit, date, note text, note type
-data point:
-    medical complication. Anything you want. Abstract.  
-develop ml/nlp

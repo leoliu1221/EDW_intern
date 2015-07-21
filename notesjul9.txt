@@ -1,3 +1,0 @@
-pathology report is more concise. and the pysician notes can be relating to history stage.
-a surgical pathology note will have 5 sections they share the same parentid.  
-deconstruct pathology note

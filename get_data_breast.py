@@ -6,8 +6,8 @@ Created on Fri Jul 10 13:41:52 2015
 """
 import re 
 from collections import defaultdict
-from file_utilities import getData3
-from file_utilities_edit import Datapoint
+from file_utilities import getData3,Datapoint
+
 #data3 = getData3()
 def get_section(text):
     '''
@@ -229,11 +229,11 @@ def get_format_data(data = None,fileName=None):
         result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
-    
+
 if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
-    #if 'data' not in locals():
+    #if 'data' note in locals():
     data = getData3('data/ovarian.csv')
     data,result = get_format_data(data)
     #import json

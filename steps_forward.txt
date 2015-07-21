@@ -1,3 +1,0 @@
-1. Tools: hive, pig,spark
-2. Where is hadoop more advantagous where not?
-3. indexes in hadoop
