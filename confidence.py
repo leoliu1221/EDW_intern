@@ -44,7 +44,7 @@ def keydb_add_result(result,dbName='keydb.data'):
     #the result stores all keys for different cancers. 
     for record in result.values():
        db = keydb_dict_add(db,get_key_freq(record))
-    keydb_add(db)
+    db = keydb_add(db)
     return db
 def keydb_dict_add(d1,d2):
     result = {}
@@ -70,6 +70,7 @@ def keydb_add(freqDict,dbName='keydb.data'):
     db = keydb_dict_add(db,freqDict)
     pickle.dump(db,open(dbName,'w'))
     print 'added to db: ',dbName
+    return db
     #return db
 
 def keydb_get_note(note,dbName='keydb.data'):
@@ -125,7 +126,7 @@ def get_key_freq(record):
 if __name__ == '__main__':
     from get_data_breast import get_format_data
     from file_utilities import getData3
-    keydb_destroy()
+    #keydb_destroy()
     data = getData3('data/ovarian.csv')
     data,result = get_format_data(data)
     db = keydb_add_result(result)
