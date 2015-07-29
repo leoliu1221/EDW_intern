@@ -30,7 +30,7 @@ def keydb_create(result,dbName='db.data'):
     db = {}
     #the result stores all keys for different cancers. 
     for record in result.values():
-        db.update(get_key_freq_note(record))
+        db.update(get_key_freq(record))
     keydb_add(db)
     return db
     
@@ -42,7 +42,6 @@ def keydb_add(freqDict,dbName='db.data'):
     Returns:
         None
     '''
-    from get_data_breast import checkAllcancer,get_section
     import os.path,pickle
     if os.path.exists(dbName):
         db = pickle.load(open(dbName,'r'))
@@ -106,15 +105,15 @@ if __name__ == '__main__':
     data,result = get_format_data(data)
     db = keydb_create(result)
     ''' ALTERNATIVE WAYS TO GET DB'''
-    ''' USING GET_KEY_FREQ_NOTE ROUTINE
+    ''' USING GET_KEY_FREQ ROUTINE
     db = {}
     for record in result.values():
-        db.update(get_key_freq_note(record))
+        db.update(get_key_freq(record))
     keydb_add(db)
     ### USING ADD_NOTE_KEYDB ROUTINE
     db = {}
     for value[1] in data.values() as record:
-        db.update(get_note_keydb(record))
+        db.update(keydb_get_note(record))
     keydb_add(db)
     '''
         
