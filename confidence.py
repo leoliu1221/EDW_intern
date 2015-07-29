@@ -4,6 +4,17 @@ Created on Tue Jul 28 16:54:21 2015
 
 @author: lliu5
 """
+def keydb_load(dbName='db.data'):
+    import os.path,pickle
+    db = {}
+    if os.path.exists(dbName):
+        db = pickle.load(open(dbName,'r'))
+        print 'db load',dbName,'successful'
+    else:
+        print 'db load',dbName,'unsuccessful -- db not found'
+    return db
+    
+    
 def keydb_destroy(dbName='db.data'):
     '''
     This function destroys the given file. 
@@ -50,7 +61,7 @@ def keydb_add(freqDict,dbName='db.data'):
     db.update(freqDict)
     pickle.dump(db,open(dbName,'w'))
     print 'added to db: ',dbName
-    return db
+    #return db
 
 def keydb_get_note(note,dbName='db.data'):
     '''
