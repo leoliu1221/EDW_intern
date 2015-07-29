@@ -126,6 +126,7 @@ def get_subcontent(result,datapoint,sub_content):
 def checkAllcancer(note,cut=110,pCut = 40):
     '''
     '''
+    note = note.replace('"','')
     stages = re.finditer(re.compile('staging summary(?i)'),note)
     starts = []
     result = {}
@@ -228,7 +229,7 @@ def get_format_data(data = None,fileName=None):
     i=0
     while i<len(data):
         print "note",i
-        result[i] = checkAllcancer(data[i][1].replace('"',''))
+        result[i] = checkAllcancer(data[i][1])
         result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
