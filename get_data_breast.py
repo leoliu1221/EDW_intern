@@ -133,8 +133,9 @@ def checkAllcancer(note,cut=110,pCut = 40):
     for stage in stages:
         previousText = note[:stage.start()].rsplit("\n",1)[1]
         if 'tumor' not in note[stage.start()-7:stage.start()].lower() and len(previousText)<pCut:
-            cancerType = previousText
-            starts.append([stage.start(),cancerType])
+            cancerType = previousText.lstrip(' ')
+            if cancerType!='' and cancerType[0].isalpha() :
+                starts.append([stage.start(),cancerType])
     i=0
     for i in xrange(len(starts)):
         if i != len(starts)-1:
@@ -238,7 +239,7 @@ if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' note in locals():
-    data = getData3('data/prostatic.csv')
+    data = getData3('data/pulmonary.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
