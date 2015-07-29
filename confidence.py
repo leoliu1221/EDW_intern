@@ -4,7 +4,7 @@ Created on Tue Jul 28 16:54:21 2015
 
 @author: lliu5
 """
-def keydb_load(dbName='db.data'):
+def keydb_load(dbName='keydb.data'):
     import os.path,pickle
     db = {}
     if os.path.exists(dbName):
@@ -15,7 +15,7 @@ def keydb_load(dbName='db.data'):
     return db
     
     
-def keydb_destroy(dbName='db.data'):
+def keydb_destroy(dbName='keydb.data'):
     '''
     This function destroys the given file. 
     Args:
@@ -30,7 +30,7 @@ def keydb_destroy(dbName='db.data'):
     else:
         print 'db destroy',dbName,'unsuccessful -- db not found'
 
-def keydb_create(result,dbName='db.data'):
+def keydb_create(result,dbName='keydb.data'):
     '''
     Args: 
         Result is the previous result or stored result. 
@@ -45,7 +45,7 @@ def keydb_create(result,dbName='db.data'):
     keydb_add(db)
     return db
     
-def keydb_add(freqDict,dbName='db.data'):
+def keydb_add(freqDict,dbName='keydb.data'):
     '''
     Args:
         freqDict: the processed frequency dictinoary 
@@ -63,7 +63,7 @@ def keydb_add(freqDict,dbName='db.data'):
     print 'added to db: ',dbName
     #return db
 
-def keydb_get_note(note,dbName='db.data'):
+def keydb_get_note(note,dbName='keydb.data'):
     '''
     Args:
         note: an actual pathology note from raw data. 
@@ -115,6 +115,7 @@ if __name__ == '__main__':
     data = getData3('data/ovarian.csv')
     data,result = get_format_data(data)
     db = keydb_create(result)
+    
     ''' ALTERNATIVE WAYS TO GET DB'''
     ''' USING GET_KEY_FREQ ROUTINE
     db = {}
