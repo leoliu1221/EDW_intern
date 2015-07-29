@@ -173,12 +173,13 @@ def get_datapoint_line(note,cut):
                 break
             
             # check the next line that is not empty
-            lNext = l+1
+            lNext = l+1            
+           
             while lines[lNext].strip()=='':
                 lNext+=1
                 if lNext>=len(lines):
                     break
-           
+            break 
             tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[lNext])
             
             # if the line contain "... staging:", the line is appended and stop. Otherwise, append the following line until the next empty line
@@ -236,7 +237,7 @@ if __name__ == '__main__':
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' note in locals():
-    data = getData3('data/ovarian.csv')
+    data = getData3('data/prostatic.csv')
     data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
