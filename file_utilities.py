@@ -21,6 +21,22 @@ def update(dic1, dic2):
     for key in dic1.keys():
         dic1[key] = list(set(dic1[key]))
     return dic1
+def dict_add(d1,d2):
+    if d1==None:
+        return d2
+    if d2==None:
+        return d1
+    result = {}
+    for cancer in d1.keys():
+        if d2.get(cancer)==None:
+            result[cancer] = d1[cancer]
+        else:
+            result[cancer] = d1[cancer]+d2[cancer]
+    for key in d2.keys():
+        if key in result.keys():
+            continue
+        result[key] = d2[key]
+    return result
 
     
 def readLines(file = 'organList.txt',threshold=2):
