@@ -43,7 +43,7 @@ def keydb_add_result(result,dbName='keydb.data'):
     db = {}
     #the result stores all keys for different cancers. 
     for record in result.values():
-       db = keydb_dict_add(db,get_key_freq(record))
+       db = dict_add(db,get_key_freq(record))
     db = keydb_add(db)
     return db
 def keydb_dict_add(d1,d2):
@@ -67,7 +67,7 @@ def keydb_add(freqDict,dbName='keydb.data'):
         db = pickle.load(open(dbName,'r'))
     else:
         db = {}
-    db = keydb_dict_add(db,freqDict)
+    db = dict_add(db,freqDict)
     pickle.dump(db,open(dbName,'w'))
     print 'added to db: ',dbName
     return db
@@ -98,18 +98,19 @@ def get_key_freq(record):
     for cancer in record.keys():
         if cancer == 'content':
             continue
-        nice_looking_cancer = (' ').join(cancer.strip().lower().split())
-        if db.get(nice_looking_cancer)==None:
-            db[nice_looking_cancer] = {}
+        #we dont need the nice looking cancer now. We only need key-number pairs for our database. 
+        #nice_looking_cancer = (' ').join(cancer.strip().lower().split())
+        #if db.get(nice_looking_cancer)==None:
+        #    db[nice_looking_cancer] = {}
         for key in record[cancer].keys():
             key = key.strip().lower()
             if key.strip()=='':
                 continue
             #record actual big keys. 
             if '_' not in key:
-                if db[nice_looking_cancer].get(key)==None:
-                    db[nice_looking_cancer][key]=0
-                db[nice_looking_cancer][key]+=1
+                if db.get(key)==None:
+                    db[key]=0
+                db[key]+=1
             #now record sub keys
             else:
                 keys = key.split('_')
@@ -117,16 +118,16 @@ def get_key_freq(record):
                     tempKey = tempKey.strip().lower()
                     if tempKey=='':
                         continue
-                    if db[nice_looking_cancer].get(tempKey)==None:
-                        db[nice_looking_cancer][tempKey]=0
-                    db[nice_looking_cancer][tempKey]+=1
+                    if db.get(tempKey)==None:
+                        db[tempKey]=0
+                    db[tempKey]+=1
     return db
      
     
 if __name__ == '__main__':
     from get_data_breast import get_format_data
     from file_utilities import getData3
-    #keydb_destroy()
+    keydb_destroy()
     data = getData3('data/ovarian.csv')
     data,result = get_format_data(data)
     db = keydb_add_result(result)
@@ -135,12 +136,12 @@ if __name__ == '__main__':
     ''' USING GET_KEY_FREQ ROUTINE
     db = {}
     for record in result.values():
-        db=keydb_dict_add(db,get_key_freq(record))
+        db=dict_add(db,get_key_freq(record))
     keydb_add(db)
     ### USING ADD_NOTE_KEYDB ROUTINE
     db = {}
     for value[1] in data.values() as record:
-        db=keydb_dict_add(db,keydb_get_note(record))
+        db=dict_add(db,keydb_get_note(record))
     keydb_add(db)
     '''
         
