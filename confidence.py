@@ -7,6 +7,33 @@ Created on Tue Jul 28 16:54:21 2015
 import time,re
 
 from file_utilities import dict_add
+
+def keydb_clean(key,returnString=False):
+    key = key.lower()
+    from nltk.corpus import stopwords
+    #clean parenthesis
+    #clean space
+    #clean non-alpha
+    #remove parenthesis, and the text within. 
+    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
+    m = regEx.match(key)
+    while m:
+        key = m.group(1) + m.group(2)
+        m = regEx.match(key)
+        #print key
+    #now check if the key is empty
+    key = key.strip()
+    if key=='':
+        return[]
+    #now remove all non-alpha numeric values, replace by space. 
+    key = re.sub('[^0-9a-zA-Z]+', ' ', key)
+    words = key.split()
+    no_stop_words = []
+    for word in words:
+        if word not in stopwords.words():
+            no_stop_words.append(word)
+    return sorted(no_stop_words)
+
 def keydb_init(dbName='keydb.data'):
     keydb = keydb_load(dbName = dbName)
     if len(keydb)==0:
@@ -110,6 +137,9 @@ def keydb_core(record):
                 continue
             #record actual big keys. 
             if '_' not in key:
+                key = ' '.join(keydb_clean(key))
+                if key.strip()=='':
+                    continue
                 if db.get(key)==None:
                     db[key]=0
                 db[key]+=1
@@ -117,7 +147,7 @@ def keydb_core(record):
             else:
                 keys = key.split('_')
                 for tempKey in keys:
-                    tempKey = tempKey.strip().lower()
+                    tempKey = ' '.join(keydb_clean(tempKey))
                     if tempKey=='':
                         continue
                     if db.get(tempKey)==None:
@@ -159,29 +189,12 @@ def keydb_marginal_core(key):
     ###############################################
     #for single key
     ###############################################
-    from nltk.corpus import stopwords
     import itertools
-    #remove parenthesis, and the text within. 
-    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
-    m = regEx.match(key)
-    while m:
-        key = m.group(1) + m.group(2)
-        m = regEx.match(key)
-        #print key
-    #now check if the key is empty
-    key = key.strip()
-    if key=='':
-        return[]
-    #now remove all non-alpha numeric values, replace by space. 
-    key = re.sub('[^0-9a-zA-Z]+', ' ', key)
-    #now we know the key does not have prethesis, and the key has some values. 
-    words = key.split()
-    no_stop_words = []
-    for word in words:
-        if word not in stopwords.words():
-            no_stop_words.append(word)
+    if key == '*****document_count*****':
+        return [(key)]
+    no_stop_words = keydb_clean(key)
     resultKeys = []
-    if len(no_stop_words)>5:
+    if len(no_stop_words)>6:
         return []
     for i in xrange(len(no_stop_words)+1):
         if i==0:
@@ -189,7 +202,38 @@ def keydb_marginal_core(key):
         for combination in itertools.combinations(no_stop_words,i):
             resultKeys.append(tuple(sorted(list(combination))))
     return resultKeys
-
+    
+def keydb_marginal_marginal(key,marginaldb = None):
+    if '_' in key:
+        key = key.split('_')[-1]
+    if marginaldb is None:
+        marginaldb = keydb_marginal_load()
+    keys = keydb_clean(key)
+    result = 1
+    total = marginaldb['*****document_count*****']
+    for k in keys:
+        if marginaldb.get(tuple([k]))==None:
+            print k,'is not found in marginal db'
+            return 0
+        if float(marginaldb[tuple([k])])>total:
+            result*=1
+        else:
+            result*=(float(marginaldb[tuple([k])])/total)
+    return result
+    
+def keydb_marginal_chained(key,marginaldb=None):
+    if '_' in key:
+        key = key.split('_')[-1]
+    if marginaldb is None:
+        marginaldb = keydb_marginal_load()
+    total = marginaldb['*****document_count*****']
+    keys = keydb_clean(key)
+    chain = tuple(sorted(keys))
+    print chain
+    return float(marginaldb.get(chain))/total
+        
+    
+    
     
     
 if __name__ == '__main__':
@@ -206,6 +250,14 @@ if __name__ == '__main__':
     keydb_marginal_destroy()
     keydb_marginal_add_db(keydb)
     marginaldb = keydb_marginal_load()
+    cResult = {}
+    test = result[1][result[1].keys()[1]].keys()[0]
+    
+    marginal = keydb_marginal_marginal(test)
+    chained = keydb_marginal_chained(test)
+    
+    
+    
     ''' ALTERNATIVE WAYS TO GET DB'''
     ''' USING GET_KEY_FREQ ROUTINE
     db = {}
