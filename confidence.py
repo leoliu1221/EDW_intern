@@ -7,6 +7,13 @@ Created on Tue Jul 28 16:54:21 2015
 import time,re
 
 from file_utilities import dict_add
+def keydb_init(dbName='keydb.data'):
+    keydb = keydb_load(dbName = dbName)
+    if len(keydb)==0:
+        keydb_add({},dbName = dbName)
+    return keydb
+    
+
 def keydb_load(dbName='keydb.data'):
     import os.path,pickle
     db = {}
@@ -89,6 +96,7 @@ def keydb_core(record):
         db: a dictionary of key frequency from the given note result. 
     '''
     db = {}
+    db['*****document_count*****']=1
     for cancer in record.keys():
         if cancer == 'content':
             continue
@@ -116,6 +124,7 @@ def keydb_core(record):
                         db[tempKey]=0
                     db[tempKey]+=1
     return db
+    
 def keydb_marginal_destroy(dbName = 'keydb_marginal.data'):
     '''
     ^^ reusing keydb_destroy
