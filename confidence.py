@@ -4,6 +4,7 @@ Created on Tue Jul 28 16:54:21 2015
 
 @author: lliu5
 """
+import time,re
 
 from file_utilities import dict_add
 def keydb_load(dbName='keydb.data'):
@@ -43,17 +44,10 @@ def keydb_add_result(result,dbName='keydb.data'):
     db = {}
     #the result stores all keys for different cancers. 
     for record in result.values():
-       db = dict_add(db,get_key_freq(record))
+       db = dict_add(db,keydb_core(record))
     db = keydb_add(db)
     return db
-def keydb_dict_add(d1,d2):
-    result = {}
-    cancers = d1.keys()
-    cancers.extend(d2.keys())
-    cancers = list(set(cancers))
-    for cancer in cancers:
-        result[cancer] = dict_add(d1.get(cancer),d2.get(cancer))
-    return result
+
 def keydb_add(freqDict,dbName='keydb.data'):
     '''
     Args:
@@ -84,9 +78,9 @@ def keydb_get_note(note,dbName='keydb.data'):
     from get_data_breast import checkAllcancer,get_section
     record = checkAllcancer(note)
     record['content'] = get_section(note)
-    return get_key_freq(record)
-
-def get_key_freq(record):
+    return keydb_core(record)    
+    
+def keydb_core(record):
     '''
     Args: 
         record: a result dictionary for 1 note. NOTE: it is not an actual note. 
@@ -122,16 +116,87 @@ def get_key_freq(record):
                         db[tempKey]=0
                     db[tempKey]+=1
     return db
-     
+def keydb_marginal_destroy(dbName = 'keydb_marginal.data'):
+    '''
+    ^^ reusing keydb_destroy
+    '''
+    keydb_destroy(dbName=dbName)
+    
+    
+def keydb_marginal_load(dbName='keydb_marginal.data'):
+    '''
+    ^^ reusing keydb_load
+    '''
+    return keydb_load(dbName = dbName)
+    
+    
+def keydb_marginal_add(key,value,dbName='keydb_marginal.data'):
+    keys = keydb_marginal_core(key)
+    marginal_dict = {}
+    for k in keys:
+        marginal_dict[k] = value
+    return keydb_add(marginal_dict,dbName=dbName)
+    
+def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
+    keydb = keydb_get_note(note)
+    return keydb_marginal_add_db(keydb)
+
+def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
+    for key,value in keydb.items():
+        keydb_marginal_add(key,value)
+    return keydb_marginal_load()
+
+def keydb_marginal_core(key):
+    ###############################################
+    #for single key
+    ###############################################
+    from nltk.corpus import stopwords
+    import itertools
+    #remove parenthesis, and the text within. 
+    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
+    m = regEx.match(key)
+    while m:
+        key = m.group(1) + m.group(2)
+        m = regEx.match(key)
+        #print key
+    #now check if the key is empty
+    key = key.strip()
+    if key=='':
+        return[]
+    #now remove all non-alpha numeric values, replace by space. 
+    key = re.sub('[^0-9a-zA-Z]+', ' ', key)
+    #now we know the key does not have prethesis, and the key has some values. 
+    words = key.split()
+    no_stop_words = []
+    for word in words:
+        if word not in stopwords.words():
+            no_stop_words.append(word)
+    resultKeys = []
+    if len(no_stop_words)>5:
+        return []
+    for i in xrange(len(no_stop_words)+1):
+        if i==0:
+            continue
+        for combination in itertools.combinations(no_stop_words,i):
+            resultKeys.append(tuple(sorted(list(combination))))
+    return resultKeys
+
+    
     
 if __name__ == '__main__':
+    start = time.time()
     from get_data_breast import get_format_data
     from file_utilities import getData3
     keydb_destroy()
-    data = getData3('data/ovarian.csv')
-    data,result = get_format_data(data)
-    db = keydb_add_result(result)
-    
+    if 'data' not in locals():
+        data = getData3('data/ovarian.csv')
+    if 'result' not in locals():
+        data,result = get_format_data(data)
+    keydb_add_result(result)
+    keydb = keydb_load()
+    keydb_marginal_destroy()
+    keydb_marginal_add_db(keydb)
+    marginaldb = keydb_marginal_load()
     ''' ALTERNATIVE WAYS TO GET DB'''
     ''' USING GET_KEY_FREQ ROUTINE
     db = {}
@@ -147,6 +212,9 @@ if __name__ == '__main__':
         
     
     
+    
+    elapsed = time.time()-start
+    print 'finished exectuing. elapsed time=',elapsed,'s'
     
     
     
