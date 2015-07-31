@@ -123,7 +123,8 @@ def keydb_core(record):
         db: a dictionary of key frequency from the given note result. 
     '''
     db = {}
-    db['*****document_count*****']=1
+    dbcount=0
+    #db['*****dataponit_count*****']=0
     for cancer in record.keys():
         if cancer == 'content':
             continue
@@ -143,6 +144,7 @@ def keydb_core(record):
                 if db.get(key)==None:
                     db[key]=0
                 db[key]+=1
+                dbcount+=1
             #now record sub keys
             else:
                 keys = key.split('_')
@@ -153,6 +155,8 @@ def keydb_core(record):
                     if db.get(tempKey)==None:
                         db[tempKey]=0
                     db[tempKey]+=1
+                    dbcount+=1
+    db['*****datapoint_count*****']=dbcount
     return db
     
 def keydb_marginal_destroy(dbName = 'keydb_marginal.data'):
@@ -175,6 +179,11 @@ def keydb_marginal_add(key,value,dbName='keydb_marginal.data'):
     for k in keys:
         marginal_dict[k] = value
     return keydb_add(marginal_dict,dbName=dbName)
+def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
+    for value in data.values():
+        note = value[1]
+        keydb_marginal_add_note(note,dbName=dbName)
+    return keydb_marginal_load()
     
 def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
     keydb = keydb_get_note(note)
@@ -190,7 +199,7 @@ def keydb_marginal_core(key):
     #for single key
     ###############################################
     import itertools
-    if key == '*****document_count*****':
+    if key == '*****datapoint_count*****':
         return [(key)]
     no_stop_words = keydb_clean(key)
     resultKeys = []
@@ -210,7 +219,7 @@ def keydb_marginal_marginal(key,marginaldb = None):
         marginaldb = keydb_marginal_load()
     keys = keydb_clean(key)
     result = 1
-    total = marginaldb['*****document_count*****']
+    total = marginaldb['*****datapoint_count*****']
     for k in keys:
         if marginaldb.get(tuple([k]))==None:
             print k,'is not found in marginal db'
@@ -226,13 +235,20 @@ def keydb_marginal_chained(key,marginaldb=None):
         key = key.split('_')[-1]
     if marginaldb is None:
         marginaldb = keydb_marginal_load()
-    total = marginaldb['*****document_count*****']
+    total = marginaldb['*****datapoint_count*****']
     keys = keydb_clean(key)
     chain = tuple(sorted(keys))
     print chain
     return float(marginaldb.get(chain))/total
-        
-    
+
+def keydb_marginal_newkey(key,marginaldb=None):
+    if '_' in key:
+        key = key.split('_')[-1]
+    if marginaldb is None:
+        marginaldb = keydb_marginal_load()
+    marginal = keydb_marginal_marginal(key,marginaldb=marginaldb)
+    chained = keydb_marginal_chained(key,marginaldb=marginaldb)
+    return (chained-marginal)/marginal
     
     
     
@@ -247,7 +263,16 @@ if __name__ == '__main__':
     if 'result' not in locals():
         data,result = get_format_data(data)
     keydb_destroy()
+    testNote = '\nUTERINE CANCER STAGING SUMMARY\nd0 d1:data1\nd0 d1 d3:data3\nd1 d2: data2\nd1 d2: data3\n\nAmerican Joint Committee on Cancer (2009) Tumor-Node-Metastasis (TNM) staging for endometrial cancer:\nTumor (T):\t\tpT1a\nNodes (N):\t\tpN0\nMetastasis (M):\tpMX\n\n'
+    testResult = keydb_get_note(testNote)
+    keydb_marginal_destroy()
+    testResultMarginal = keydb_marginal_add_note(testNote)
+    marginaldb = keydb_marginal_load()
+    key = 'd0 d1'
+    result = keydb_marginal_newkey(key,marginaldb = marginaldb)
 
+    
+    '''
     keydb_add_result(result)
     keydb = keydb_load()
     keydb_marginal_destroy()
@@ -259,7 +284,7 @@ if __name__ == '__main__':
     marginal = keydb_marginal_marginal(test)
     chained = keydb_marginal_chained(test)
     
-    
+    '''
     
     ''' ALTERNATIVE WAYS TO GET DB'''
     ''' USING GET_KEY_FREQ ROUTINE
