@@ -127,28 +127,39 @@ def checkAllcancer(note,cut=110,pCut = 40):
     '''
     '''
     note = note.replace('"','')
+    #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
     starts = []
     result = {}
+    #for different cancer staging summary there will be different start index. 
+    #we store the start index in variable starts. 
     for stage in stages:
+        #preivous text is the last line before our stage keyword 
         previousText = note[:stage.start()].rsplit("\n",1)[1]
+        #pcut is for finding the name of the certain cancer before staging keyword
         if 'tumor' not in note[stage.start()-7:stage.start()].lower() and len(previousText)<pCut:
             cancerType = previousText.lstrip(' ')
+            #now if the cancer type is valid we add the index to start
             if cancerType!='' and cancerType[0].isalpha() :
                 starts.append([stage.start(),cancerType])
+    #for the start index in starts:
+    #
     i=0
     for i in xrange(len(starts)):
+        #start is the starting index for note
+        start=starts[i][0]
+        if start<0:
+            start=0
         if i != len(starts)-1:
-            process_note = note[starts[i][0]-pCut:starts[i+1][0]]
+            process_note = note[start:starts[i+1][0]]
         else:
-            process_note = note[starts[i][0]-pCut:]
+            process_note = note[start:]
         process_note = process_note.split("\n",1)[1]
-        
-            
+        print process_note
         # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
         datapoint = get_datapoint_line(process_note, cut)
-        if len(datapoint)>2:
-            result[starts[i][1]] = (datapoint)
+        #if len(datapoint.keys())>2:
+        result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
     return result
   
@@ -194,7 +205,8 @@ def get_datapoint_line(note,cut):
                     lNext+=1               
                 break
         l+=1
-                
+    #now linelist contains any line input till it finds tnm staging. 
+    #print lineList
             
 #    lines = note.split("\n")
 #    lineList = []
@@ -202,10 +214,23 @@ def get_datapoint_line(note,cut):
 #        if line.strip()!='':
 #            lineList.append(line)
     result = {}
+    ############
+    #blocklist is for storing blocks
+    #blocks can spread multiple lines. 
+    #1 block only contain 1 main data point and key
+    #1 block can contain many sub keys and values. 
     blockList = []
-    i=1
+    #starting from the first line of linelist
+    i=0
     while i<len(lineList):
         block = lineList[i]+"\n"
+        #j is for finding the sub keys for a note. 
+        ##################
+        #things like: 
+        #mainkey: maindata
+        #   subkey: subdata
+        #   subkey:subdata 
+        ##################
         j=i+1
         while j<len(lineList):
             if lineList[j].startswith('\t') or lineList[j].startswith(' '):
@@ -214,13 +239,16 @@ def get_datapoint_line(note,cut):
                 break
             j+=1
         blockList.append(block)
+        #print 'block:',block
         info = Datapoint(block)
+        #print 'info',info
         k = info.key; v = info.value; sub_content = info.sub
+        #print 'in block',k,v,sub_content
         if len(k)<=100 and (k!='' or v!=''):
             result[k] = v.replace("\t","")
             result = get_subcontent(result,info,sub_content)
         i=j
-        
+        #print 'result',result
     return result
 
 def get_format_data(data = None,fileName=None):
@@ -236,11 +264,12 @@ def get_format_data(data = None,fileName=None):
     return data,result
 
 if __name__ == '__main__':
+    pass
 #    if 'data' not in locals():
 #        data = getData3()
     #if 'data' note in locals():
-    data = getData3('data/pulmonary.csv')
-    data,result = get_format_data(data)
+    #data = getData3('data/pulmonary.csv')
+    #data,result = get_format_data(data)
     #import json
     #json.dump(result,open('results.json','w'))
     #data = getData3()

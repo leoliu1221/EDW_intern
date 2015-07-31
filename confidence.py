@@ -240,11 +240,14 @@ if __name__ == '__main__':
     start = time.time()
     from get_data_breast import get_format_data
     from file_utilities import getData3
-    keydb_destroy()
+    
     if 'data' not in locals():
         data = getData3('data/ovarian.csv')
+        
     if 'result' not in locals():
         data,result = get_format_data(data)
+    keydb_destroy()
+
     keydb_add_result(result)
     keydb = keydb_load()
     keydb_marginal_destroy()
