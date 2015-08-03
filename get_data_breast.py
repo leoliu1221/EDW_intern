@@ -155,7 +155,7 @@ def checkAllcancer(note,cut=110,pCut = 40):
         else:
             process_note = note[start:]
         process_note = process_note.split("\n",1)[1]
-        print process_note
+        #print process_note
         # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
         datapoint = get_datapoint_line(process_note, cut)
         #if len(datapoint.keys())>2:

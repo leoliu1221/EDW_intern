@@ -237,7 +237,11 @@ def keydb_marginal_chained(key,marginaldb=None):
         marginaldb = keydb_marginal_load()
     total = marginaldb['*****datapoint_count*****']
     keys = keydb_clean(key)
+    if len(keys)==0:
+        return 0.0
     chain = tuple(sorted(keys))
+    if marginaldb.get(chain)==None:
+        return 0
     print chain
     return float(marginaldb.get(chain))/total
 
@@ -246,8 +250,14 @@ def keydb_marginal_newkey(key,marginaldb=None):
         key = key.split('_')[-1]
     if marginaldb is None:
         marginaldb = keydb_marginal_load()
+    
     marginal = keydb_marginal_marginal(key,marginaldb=marginaldb)
     chained = keydb_marginal_chained(key,marginaldb=marginaldb)
+    if marginal == 0:
+        return 0
+    if chained-marginal==0:
+        if len(keydb_clean(key))==1:
+            return float("inf")
     return (chained-marginal)/marginal
     
     
@@ -257,20 +267,29 @@ if __name__ == '__main__':
     from get_data_breast import get_format_data
     from file_utilities import getData3
     
-    if 'data' not in locals():
-        data = getData3('data/ovarian.csv')
-        
-    if 'result' not in locals():
-        data,result = get_format_data(data)
-    keydb_destroy()
+    data = getData3('data/ovarian.csv')     
+    data,result = get_format_data(data)
+    keydb_destroy()    
+    keydb_marginal_destroy()
     testNote = '\nUTERINE CANCER STAGING SUMMARY\nd0 d1:data1\nd0 d1 d3:data3\nd1 d2: data2\nd1 d2: data3\n\nAmerican Joint Committee on Cancer (2009) Tumor-Node-Metastasis (TNM) staging for endometrial cancer:\nTumor (T):\t\tpT1a\nNodes (N):\t\tpN0\nMetastasis (M):\tpMX\n\n'
     testResult = keydb_get_note(testNote)
-    keydb_marginal_destroy()
-    testResultMarginal = keydb_marginal_add_note(testNote)
+    marginal_result = result
+    i=-1
+    for value in data:
+        i+=1
+        keydb_marginal_add_note(value[1])
+    
     marginaldb = keydb_marginal_load()
-    key = 'd0 d1'
-    result = keydb_marginal_newkey(key,marginaldb = marginaldb)
+    for key1,value1 in result.items():
+        for key2,value2 in value1.items():
+            if key2 == 'content':
+                continue
+            else:
+                for key in value2.keys():
+                    marginal_result[key1][key2][key] = keydb_marginal_newkey(key,marginaldb=marginaldb)
+                                        
 
+    
     
     '''
     keydb_add_result(result)
