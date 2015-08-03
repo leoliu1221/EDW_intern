@@ -144,9 +144,12 @@ def getScore(v,dbVal,dbVal_wordcount,countdict):
     # token of v 
     token = list(set(dbVal.keys())-set(label))
     token_combine = {}   # combine synonym and antonym with original word
+    antonym = defaultdict(list)
     for k in token:       
         flag = 0
         syn,an = Syn_Ant(k)
+        if an!={}:
+            antonym[an.keys()[0]]=an.values()[0]
         # If any item in token is synonym or antonym of k, combine frequency and remove that word from the token list.
         # Collect the new frequency in a token_combine dictionary
         for s in syn:
@@ -154,21 +157,24 @@ def getScore(v,dbVal,dbVal_wordcount,countdict):
                 token_combine[k]=dbVal[k]+dbVal[str(s)]
                 token.remove(str(s))
                 flag = 1
+      
         for key,val in an.iteritems():
             if str(val) in token:
                 token_combine[k]=dbVal[k]+dbVal[str(val)]  
                 token.remove(str(val))
                 flag = 1
+ 
         # If there is no synonym or antonym of k contained in token list, collect the frequency from dbVal
         if flag==0:
             token_combine[k]=dbVal[k]
-    
+
     # Calculate the score for each element in the original token list
-    for k in list(set(dbVal.keys())-set(label)):     
+    for k in list(set(dbVal.keys())-set(label)): 
+       
         if k==v:    
             # If v is antonym of k, collect combined frequency
-            if v in an.itervalues():
-                for key,val in an.iteritems():
+            if v in antonym.values():
+                for key,val in antonym.iteritems():
                     if str(val)==v:
                         num_token = token_combine[key]
             else:
@@ -182,30 +188,51 @@ def getScore(v,dbVal,dbVal_wordcount,countdict):
     return score    
 
 def valdb_add_result(val):
-    dbVal = {}
-    dbVal_wordcount = []
+    dbVal_local = {}
+    dbVal_wordcount_local = []
     score = defaultdict(list)
       
     i=0
     while i<len(val):
-        v = val[i]        
+        v = val[i]    
         # get frequency count (multiple values of them) for value v and add to database dbVal
         countdict = getCount(v)
-        dbVal = valdb_add(countdict)
+        dbVal_local = valdb_add(countdict)
         # get wordcount for value v and add to database dbVal_wordcount
-        dbVal_wordcount = valdb_wordcount_add(getWordcount(countdict,v))
-        score[i] = getScore(v,dbVal,dbVal_wordcount,countdict)
+        dbVal_wordcount_local = valdb_wordcount_add(getWordcount(countdict,v))
+        score[i] = getScore(v,dbVal_local,dbVal_wordcount_local,countdict)
         i+=1
       
     
-    return dbVal,dbVal_wordcount,score
+    return dbVal_local,dbVal_wordcount_local,score
+    
+def score_fromdb(val):
+    dbVal_local = {}
+    dbVal_wordcount_local = []
+    score = defaultdict(list)
+      
+    for v in val:   
+        # get frequency count (multiple values of them) for value v and add to database dbVal
+        countdict = getCount(v)
+        dbVal_local = valdb_add(countdict)
+        # get wordcount for value v and add to database dbVal_wordcount
+        dbVal_wordcount_local = valdb_wordcount_add(getWordcount(countdict,v))
+    i=0
+    while i<len(val):
+        v = val[i]
+        countdict = getCount(v)
+        score[i] = getScore(v,dbVal_local,dbVal_wordcount_local,countdict)
+        i+=1
+    
+    return dbVal_local,dbVal_wordcount_local,score
             
 if __name__ == '__main__':
     # val is a list of value corresponding to each key
-    valdb_destroy('Valdb.data')    
-    valdb_destroy('Valdb_wordcount.data')
     val = ['yes','no','yes','no','accept2','not accept'] #just for testing
-    dbVal,dbVal_wordcount,score = valdb_add_result(val)
+#    valdb_destroy('Valdb.data')    
+#    valdb_destroy('Valdb_wordcount.data')    
+#    dbVal,dbVal_wordcount_score,score = score_fromdb(val)
+    dbVal_add,dbVal_wordcount_add,score_add = valdb_add_result(['reject','123'])
     
     '''
      score detail:
