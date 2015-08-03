@@ -54,7 +54,7 @@ def keydb_load(dbName='keydb.data'):
     db = {}
     if os.path.exists(dbName):
         db = pickle.load(open(dbName,'r'))
-        print 'db load',dbName,'successful'
+        #print 'db load',dbName,'successful'
     else:
         print 'db load',dbName,'unsuccessful -- db not found'
     return db
@@ -105,7 +105,7 @@ def keydb_add(freqDict,dbName='keydb.data'):
         db = {}
     db = dict_add(db,freqDict)
     pickle.dump(db,open(dbName,'w'))
-    print 'added to db: ',dbName
+    #print 'added to db: ',dbName
     return db
     #return db
 
@@ -231,7 +231,7 @@ def keydb_marginal_marginal(key,marginaldb = None):
     total = marginaldb['*****datapoint_count*****']
     for k in keys:
         if marginaldb.get(tuple([k]))==None:
-            print k,'is not found in marginal db'
+            #print k,'is not found in marginal db'
             return 0
         if float(marginaldb[tuple([k])])>total:
             result*=1
@@ -255,6 +255,7 @@ def keydb_marginal_chained(key,marginaldb=None):
     return float(marginaldb.get(chain))/total
 
 def keydb_marginal_newkey(key,marginaldb=None):
+    result = 0
     if '_' in key:
         key = key.split('_')[-1]
     if marginaldb is None:
@@ -262,78 +263,135 @@ def keydb_marginal_newkey(key,marginaldb=None):
     
     marginal = keydb_marginal_marginal(key,marginaldb=marginaldb)
     chained = keydb_marginal_chained(key,marginaldb=marginaldb)
-    '''    
+       
     if marginal == 0:
-        return 0
-    if chained-marginal==0:
+        result = 0
+    elif chained-marginal==0:
         if len(keydb_clean(key))==1:
-            return float("inf")
-    '''
-    return {'chained':chained,'marginal':marginal}
+            result= float("inf")
+        else:
+            result = 0
+    else:
+        result = round((chained-marginal)/marginal,4)
+    
+    return {'chained':chained,'marginal':marginal,'chain-marg':result}
     
     
     
 if __name__ == '__main__':
-    start = time.time()
     from get_data_breast import get_format_data
     from file_utilities import getData3
     
-    data = getData3('data/ovarian.csv')     
-    data,result = get_format_data(data)
+    
+    start = time.time()
+    start0 = start
+    times = []
+    #times is an array of 1 tuple, for each of the time there is an explanation. 
+
+    '''
+    #clean all databases
     keydb_destroy()    
     keydb_marginal_destroy()
-    testNote = '\nUTERINE CANCER STAGING SUMMARY\nd0 d1:data1\nd0 d1 d3:data3\nd1 d2: data2\nd1 d2: data3\n\nAmerican Joint Committee on Cancer (2009) Tumor-Node-Metastasis (TNM) staging for endometrial cancer:\nTumor (T):\t\tpT1a\nNodes (N):\t\tpN0\nMetastasis (M):\tpMX\n\n'
-    testResult = keydb_get_note(testNote)
-    marginal_result = result
-    i=-1
-    for value in data:
-        i+=1
-        keydb_marginal_add_note(value[1])
-    
-    marginaldb = keydb_marginal_load()
-    for key1,value1 in result.items():
-        for key2,value2 in value1.items():
-            if key2 == 'content':
-                continue
-            else:
-                for key in value2.keys():
-                    marginal_result[key1][key2][key] = keydb_marginal_newkey(key,marginaldb=marginaldb)
-                                        
-
-    
-    
-    '''
-    keydb_add_result(result)
-    keydb = keydb_load()
-    keydb_marginal_destroy()
-    keydb_marginal_add_db(keydb)
-    marginaldb = keydb_marginal_load()
-    cResult = {}
-    test = result[1][result[1].keys()[1]].keys()[0]
-    
-    marginal = keydb_marginal_marginal(test)
-    chained = keydb_marginal_chained(test)
-    
+    elapsed = time.time()-start
+    print 'destroy keydb and marginal db finished. elapsed time=',elapsed,'s'
+    times.append((['destroy keydb and marginal db',elapsed]))    
+    start = time.time()    
     '''
     
-    ''' ALTERNATIVE WAYS TO GET DB'''
-    ''' USING GET_KEY_FREQ ROUTINE
-    db = {}
-    for record in result.values():
-        db=dict_add(db,get_key_freq(record))
-    keydb_add(db)
-    ### USING ADD_NOTE_KEYDB ROUTINE
-    db = {}
-    for value[1] in data.values() as record:
-        db=dict_add(db,keydb_get_note(record))
-    keydb_add(db)
-    '''
+    
+    #get file list
+    from glob import glob
+    files = glob('./data/*.csv')
+    
+    for f in files:
+        #get data
+        data = getData3(f)     
+        data,result = get_format_data(data)
+        elapsed = time.time()-start
+        print 'laoding data finished. elapsed time=',elapsed,'s'   
+        times.append((['loading data '+f,elapsed]))
+        start = time.time()
         
     
-    
-    
-    elapsed = time.time()-start
-    print 'finished exectuing. elapsed time=',elapsed,'s'
+        
+        ###################test
+        #testNote = '\nUTERINE CANCER STAGING SUMMARY\nd0 d1:data1\nd0 d1 d3:data3\nd1 d2: data2\nd1 d2: data3\n\nAmerican Joint Committee on Cancer (2009) Tumor-Node-Metastasis (TNM) staging for endometrial cancer:\nTumor (T):\t\tpT1a\nNodes (N):\t\tpN0\nMetastasis (M):\tpMX\n\n'
+        #testResult = keydb_get_note(testNote)
+        #keydb_marginal_add_note(testNote)
+        #realResult = testResult.copy()
+        #for key in testResult.keys():
+        #    realResult[key]= keydb_marginal_newkey(key)
+        ###################test over
+        
+        
+        #load value    
+        for value in data:
+            keydb_marginal_add_note(value[1])
+            #valdb_add_note(value[1])
+            
+        
+        
+        elapsed = time.time()-start
+        print 'add note to marginal db finished. elapsed time=',elapsed,'s'   
+        times.append((['adding data ' +f,elapsed]))
+        start = time.time()
+        
+        '''
+        #detect keys, excluding those of content
+        marginal_result=result.copy()
+        marginaldb = keydb_marginal_load()
+        valuedb = valuedb_load()
+        for key1,value1 in result.items():
+            for key2,value2 in value1.items():
+                if key2 == 'content':
+                    continue
+                else:
+                    for key in value2.keys():
+                        marginal_result[key1][key2][key]['keyscore'] = keydb_marginal_newkey(key,marginaldb=marginaldb)
+                        marginal_result[key1][key2][key]['valuescore'] = valuedb_newvalue(value2[key],valuedb = valuedb)
+                        
+        elapsed = time.time()-start
+        print 'detecting key finished. elapsed time=',elapsed,'s'  
+        times.append((['detecting data',elapsed]))
+        start = time.time()                               
+        '''
+        
+        
+        '''
+        keydb_add_result(result)
+        keydb = keydb_load()
+        keydb_marginal_destroy()
+        keydb_marginal_add_db(keydb)
+        marginaldb = keydb_marginal_load()
+        cResult = {}
+        test = result[1][result[1].keys()[1]].keys()[0]
+        
+        marginal = keydb_marginal_marginal(test)
+        chained = keydb_marginal_chained(test)
+        
+        '''
+        
+        ''' ALTERNATIVE WAYS TO GET DB'''
+        ''' USING GET_KEY_FREQ ROUTINE
+        db = {}
+        for record in result.values():
+            db=dict_add(db,get_key_freq(record))
+        keydb_add(db)
+        ### USING ADD_NOTE_KEYDB ROUTINE
+        db = {}
+        for value[1] in data.values() as record:
+            db=dict_add(db,keydb_get_note(record))
+        keydb_add(db)
+        '''
+            
+        
+        
+        
+        elapsed = time.time()-start0
+        print 'finished exectuing. elapsed time=',elapsed,'s'
+        times.append(['total time '+f,elapsed])
+    print(times)
+        
     
     
     
