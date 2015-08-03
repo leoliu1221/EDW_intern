@@ -8,6 +8,7 @@ import time,re
 
 from file_utilities import dict_add
 
+    
 def keydb_clean(key,returnString=False):
     key = key.lower()
     from nltk.corpus import stopwords
@@ -21,6 +22,13 @@ def keydb_clean(key,returnString=False):
         key = m.group(1) + m.group(2)
         m = regEx.match(key)
         #print key
+    #remove left parenthesis and the text within (till the end
+    regEx = re.compile(r'([^\(]*) *(\(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1)
+        m=regEx.match(key)
     #now check if the key is empty
     key = key.strip()
     if key=='':
@@ -147,6 +155,7 @@ def keydb_core(record):
                 dbcount+=1
             #now record sub keys
             else:
+                dbcount+=1
                 keys = key.split('_')
                 for tempKey in keys:
                     tempKey = ' '.join(keydb_clean(tempKey))
@@ -155,7 +164,7 @@ def keydb_core(record):
                     if db.get(tempKey)==None:
                         db[tempKey]=0
                     db[tempKey]+=1
-                    dbcount+=1
+                    
     db['*****datapoint_count*****']=dbcount
     return db
     
@@ -242,7 +251,7 @@ def keydb_marginal_chained(key,marginaldb=None):
     chain = tuple(sorted(keys))
     if marginaldb.get(chain)==None:
         return 0
-    print chain
+    #print 'chain',chain
     return float(marginaldb.get(chain))/total
 
 def keydb_marginal_newkey(key,marginaldb=None):
@@ -253,12 +262,14 @@ def keydb_marginal_newkey(key,marginaldb=None):
     
     marginal = keydb_marginal_marginal(key,marginaldb=marginaldb)
     chained = keydb_marginal_chained(key,marginaldb=marginaldb)
+    '''    
     if marginal == 0:
         return 0
     if chained-marginal==0:
         if len(keydb_clean(key))==1:
             return float("inf")
-    return (chained-marginal)/marginal
+    '''
+    return {'chained':chained,'marginal':marginal}
     
     
     
