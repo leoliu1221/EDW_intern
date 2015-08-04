@@ -1,0 +1,203 @@
+(dp0
+S'american joint committee on cancer (2009) tumor-node-metastasis (tmn) staging for ovarian cancer'
+p1
+I13
+sS'number positive'
+p2
+I36
+sS'primary tumor site'
+p3
+I2
+sS'vascular/lymphatic involvement'
+p4
+I31
+sS'distant metastasis (cm)'
+p5
+I25
+sS'grade'
+p6
+I32
+sS'laterality'
+p7
+I37
+sS'percent solid'
+p8
+I35
+sS'associated endometrial change'
+p9
+I2
+sS'implant(s)/metastasis beyond pelvis'
+p10
+I1
+sS'total lymph nodes'
+p11
+I74
+sS'tmn staging'
+p12
+I5
+sS'margins'
+p13
+I2
+sS'serosal involvement'
+p14
+I2
+sS'surface involvement'
+p15
+I2
+sS'size'
+p16
+I41
+sS'american joint committee on cancer (2009) tumor-node-metastasis (tnm) staging for ovarian cancer'
+p17
+I19
+sS'or adnexa)'
+p18
+I2
+sS'within pelvis'
+p19
+I2
+sS'implant(s) within pelvis'
+p20
+I2
+sS'uterine cancer staging summary'
+p21
+I2
+sS'adnexa'
+p22
+I2
+sS'lymphovascular invasion'
+p23
+I5
+sS'tumor type'
+p24
+I120
+sS'tumor marker studies'
+p25
+I83
+sS'tumor bank'
+p26
+I32
+sS'endocervical involvement'
+p27
+I1
+sS'character of parenchyma'
+p28
+I125
+sS'american joint committee on cancer (2009) tumor-node-metastasis (tnm) staging for endometrial cancer'
+p29
+I1
+sS'msh6 (present, absent, inconclusive)'
+p30
+I3
+sS'parametrial'
+p31
+I2
+sS'percent solid (carcinoma)'
+p32
+I1
+sS'tumor grade'
+p33
+I4
+sS'uterine wall thickness (mm)'
+p34
+I2
+sS'er/pr'
+p35
+I27
+sS'implant(s) beyond pelvis'
+p36
+I2
+sS'specimen'
+p37
+I2
+sS'dominant tumor size'
+p38
+I1
+sS'overall'
+p39
+I2
+sS'omentum tumor size'
+p40
+I2
+sS'lymphatic/vascular invasion'
+p41
+I2
+sS'pms2 (present, absent, inconclusive)'
+p42
+I3
+sS'architectural'
+p43
+I2
+sS'within pelvis (cm)'
+p44
+I28
+sS'depth of invasion (mm)'
+p45
+I2
+sS'ovarian cancer staging summary'
+p46
+I33
+sS'fallopian tube involvement'
+p47
+I8
+sS'distant metastasis'
+p48
+I2
+sS'(stromal)'
+p49
+I1
+sS'endocervical involvement (stromal)'
+p50
+I1
+sS'status of capsule'
+p51
+I36
+sS'figo grade'
+p52
+I8
+sS'beyond pelvis (cm)'
+p53
+I28
+sS'stic (carcinoma in situ)'
+p54
+I2
+sS'(excluding vagina, pelvic serosa'
+p55
+I2
+sS'(excluding peritoneum)'
+p56
+I24
+sS'extent of tumor spread'
+p57
+I153
+sS'beyond pelvis'
+p58
+I2
+sS'extrauterine involvement'
+p59
+I2
+sS'implant(s)/metastasis within pelvis'
+p60
+I1
+sS'tumor size'
+p61
+I5
+sS'nuclear'
+p62
+I2
+sS'dna/ploidy'
+p63
+I26
+sS'percent cystic'
+p64
+I36
+sS'necrosis present'
+p65
+I37
+sS'procedure'
+p66
+I2
+sS'american joint committee on cancer (2009) tumor-node-metastasis (tmn) staging for endometrial cancer'
+p67
+I1
+s.

@@ -248,7 +248,8 @@ if __name__ == '__main__':
                     value = value.replace("_","")
                     collection[k].append(value.lower())
         i+=1
-        
+    from confidence import keydb_marginal_load,keydb_marginal_newkey
+    marginaldb = keydb_marginal_load()
     for k,v in collection.items():
         print k,v
         valdb_destroy('Valdb.data')    
@@ -258,6 +259,8 @@ if __name__ == '__main__':
         collection_score[k].append(v)
         dbVal,dbVal_wordcount,score = score_fromdb(v)
         collection_score[k].append(score)
+        kscore= keydb_marginal_newkey(k,marginaldb)
+        collection_score[k].append(kscore)
         
             
 #    dbVal,dbVal_wordcount_score,score = score_fromdb(val)
