@@ -19,6 +19,7 @@ def keydb_clean(key,returnString=False):
     regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
     m = regEx.match(key)
     while m:
+        print key
         key = m.group(1) + m.group(2)
         m = regEx.match(key)
         #print key
@@ -31,6 +32,8 @@ def keydb_clean(key,returnString=False):
         m=regEx.match(key)
     #now check if the key is empty
     key = key.strip()
+    if returnString:
+        return key
     if key=='':
         return[]
     #now remove all non-alpha numeric values, replace by space. 
@@ -222,6 +225,9 @@ def keydb_marginal_core(key):
     return resultKeys
     
 def keydb_marginal_marginal(key,marginaldb = None):
+    ###########################
+    #getting the marginal probability
+    ##########################
     if '_' in key:
         key = key.split('_')[-1]
     if marginaldb is None:
@@ -240,6 +246,9 @@ def keydb_marginal_marginal(key,marginaldb = None):
     return result
     
 def keydb_marginal_chained(key,marginaldb=None):
+    ###########################
+    #getting the chanied probability
+    ##########################
     if '_' in key:
         key = key.split('_')[-1]
     if marginaldb is None:
@@ -255,6 +264,9 @@ def keydb_marginal_chained(key,marginaldb=None):
     return float(marginaldb.get(chain))/total
 
 def keydb_marginal_newkey(key,marginaldb=None):
+    ###########################
+    #insertring a new key
+    ##########################
     result = 0
     if '_' in key:
         key = key.split('_')[-1]
@@ -303,10 +315,13 @@ if __name__ == '__main__':
     from glob import glob
     files = glob('./data/*.csv')
     
+    lengths = []
     for f in files:
         #get data
         data = getData3(f)     
         data,result = get_format_data(data)
+        lengths.append([f,len(data)])
+        continue
         elapsed = time.time()-start
         print 'laoding data finished. elapsed time=',elapsed,'s'   
         times.append((['loading data '+f,elapsed]))

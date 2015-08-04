@@ -7,6 +7,7 @@ Created on Fri Jul 10 13:41:52 2015
 import re 
 from collections import defaultdict
 from file_utilities import getData3,Datapoint
+#from get_data_breast import get_format_data
 
 #data3 = getData3()
 def get_section(text):
@@ -135,13 +136,19 @@ def checkAllcancer(note,cut=110,pCut = 40):
     #we store the start index in variable starts. 
     for stage in stages:
         #preivous text is the last line before our stage keyword 
-        previousText = note[:stage.start()].rsplit("\n",1)[1]
+        if len(note[:stage.start()].rsplit("\n",1))<2:
+            previousText = ''
+        else:
+            previousText = note[:stage.start()].rsplit("\n",1)[1]
+        #print 'previoustext',previousText
         #pcut is for finding the name of the certain cancer before staging keyword
         if 'tumor' not in note[stage.start()-7:stage.start()].lower() and len(previousText)<pCut:
-            cancerType = previousText.lstrip(' ')
+            cancerType = previousText.lstrip(' ').strip()
+            
             #now if the cancer type is valid we add the index to start
             if cancerType!='' and cancerType[0].isalpha() :
                 starts.append([stage.start(),cancerType])
+        
     #for the start index in starts:
     #
     i=0
@@ -158,6 +165,7 @@ def checkAllcancer(note,cut=110,pCut = 40):
         #print process_note
         # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
         datapoint = get_datapoint_line(process_note, cut)
+        #print 'datapoint',datapoint
         #if len(datapoint.keys())>2:
         result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
@@ -166,7 +174,6 @@ def checkAllcancer(note,cut=110,pCut = 40):
     
 
 def get_datapoint_line(note,cut):
-    
     #cut off tnm staging +cut, or to the end of the line
 #    try:
 #        tnm_index = re.search('(tnm|tmn)[)]* staging(?i)', note).start()
@@ -205,6 +212,7 @@ def get_datapoint_line(note,cut):
                     lNext+=1               
                 break
         l+=1
+    
     #now linelist contains any line input till it finds tnm staging. 
     #print lineList
             
@@ -223,7 +231,12 @@ def get_datapoint_line(note,cut):
     #starting from the first line of linelist
     i=0
     while i<len(lineList):
+        #the first line of block has to be a main datapoint
+        #therefore we strip it. 
+        #tempLine = keydb_clean(lineList[i],True)
+
         block = lineList[i]+"\n"
+        #check if the block first line is empty or not. If its empty, then do not process it. 
         #j is for finding the sub keys for a note. 
         ##################
         #things like: 
@@ -233,11 +246,13 @@ def get_datapoint_line(note,cut):
         ##################
         j=i+1
         while j<len(lineList):
-            if lineList[j].startswith('\t') or lineList[j].startswith(' '):
-                block = block + lineList[j]+"\n"
+            lineList[j] = lineList[j].replace('    ','\t')
+            if lineList[j].startswith('\t'):
+                block = block + '\t'+lineList[j].strip()+"\n"
             else:
                 break
             j+=1
+        #print 'block['+block+']'
         blockList.append(block)
         #print 'block:',block
         info = Datapoint(block)
@@ -262,14 +277,17 @@ def get_format_data(data = None,fileName=None):
         result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
-
+    
 if __name__ == '__main__':
-    pass
-#    if 'data' not in locals():
-#        data = getData3()
+    from file_utilities import match_encounter_id
+    if 'data' not in locals():
+        pass
+    data = getData3('./data/ovarian.csv')
+    data,result = get_format_data(data)
+    new_result = match_encounter_id(data,result)
     #if 'data' note in locals():
     #data = getData3('data/pulmonary.csv')
-    #data,result = get_format_data(data)
+    #data = getData3('data/pulmonary.csv')
     #import json
     #json.dump(result,open('results.json','w'))
     #data = getData3()

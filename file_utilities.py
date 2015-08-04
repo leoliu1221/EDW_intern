@@ -123,9 +123,10 @@ def getData3(fName=None):
         event_cd = int(raw[i+3].replace('"',''))
         event_dsc = raw[i+4]
         '''
+        encounterid = raw[i]
         first_eightthousand = raw[i+5]
         second_eightthousand = raw[i+6]
-        data.append([rowNum,first_eightthousand+second_eightthousand])
+        data.append([rowNum,first_eightthousand+second_eightthousand,encounterid])
                 
         i = i+7
         rowNum+=1
@@ -148,7 +149,12 @@ class Datapoint:
                 self.origin = ''
             #take the first line as key-value, and then pass the rest to find subs. 
             lines = message.split('\n')
-            if ':' not in lines[0]:
+            #replace ......> into :
+            pattern = re.compile(r'([^\.^\:]+):*[\.]*>+([^\.]+)')
+            match = pattern.match(lines[0])
+            if match:
+                lines[0] = match.group(1)+':'+match.group(2)
+            if ':' not in lines[0]:          
                 lines[0] = lines[0].replace('\t',':',1)
             line0 = lines[0].strip().split(':')
 #            print 'line0',line0
@@ -199,8 +205,17 @@ class Datapoint:
     def __str__(self):
             return self.key+':'+self.value
             
-
+def match_encounter_id(data, result):
+    '''
+    '''
+    for key in result.keys():
+        result[key]['encounterid'] = data[key][2]
+    return result
+    
+    
 if __name__=='__main__':
+    pass
+    '''
     if not 'data' in locals():    
         data = getData3()
 
@@ -208,7 +223,7 @@ if __name__=='__main__':
         
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2)
-    
+    '''    
 
             
     
