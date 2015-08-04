@@ -11,18 +11,6 @@ from file_utilities import dict_add,getData3
 from nltk.corpus import wordnet as wn
 from get_data_breast import checkAllcancer
 
-#
-#def collectValue(inputDict):
-#    value = defaultdict(list)
-#    for k,v in inputDict.iteritems():
-#        for k2,v2 in v.iteritems():
-#            if k2!='content':
-#                for k3,v3 in v2.iteritems():
-#                    value[k3].append(v3[0])
-#    return value
-#
-#    
-#val = collectValue(result)
 
 def Syn_Ant(word):
     syn = []
