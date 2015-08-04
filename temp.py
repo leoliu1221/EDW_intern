@@ -7,8 +7,10 @@ This is a temporary script file.
 from collections import defaultdict
 import re
 import numpy as np
-from file_utilities import dict_add
+from file_utilities import dict_add,getData3
 from nltk.corpus import wordnet as wn
+from get_data_breast import checkAllcancer
+
 #
 #def collectValue(inputDict):
 #    value = defaultdict(list)
@@ -77,7 +79,7 @@ def valdb_wordcount_add(dbVal_wordcount,dbName = 'Valdb_wordcount.data'):
 #    print 'added to db: ',dbName
     return db
 
-def getCount(v,lenCutoff = 0.8):
+def getCount(v,lenCutoff = 0.9):
     label = ['total','num','num_text','text','num_text_short','num_text_long']        
     if v not in label:
         label.append(v)
@@ -124,66 +126,79 @@ def getScore(v,dbVal,dbVal_wordcount,countdict):
     else:
         score['Length'] = 1
     
-    c = np.array(dbVal_wordcount) # c is a vector of word count
-    dbVal_wordcount.sort()
-    med = dbVal_wordcount[len(dbVal_wordcount)/2] # median of a vector containing word count
+    if countdict['text']==1:
+        # Wordcount feature
+        c = np.array(dbVal_wordcount) # c is a vector of word count
+        dbVal_wordcount.sort()
+        med = dbVal_wordcount[len(dbVal_wordcount)/2] # median of a vector containing word count
     # If std.dev(c) which is the denominator is not 0, calculate the score 
     # score = absolute value of (word count for v - med and then divided by std.dev of c)
-    if c.std()!=0:
-        score['Wordcount']=abs(float((len(v.split(" "))-med))/float(c.std()))
+        if c.std()!=0:
+            score['Wordcount']=abs(float((len(v.split(" "))-med))/float(c.std()))
     # If std.dev(c) is 0: 
     #   check if word count of v is equal to med then set score to 0 (good case)
     #   otherwise, set score to be 100 (bad case)
-    else: 
-        if len(v.split(" "))==med:
-            score['Wordcount']=0
-        else:
-            score['Wordcount'] = 100
-            
-    label = ['total','num','num_text','text','num_text_short','num_text_long']
-    # token of v 
-    token = list(set(dbVal.keys())-set(label))
-    token_combine = {}   # combine synonym and antonym with original word
-    antonym = defaultdict(list)
-    for k in token:       
-        flag = 0
-        syn,an = Syn_Ant(k)
-        if an!={}:
-            antonym[an.keys()[0]]=an.values()[0]
-        # If any item in token is synonym or antonym of k, combine frequency and remove that word from the token list.
-        # Collect the new frequency in a token_combine dictionary
-        for s in syn:
-            if str(s) in token and str(s)!=k:
-                token_combine[k]=dbVal[k]+dbVal[str(s)]
-                token.remove(str(s))
-                flag = 1
-      
-        for key,val in an.iteritems():
-            if str(val) in token:
-                token_combine[k]=dbVal[k]+dbVal[str(val)]  
-                token.remove(str(val))
-                flag = 1
- 
-        # If there is no synonym or antonym of k contained in token list, collect the frequency from dbVal
-        if flag==0:
-            token_combine[k]=dbVal[k]
-
-    # Calculate the score for each element in the original token list
-    for k in list(set(dbVal.keys())-set(label)): 
-       
-        if k==v:    
-            # If v is antonym of k, collect combined frequency
-            if v in antonym.values():
-                for key,val in antonym.iteritems():
-                    if str(val)==v:
-                        num_token = token_combine[key]
+        else: 
+            if len(v.split(" "))==med:
+                score['Wordcount']=0
             else:
-                num_token = token_combine[v]
-            
+                score['Wordcount'] = 100
+                
+        # Token feature
+        label = ['total','num','num_text','text','num_text_short','num_text_long']
+        # token of v 
+        token = list(set(dbVal.keys())-set(label))
+        token_combine = {}   # combine synonym and antonym with original word
+        antonym = defaultdict(list)
+        remove_item = {}
+        
+        for k in token:
+            if k in remove_item.keys():
+                continue
+            flag = 0
+            syn,an = Syn_Ant(k)
+            if an!={}:
+                antonym[an.keys()[0]]=an.values()[0]
+            # If any item in token is synonym or antonym of k, combine frequency and remove that word from the token list.
+            # Collect the new frequency in a token_combine dictionary
+            for s in syn:            
+                if str(s) in token and str(s)!=k :
+                    remove_item[s]=k               
+                    token_combine[k]=dbVal[k]+dbVal[str(s)]
+                    #token.remove(str(s))
+                    flag = 1
+          
+            for key,val in an.iteritems():            
+                if str(val) in token:
+                    remove_item[val]=k               
+                    token_combine[k]=dbVal[k]+dbVal[str(val)]  
+                    #token.remove(str(val))
+                    flag = 1
+     
+            # If there is no synonym or antonym of k contained in token list, collect the frequency from dbVal
+            if flag==0:
+                token_combine[k]=dbVal[k]
+          
+    #    print token_combine,"\nflag",flag
+        # Calculate the score for each element in the original token list
+        for k in list(set(dbVal.keys())-set(label)): 
+            #making sure k is always equal to v
+            if k!=v:
+                continue
+            if token_combine.get(k) is not None:
+                num_token = token_combine[k]
+            else:
+                num_token = token_combine[remove_item[k]]
+    
             eq_portion = float(1)/float(len(token_combine))
             percentage = float(num_token)/float(dbVal['total'])
-            score['Token'] = float(percentage-eq_portion)
-        
+            score['Token'] = float(percentage-eq_portion)         
+                
+
+    else:
+        score['Wordcount'] = "NA"
+        score['Token'] = "NA"
+
            
     return score    
 
@@ -228,11 +243,37 @@ def score_fromdb(val):
             
 if __name__ == '__main__':
     # val is a list of value corresponding to each key
-    val = ['yes','no','yes','no','accept2','not accept'] #just for testing
-#    valdb_destroy('Valdb.data')    
-#    valdb_destroy('Valdb_wordcount.data')    
+#    val = ['yes','no','yes','no','accept2','not accept'] #just for testing
+    
+    collection = {}
+    collection_score = {}
+    data = getData3()
+    i=0
+    while i<len(data):
+        input_dict = checkAllcancer(data[i][1])
+        for item in input_dict.values():
+            for k in item.keys():
+                value = item[k][0]
+                if value!='' and value!="_":
+                    if collection.get(k)==None:
+                        collection[k]=[]
+                    value = value.replace("_","")
+                    collection[k].append(value.lower())
+        i+=1
+        
+    for k,v in collection.items():
+        print k,v
+        valdb_destroy('Valdb.data')    
+        valdb_destroy('Valdb_wordcount.data')
+        if collection_score.get(k)==None:
+            collection_score[k] = []
+        collection_score[k].append(v)
+        dbVal,dbVal_wordcount,score = score_fromdb(v)
+        collection_score[k].append(score)
+        
+            
 #    dbVal,dbVal_wordcount_score,score = score_fromdb(val)
-    dbVal_add,dbVal_wordcount_add,score_add = valdb_add_result(['reject','123'])
+#    dbVal_add,dbVal_wordcount_add,score_add = valdb_add_result(['reject','123'])
     
     '''
      score detail:
