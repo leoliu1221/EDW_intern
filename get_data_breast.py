@@ -279,18 +279,12 @@ def get_format_data(data = None,fileName=None):
     return data,result
     
 if __name__ == '__main__':
-    from file_utilities import match_encounter_id
+    #from file_utilities import match_encounter_id
     if 'data' not in locals():
         pass
     data = getData3('./data/ovarian.csv')
     data,result = get_format_data(data)
-    new_result = match_encounter_id(data,result)
-    #if 'data' note in locals():
-    #data = getData3('data/pulmonary.csv')
-    #data = getData3('data/pulmonary.csv')
-    #import json
-    #json.dump(result,open('results.json','w'))
-    #data = getData3()
+    #new_result = match_encounter_id(data,result)
     
     
     

@@ -1,0 +1,40 @@
+.color {
+  padding: 30px 15px;
+  margin-bottom: 30px;
+  height: 75%;
+  color: inherit;
+  background-color:rgba(255,0,0,0.5); 
+}
+.color h1,
+.color .h1 {
+  color: inherit;
+}
+.color p {
+  margin-bottom: 15px;
+  font-size: 21px;
+  font-weight: 200;
+}
+.color > hr {
+  border-top-color: #d5d5d5;
+}
+.container .color,
+.container-fluid .color {
+  border-radius: 6px;
+}
+.color .container {
+  max-width: 100%;
+}
+@media screen and (min-width: 768px) {
+  .color {
+    padding: 48px 0;
+  }
+  .container .color,
+  .container-fluid .color {
+    padding-right: 60px;
+    padding-left: 60px;
+  }
+  .color h1,
+  .color .h1 {
+    font-size: 63px;
+  }
+}

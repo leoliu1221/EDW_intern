@@ -212,7 +212,23 @@ def match_encounter_id(data, result):
         result[key]['encounterid'] = data[key][2]
     return result
     
-    
+def get_name(filePath):
+    '''
+    e.g. if the filepath is 'C:\\data\\breast.csv
+    then return breast. 
+    '''
+    result = []
+    for c in filePath:
+        if c.isalnum():
+            result.append(c)
+        else:
+            result.append(' ')
+    result= ''.join(result)
+    if len(result.split())<2:
+        return 'NOVALUE'
+    else:
+        return result.split()[-2]
+        
 if __name__=='__main__':
     pass
     '''

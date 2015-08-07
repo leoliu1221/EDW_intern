@@ -1,0 +1,44 @@
+<html>
+    <head>
+        {% block title %}
+        <title> EDW - template page</title>
+        {% endblock %}
+
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+        <link href="/static/css/bootstrap.min.css" rel = "stylesheet" media="screen">
+        <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/css/template.css" rel="stylesheet">
+        {% block css %}
+        {% endblock %}
+        <script src="/static/js/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        {% block js %}
+        {% endblock %}
+    </head>
+    <body>
+
+        <nav class="navbar navbar-default navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">EDW Extractor</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+
+            </div><!-- /.container-fluid -->
+            </nav>
+{% block content %}{% endblock %}
+
+        </body>
+
+
+
+    </html>

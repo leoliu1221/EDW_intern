@@ -19,7 +19,7 @@ def keydb_clean(key,returnString=False):
     regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
     m = regEx.match(key)
     while m:
-        print key
+        #print key
         key = m.group(1) + m.group(2)
         m = regEx.match(key)
         #print key
@@ -199,11 +199,11 @@ def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
     
 def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
     keydb = keydb_get_note(note)
-    return keydb_marginal_add_db(keydb)
+    return keydb_marginal_add_db(keydb,dbName = dbName)
 
 def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
     for key,value in keydb.items():
-        keydb_marginal_add(key,value)
+        keydb_marginal_add(key,value,dbName=dbName)
     return keydb_marginal_load()
 
 def keydb_marginal_core(key):
@@ -292,7 +292,7 @@ def keydb_marginal_newkey(key,marginaldb=None):
     
 if __name__ == '__main__':
     from get_data_breast import get_format_data
-    from file_utilities import getData3
+    from file_utilities import getData3,get_name
     
     
     start = time.time()
@@ -315,13 +315,13 @@ if __name__ == '__main__':
     from glob import glob
     files = glob('./data/*.csv')
     
-    lengths = []
+    #lengths = []
     for f in files:
         #get data
         data = getData3(f)     
         data,result = get_format_data(data)
-        lengths.append([f,len(data)])
-        continue
+        #lengths.append([f,len(data)])
+        #continue
         elapsed = time.time()-start
         print 'laoding data finished. elapsed time=',elapsed,'s'   
         times.append((['loading data '+f,elapsed]))
@@ -341,7 +341,7 @@ if __name__ == '__main__':
         
         #load value    
         for value in data:
-            keydb_marginal_add_note(value[1])
+            keydb_marginal_add_note(value[1],dbName=get_name(f)+'.data')
             #valdb_add_note(value[1])
             
         
