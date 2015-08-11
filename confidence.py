@@ -134,7 +134,7 @@ def keydb_core(record):
         db: a dictionary of key frequency from the given note result. 
     '''
     db = {}
-    dbcount=0
+    dpcount=0
     #db['*****dataponit_count*****']=0
     for cancer in record.keys():
         if cancer == 'content':
@@ -155,10 +155,10 @@ def keydb_core(record):
                 if db.get(key)==None:
                     db[key]=0
                 db[key]+=1
-                dbcount+=1
+                dpcount+=1
             #now record sub keys
             else:
-                dbcount+=1
+                dpcount+=1
                 keys = key.split('_')
                 for tempKey in keys:
                     tempKey = ' '.join(keydb_clean(tempKey))
@@ -168,7 +168,9 @@ def keydb_core(record):
                         db[tempKey]=0
                     db[tempKey]+=1
                     
-    db['*****datapoint_count*****']=dbcount
+    db['*****datapoint_count*****']=dpcount
+    db['*****note_count*****']=1
+    
     return db
     
 def keydb_marginal_destroy(dbName = 'keydb_marginal.data'):
@@ -204,7 +206,7 @@ def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
 def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
     for key,value in keydb.items():
         keydb_marginal_add(key,value,dbName=dbName)
-    return keydb_marginal_load()
+    return keydb_marginal_load(dbName = dbName)
 
 def keydb_marginal_core(key):
     ###############################################
@@ -212,6 +214,8 @@ def keydb_marginal_core(key):
     ###############################################
     import itertools
     if key == '*****datapoint_count*****':
+        return [(key)]
+    if key=='*****note_count*****':
         return [(key)]
     no_stop_words = keydb_clean(key)
     resultKeys = []
@@ -293,8 +297,6 @@ def keydb_marginal_newkey(key,marginaldb=None):
 if __name__ == '__main__':
     from get_data_breast import get_format_data
     from file_utilities import getData3,get_name
-    
-    
     start = time.time()
     start0 = start
     times = []
@@ -338,10 +340,15 @@ if __name__ == '__main__':
         #    realResult[key]= keydb_marginal_newkey(key)
         ###################test over
         
-        
-        #load value    
+        keydb_marginal_destroy(get_name(f)+'.data')
+        #load value  
+        i=0
         for value in data:
+            i+=1
+            tempStart = time.time()
+            
             keydb_marginal_add_note(value[1],dbName=get_name(f)+'.data')
+            print i,'/',len(data), time.time() - tempStart            
             #valdb_add_note(value[1])
             
         
