@@ -248,7 +248,7 @@ def get_datapoint_line(note,cut):
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
             if lineList[j].startswith('\t'):
-                block = block + '\t'+lineList[j].strip()+"\n"
+                block = block + '\t'+lineList[j].strip()+'\n'
             else:
                 break
             j+=1
@@ -272,7 +272,7 @@ def get_format_data(data = None,fileName=None):
     result = defaultdict(list)
     i=0
     while i<len(data):
-        print "note",i
+        
         result[i] = checkAllcancer(data[i][1])
         result[i]['content'] = get_section(data[i][1])        
         i+=1
