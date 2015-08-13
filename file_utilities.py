@@ -22,6 +22,12 @@ def update(dic1, dic2):
         dic1[key] = list(set(dic1[key]))
     return dic1
 def dict_add(d1,d2):
+    '''
+    
+
+
+
+    '''
     if d1==None:
         return d2
     if d2==None:

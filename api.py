@@ -9,6 +9,7 @@ from flask import Flask,request,render_template
 from flask_restful import Resource,Api,reqparse
 import json
 import traceback
+from confidence_value import getScore
 from confidence import keydb_marginal_load,keydb_marginal_newkey,keydb_clean
 app = Flask(__name__)
 api = Api(app)
@@ -16,7 +17,15 @@ api = Api(app)
 @app.route('/')
 def index():
     return render_template('home.html')
+@app.route('/confidence')
+def confidence():
+    return render_template('confidence.html')
     
+
+@app.route('/cleaner')
+def cleaner():
+    return render_template('cleaner.html')
+
 @app.route('/note',methods=['GET', 'POST'])
 def Extract():
     #print request.form
@@ -52,6 +61,8 @@ def Extract():
                     #your splited cancer will have the name as the first value. 
                     
                     result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
+                    value_score = getScore(k,value,keydb_marginal_load('valdb.data'))
+                    result_confidence[cancer][k].append(' '.join([str(item) for item in value_score.values()]))
                 
             result['specimens']=get_section(note)
         except Exception, err:

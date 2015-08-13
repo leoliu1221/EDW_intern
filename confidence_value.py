@@ -244,12 +244,14 @@ def getCount(v,lenCutoff = 0.9):
     return countDict
 
 
-def baseDB():
-    valdb_destroy('Valdb.data')  
+def baseDB(dbName = None):
+    if dbName is None:
+        dbName = 'Valdb.data'
+    valdb_destroy(dbName)  
     data = getData3()   
     # create baseDB
     collection = get_collection(data)
-    valdb = valdb_add(collection)
+    valdb = valdb_add(collection,dbName = dbName)
     return valdb
 
 if __name__ == '__main__':
