@@ -61,7 +61,7 @@ def Extract():
                     #your splited cancer will have the name as the first value. 
                     
                     result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
-                    value_score = getScore(k,value,keydb_marginal_load('valdb.data'))
+                    value_score = getScore(k,value,keydb_marginal_load('Valdb.data'))
                     result_confidence[cancer][k].append(' '.join([str(item) for item in value_score.values()]))
                 
             result['specimens']=get_section(note)
