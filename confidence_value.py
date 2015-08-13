@@ -248,10 +248,13 @@ def baseDB(dbName = None):
     if dbName is None:
         dbName = 'Valdb.data'
     valdb_destroy(dbName)  
-    data = getData3()   
-    # create baseDB
-    collection = get_collection(data)
-    valdb = valdb_add(collection,dbName = dbName)
+    from glob import glob
+    files = glob('./data/*.csv')
+    for f in files:
+        data = getData3(f)   
+        # create baseDB
+        collection = get_collection(data)
+        valdb = valdb_add(collection,dbName = dbName)
     return valdb
 
 if __name__ == '__main__':
