@@ -257,8 +257,11 @@ if __name__ == '__main__':
         if collection_score.get(k)==None:
             collection_score[k] = []
         collection_score[k].append(v)
+        
+        #This is where you get the value score
         dbVal,dbVal_wordcount,score = score_fromdb(v)
         collection_score[k].append(score)
+        #this is where you get the key score. 
         kscore= keydb_marginal_newkey(k,marginaldb)
         collection_score[k].append(kscore)
         

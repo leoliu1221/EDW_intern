@@ -9,7 +9,7 @@ from flask import Flask,request,render_template
 from flask_restful import Resource,Api,reqparse
 import json
 import traceback
-from confidence import keydb_marginal_load
+from confidence import keydb_marginal_load,keydb_marginal_newkey,keydb_clean
 app = Flask(__name__)
 api = Api(app)
 
@@ -34,11 +34,16 @@ def Extract():
             for cancer in result.keys():
                 marginaldbname = cancer.split()[0].lower()+'.data'
                 print 'marginaldbname: ',marginaldbname
+                               
                 marginaldb = keydb_marginal_load(marginaldbname)
+                ########################################
+                # the below code is for getting confidence score. 
+                #########################################                
                 for k,v in result[cancer].items():
                     #note that v is a list contains value and original value. 
                     value = v[0]
                     #now we can do value processing. 
+                    #put your code here
                     
                     #now we can do key confidence processing. 
                     #it needs a library indicating which unverse it belongs to. 
@@ -47,13 +52,13 @@ def Extract():
                     #your splited cancer will have the name as the first value. 
                     
                     result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
-            
+                
             result['specimens']=get_section(note)
         except Exception, err:
             print '*'*80
             print err
             print traceback.format_exc()
-        return json.dumps(result,result_confidence)
+        return json.dumps(result)
     print '*'*80,'note','['+str(note)+']'
     if request.method == 'POST':
         return 'post method received'
