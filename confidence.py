@@ -233,11 +233,17 @@ def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
     keydb = keydb_get_note(note)
         
     
-    return keydb_marginal_add_db(noteDict = keydb,dbName = dbName)
+    return keydb_marginal_add_db(keydb,dbName = dbName)
 
 def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
-    for key,value in keydb.items():
-        keydb_marginal_add(key,value,dbName=dbName)
+    keydb_marginal_add(noteDict=keydb,dbName=dbName)
+    #############################
+    # you can also do key value pairs for each
+    #less efficiently:
+    ##############################    
+    #for key,value in keydb.items():
+    #    keydb_marginal_add(key=key,value=value,dbName=dbName)
+    ##############################
     return keydb_marginal_load(dbName = dbName)
 
 def keydb_marginal_core(key):
@@ -571,6 +577,9 @@ if __name__ == '__main__':
     
     #lengths = []
     for f in files:
+        #destroy the keydb for each data
+        keydb_marginal_destroy(get_name(f)+'.data')
+        #continue
         #get data
         data = getData3(f)     
         data,result = get_format_data(data)
@@ -592,7 +601,7 @@ if __name__ == '__main__':
         #    realResult[key]= keydb_marginal_newkey(key)
         ###################test over
         
-        keydb_marginal_destroy(get_name(f)+'.data')
+
         #load value  
         i=0
         for value in data:
