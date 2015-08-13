@@ -10,6 +10,7 @@ import numpy as np
 from file_utilities import dict_add,getData3
 from nltk.corpus import wordnet as wn
 from get_data_breast import checkAllcancer
+from confidence import keydb_clean
 
 
 def Syn_Ant(word):
@@ -198,6 +199,7 @@ def valdb_add_result(val):
     i=0
     while i<len(val):
         v = val[i]    
+        v = keydb_clean(v,True)
         # get frequency count (multiple values of them) for value v and add to database dbVal
         countdict = getCount(v)
         dbVal_local = valdb_add(countdict)
@@ -228,43 +230,91 @@ def score_fromdb(val):
         i+=1
     
     return dbVal_local,dbVal_wordcount_local,score
-            
-if __name__ == '__main__':
-    # val is a list of value corresponding to each key
-#    val = ['yes','no','yes','no','accept2','not accept'] #just for testing
+  
+
+def keydb_clean_string(key,returnString=False):
+    key = key.lower()
+    from nltk.corpus import stopwords
+    #clean parenthesis
+    #clean space
+    #clean non-alpha
+    #remove parenthesis, and the text within. 
+    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1) + m.group(2)
+        m = regEx.match(key)
+        #print key
+    #remove left parenthesis and the text within (till the end
+    regEx = re.compile(r'([^\(]*) *(\(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1)
+        m=regEx.match(key)
+    #now check if the key is empty
+    key = key.strip()
+    if returnString:
+        return key
+    if key=='':
+        return[]
+    #now remove all non-alpha numeric values, replace by space. 
+    key = re.sub('[^_/0-9a-zA-Z]+', ' ', key)
+    key = key.split("_")[-1]
     
+    words = key.split()
+    no_stop_words = ""
+    for word in words:
+        if word not in stopwords.words():
+            no_stop_words = no_stop_words + word + " "
+    pos = no_stop_words.rfind(' ')
+    no_stop_words = no_stop_words[:pos]+no_stop_words[pos+1:]
+    return [no_stop_words]
+
+         
+def get_collection(data):
     collection = {}
-    collection_score = {}
-    data = getData3()
     i=0
     while i<len(data):
         input_dict = checkAllcancer(data[i][1])
         for item in input_dict.values():
             for k in item.keys():
+                k_clean = keydb_clean_string(k)
+                if len(k_clean)==0:
+                    break
+                k_clean = k_clean[0]
+#                k_clean = k                          
                 value = item[k][0]
                 if value!='' and value!="_":
-                    if collection.get(k)==None:
-                        collection[k]=[]
+                    if collection.get(k_clean)==None:
+                        collection[k_clean]=[]
                     value = value.replace("_","")
-                    collection[k].append(value.lower())
+                    collection[k_clean].append(value.lower())
         i+=1
-    from confidence import keydb_marginal_load,keydb_marginal_newkey
-    marginaldb = keydb_marginal_load()
-    for k,v in collection.items():
-        print k,v
+    return collection
+    
+if __name__ == '__main__':
+    data = getData3() 
+    collection_score = {}
+    collection = get_collection(data)
+#    key = collection.keys() # just for testing, we can get a list of key we want to find value score
+    key = ['beyond pelvis']    
+    for k in key:
         valdb_destroy('Valdb.data')    
         valdb_destroy('Valdb_wordcount.data')
+        v = collection[k]
         if collection_score.get(k)==None:
             collection_score[k] = []
         collection_score[k].append(v)
         dbVal,dbVal_wordcount,score = score_fromdb(v)
         collection_score[k].append(score)
-        kscore= keydb_marginal_newkey(k,marginaldb)
-        collection_score[k].append(kscore)
+#        kscore= keydb_marginal_newkey(k,marginaldb)
+#        collection_score[k].append(kscore)
         
             
 #    dbVal,dbVal_wordcount_score,score = score_fromdb(val)
-#    dbVal_add,dbVal_wordcount_add,score_add = valdb_add_result(['reject','123'])
+#    dbVal_add,dbVal_wordcount_add,score_add = valdb_add_result(['reject','123']) 
     
     '''
      score detail:
