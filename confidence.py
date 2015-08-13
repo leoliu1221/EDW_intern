@@ -194,13 +194,33 @@ def keydb_marginal_load(dbName='keydb_marginal.data'):
     '''
     return keydb_load(dbName = dbName)
     
-    
-def keydb_marginal_add(key,value,dbName='keydb_marginal.data'):
-    keys = keydb_marginal_core(key)
-    marginal_dict = {}
-    for k in keys:
-        marginal_dict[k] = value
-    return keydb_add(marginal_dict,dbName=dbName)
+
+def keydb_marginal_add(key=None,value=None,dbName='keydb_marginal.data',noteDict = None):
+    if noteDict is None:
+        #if a note dict does not present
+        if key is None or value is None:
+            return {}
+        keys = keydb_marginal_core(key)
+        marginal_dict = {}
+        for k in keys:
+            if marginal_dict.get(k) == None:
+                marginal_dict[k]=0
+            marginal_dict[k] += value
+        
+        return keydb_add(marginal_dict,dbName=dbName)
+    else:
+        #this is for adding a note dict. 
+        
+        marginal_dict = {}
+        for key,value in noteDict.items():
+            keys = keydb_marginal_core(key)
+            for k in keys:
+                if marginal_dict.get(k)==None:
+                    marginal_dict[k]=0
+                marginal_dict[k]+=value
+        return keydb_add(marginal_dict,dbName = dbName)
+        
+        
 def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
     for value in data.values():
         note = value[1]
@@ -208,8 +228,12 @@ def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
     return keydb_marginal_load()
     
 def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
+    #first get the keydb from keydb_get_note 
+    #now keydb stores all frequencies of keys
     keydb = keydb_get_note(note)
-    return keydb_marginal_add_db(keydb,dbName = dbName)
+        
+    
+    return keydb_marginal_add_db(noteDict = keydb,dbName = dbName)
 
 def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
     for key,value in keydb.items():
