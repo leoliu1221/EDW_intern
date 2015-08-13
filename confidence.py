@@ -8,9 +8,13 @@ import time,re
 
 from file_utilities import dict_add,get_name
 import numpy as np
+import nltk
+nltk.download('stopwords')
+nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
 from collections import defaultdict
 #Uasage: top_dict(keydb_marginal_load('breast.data'),20)
+
 def top_dict(dict,num):
     if num<=0:
         return []
