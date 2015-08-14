@@ -38,8 +38,11 @@ def conf_result():
     else:
 
         marginaldb = keydb_marginal_load(marginaldbname)
-        keyresult = keydb_marginal_newkey(value,marginaldb)
-        valresult = getScore(k,value,keydb_marginal_load('Valdb.data'))
+        keyresult = keydb_marginal_newkey(key,marginaldb)
+        valresult = getScore(key,value,keydb_marginal_load('Valdb.data'))
+        stringValResult = ' '.join([str(item) for item in value_score.values()])
+        return json.dmps([keyresult,stringValResult])
+
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
     args = parser.parse_args()
@@ -90,7 +93,7 @@ def Extract():
                     #in here we will just try to use our pre-existing libraries. 
                     #namely, if you have breast cancer as cancer, then
                     try:
-                        result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
+                        result_confidence[cancer][k].append(keydb_marginal_newkey(k,marginaldb))
                     except Exception, err:
                         print 'ERROR: key_confidence failed'
                         print err
