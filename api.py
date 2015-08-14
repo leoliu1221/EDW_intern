@@ -43,6 +43,45 @@ def conf_result():
         stringValResult = ' '.join([str(item) for item in value_score.values()])
         return json.dmps([keyresult,stringValResult])
 
+###################################################
+### for command line access, namely using the args parse, 
+### example commands: curl localhost:5000/cleaner_result -d 'key=your interns are  dumb ' -X POST
+### you need to replace the localhost:5000 to the actual website though. 
+### in ruby, use Net:HTTP
+###example: 
+### response = http.post('localhost:5000/cleaner_result','key=interns are dumb')
+### responce will be something from response. 
+'''
+### not that the below code has been tested and it ran succesfully. 
+### it should run for all cases as well. 
+
+require 'net/http'
+
+require 'rubygems'
+require 'json'
+@host = 'localhost'
+@port = '5000'
+@port_address = 'cleaner_result'
+
+@content = {
+"key" => "your interns are dumb"
+}.to_json
+
+
+def post
+    req = Net::HTTP::Post.new(@port_address,initheader = {'Content-Type' => 'application/json'})
+    req.body = @content
+    response = Net::HTTP.new(@host,@port).start {|http| http.request(req)}
+    puts "Response #{response.code} #{response.message}: #{response.body}"
+    return response.body
+    end
+thepost = post
+puts thepost
+'''
+
+
+
+###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
     args = parser.parse_args()
