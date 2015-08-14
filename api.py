@@ -53,7 +53,7 @@ def cleaner_result():
         return 'No info'
     else:
         result = keydb_clean(key)
-    return json.dumps(key)
+    return json.dumps(result)
 
 
 @app.route('/cleaner')
