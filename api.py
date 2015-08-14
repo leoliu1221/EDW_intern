@@ -20,7 +20,38 @@ def index():
 @app.route('/confidence')
 def confidence():
     return render_template('confidence.html')
-    
+@app.route('/conf_result',methods=['GET','POST'])
+def conf_result():
+    args = parser.parse_args()
+    key = args['key'] 
+    value = args['value']
+    cancername = args['cancer']
+    marginaldbname = str(cancername)+'.data'
+    if key == None:
+        key = request.form.get('key')
+        value = request.form.get('value')
+        cancername = request.form.get('cancername')
+        marginaldbname = str(cancername)+'.data'
+    if key==None or value == None:
+        
+        return ' '.join([str(item) for item in ['No info', 'key',key,'value',value,'cancername',cancername]])
+    else:
+
+        marginaldb = keydb_marginal_load(marginaldbname)
+        keyresult = keydb_marginal_newkey(value,marginaldb)
+        valresult = getScore(k,value,keydb_marginal_load('Valdb.data'))
+@app.route('/cleaner_result',methods=['GET','POST'])
+def cleaner_result():
+    args = parser.parse_args()
+    key = args['key']
+    if key == None:
+        key = request.form.get('key')
+    if key == None:
+        return 'No info'
+    else:
+        result = keydb_clean(key)
+    return json.dumps(key)
+
 
 @app.route('/cleaner')
 def cleaner():
@@ -59,11 +90,17 @@ def Extract():
                     #in here we will just try to use our pre-existing libraries. 
                     #namely, if you have breast cancer as cancer, then
                     #your splited cancer will have the name as the first value. 
-                    
-                    result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
-                    value_score = getScore(k,value,keydb_marginal_load('valdb.data'))
-                    result_confidence[cancer][k].append(' '.join([str(item) for item in value_score.values()]))
-                
+                    try:
+                        result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
+                    except Exception, err:
+                        print 'ERROR: key_confidence failed'
+                        print err
+                    try:
+                        value_score = getScore(k,value,keydb_marginal_load('Valdb.data'))
+                        result_confidence[cancer][k].append(' '.join([str(item) for item in value_score.values()]))
+                    except Exception, err:
+                        print 'ERROR: value_confidence failed'
+                        print err
             result['specimens']=get_section(note)
         except Exception, err:
             print '*'*80
@@ -77,6 +114,8 @@ def Extract():
     return 'extraction in progress'    
 parser =reqparse.RequestParser()
 parser.add_argument('data')
+parser.add_argument('key')
+parser.add_argument('value')
 
 if __name__=='__main__':
     app.run(debug=True)
