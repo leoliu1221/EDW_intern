@@ -89,7 +89,6 @@ def Extract():
                     #it needs a library indicating which unverse it belongs to. 
                     #in here we will just try to use our pre-existing libraries. 
                     #namely, if you have breast cancer as cancer, then
-                    #your splited cancer will have the name as the first value. 
                     try:
                         result_confidence[cancer][k].append(keydb_marginal_newkey(value,marginaldb))
                     except Exception, err:
@@ -101,6 +100,7 @@ def Extract():
                     except Exception, err:
                         print 'ERROR: value_confidence failed'
                         print err
+
             result['specimens']=get_section(note)
         except Exception, err:
             print '*'*80
