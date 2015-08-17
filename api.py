@@ -36,12 +36,22 @@ def conf_result():
         
         return ' '.join([str(item) for item in ['No info', 'key',key,'value',value,'cancername',cancername]])
     else:
-
-        marginaldb = keydb_marginal_load(marginaldbname)
-        keyresult = keydb_marginal_newkey(key,marginaldb)
-        valresult = getScore(key,value,keydb_marginal_load('Valdb.data'))
-        stringValResult = ' '.join([str(item) for item in valresult.values()])
-        return json.dmps([keyresult,stringValResult])
+        keyresult = ''
+        try:
+            marginaldb = keydb_marginal_load(marginaldbname)
+            keyresult = keydb_marginal_newkey(key,marginaldb)
+        except Exception,err:
+            print err
+            print 'ERROR: key db error'
+        
+        stringValResult = ''
+        try:
+            valresult = getScore(key,value,keydb_marginal_load('Valdb.data'))
+            stringValResult = ' '.join([str(item) for item in valresult.values()])
+        except Exception, err:
+            print err
+            print 'ERROR: val db error'
+        return json.dumps([keyresult,stringValResult])
 
 ###################################################
 ### for command line access, namely using the args parse, 
@@ -104,8 +114,10 @@ def Extract():
     #print request.form
     args = parser.parse_args()
     note = args['data']
+    cancerName = args['cancer']
     if note == None:
         note = request.form.get('data')
+        cancerName = request.form.get('cancer')
     if note == None:
         return 'No info'
     else:
@@ -114,7 +126,7 @@ def Extract():
             result = checkAllcancer(note)
             result_confidence= result.copy()
             for cancer in result.keys():
-                marginaldbname = cancer.split()[0].lower()+'.data'
+                marginaldbname = cancerName.lower()+'.data'
                 print 'marginaldbname: ',marginaldbname
                                
                 marginaldb = keydb_marginal_load(marginaldbname)

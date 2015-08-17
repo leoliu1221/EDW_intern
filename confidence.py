@@ -8,13 +8,22 @@ import time,re
 
 from file_utilities import dict_add,get_name
 import numpy as np
+
+from collections import defaultdict
+#now comes the global variables
+
 import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
-from collections import defaultdict
-#Uasage: top_dict(keydb_marginal_load('breast.data'),20)
+from nltk.stem.snowball import SnowballStemmer
 
+#see which languages are supported:
+#print(" ".join(SnowballStemmer.languages))
+LANGUAGE= 'english'
+stemmer = SnowballStemmer(LANGUAGE)
+
+#Uasage: top_dict(keydb_marginal_load('breast.data'),20)
 def top_dict(dict,num):
     if num<=0:
         return []
@@ -53,6 +62,8 @@ def keydb_clean(key,returnString=False):
     words = key.split()
     no_stop_words = []
     for word in words:
+        #now do stemming
+        word = stemmer.stem(word)
         if word not in stopwords.words():
             no_stop_words.append(word)
     return sorted(no_stop_words)
@@ -64,16 +75,22 @@ def keydb_init(dbName='keydb.data'):
     return keydb
     
 
-def keydb_load(dbName='keydb.data'):
+def keydb_load(dbName='keydb.data',keydb_folder = './keydb/'):
+    '''
+    this function looks for data files in keydbFolder or in current directory. 
+    the default keydb_folder is './keydb/'    
+    '''
     import os.path,cPickle as pickle
     db = {}
     if os.path.exists(dbName):
         db = pickle.load(open(dbName,'r'))
         #print 'db load',dbName,'successful'
+    elif os.path.exists(keydb_folder+dbName):
+        dbName = keydb_folder+dbName
+        db = pickle.load(open(dbName,'r'))
     else:
         print 'db load',dbName,'unsuccessful -- db not found'
     return db
-    
     
 def keydb_destroy(dbName='keydb.data'):
     '''
@@ -134,7 +151,8 @@ def keydb_get_note(note,dbName='keydb.data'):
     '''
     from get_data_breast import checkAllcancer,get_section
     record = checkAllcancer(note)
-    record['content'] = get_section(note)
+    #specimens are not important any more. 
+    #record['content'] = get_section(note)
     return keydb_core(record)    
     
 def keydb_core(record):
@@ -234,7 +252,7 @@ def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
 def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
     #first get the keydb from keydb_get_note 
     #now keydb stores all frequencies of keys
-    keydb = keydb_get_note(note)
+    keydb = keydb_get_note(note,dbName = dbName)
         
     
     return keydb_marginal_add_db(keydb,dbName = dbName)
@@ -556,7 +574,12 @@ def score_fromdb(val):
     return dbVal_local,dbVal_wordcount_local,score
     
     
-if __name__ == '__main__':
+
+def keydb_build():
+    '''
+    this function is for building all keydbs from all csvs from /data folder. 
+    when the build finishes, you will have all *.data where * is the cancer name. 
+    '''
     from get_data_breast import get_format_data
     from file_utilities import getData3
     start = time.time()
@@ -612,7 +635,7 @@ if __name__ == '__main__':
             i+=1
             tempStart = time.time()
             
-            keydb_marginal_add_note(value[1],dbName=get_name(f)+'.data')
+            keydb_marginal_add_note(value[1])
             print i,'/',len(data), time.time() - tempStart            
             #valdb_add_note(value[1])
             
@@ -678,6 +701,9 @@ if __name__ == '__main__':
         print 'finished exectuing. elapsed time=',elapsed,'s'
         times.append(['total time '+get_name(f),elapsed])
     print(times)
+    
+if __name__ == '__main__':
+    keydb_build()
         
     
     
