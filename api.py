@@ -40,7 +40,7 @@ def conf_result():
         marginaldb = keydb_marginal_load(marginaldbname)
         keyresult = keydb_marginal_newkey(key,marginaldb)
         valresult = getScore(key,value,keydb_marginal_load('Valdb.data'))
-        stringValResult = ' '.join([str(item) for item in value_score.values()])
+        stringValResult = ' '.join([str(item) for item in valresult.values()])
         return json.dmps([keyresult,stringValResult])
 
 ###################################################
@@ -158,6 +158,7 @@ parser =reqparse.RequestParser()
 parser.add_argument('data')
 parser.add_argument('key')
 parser.add_argument('value')
+parser.add_argument('cancer')
 
 if __name__=='__main__':
     app.run(debug=True)
