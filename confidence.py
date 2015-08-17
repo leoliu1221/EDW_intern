@@ -31,7 +31,7 @@ def top_dict(dict,num):
     return sorted(temp_arr,reverse=True)[0:num]
     
 def keydb_clean(key,returnString=False):
-    key = key.lower()
+    
     from nltk.corpus import stopwords
     #clean parenthesis
     #clean space
@@ -54,7 +54,7 @@ def keydb_clean(key,returnString=False):
     #now check if the key is empty
     key = key.strip()
     if returnString:
-        return key
+        return key.lower()
     if key=='':
         return[]
     #now remove all non-alpha numeric values, replace by space. 
@@ -63,9 +63,11 @@ def keydb_clean(key,returnString=False):
     no_stop_words = []
     for word in words:
         #now do stemming
-        word = stemmer.stem(word)
+        #reason to check stopwords first is: 
+        #ER will be er after stemming. 
+        #and er is a stopword while ER is not. 
         if word not in stopwords.words():
-            no_stop_words.append(word)
+            no_stop_words.append(stemmer.stem(word))
     return sorted(no_stop_words)
 
 def keydb_init(dbName='keydb.data'):
@@ -174,7 +176,7 @@ def keydb_core(record):
         #if db.get(nice_looking_cancer)==None:
         #    db[nice_looking_cancer] = {}
         for key in record[cancer].keys():
-            key = key.strip().lower()
+            key = key.strip()
             if key.strip()=='':
                 continue
             #record actual big keys. 
@@ -635,7 +637,8 @@ def keydb_build():
             i+=1
             tempStart = time.time()
             
-            keydb_marginal_add_note(value[1])
+            keydb_marginal_add_note(value[1],dbName = get_name(f)+'.data' )
+
             print i,'/',len(data), time.time() - tempStart            
             #valdb_add_note(value[1])
             
@@ -703,7 +706,8 @@ def keydb_build():
     print(times)
     
 if __name__ == '__main__':
-    keydb_build()
+    pass    
+    #keydb_build()
         
     
     

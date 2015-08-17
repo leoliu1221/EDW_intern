@@ -115,9 +115,14 @@ def Extract():
     args = parser.parse_args()
     note = args['data']
     cancerName = args['cancer']
+    
     if note == None:
         note = request.form.get('data')
         cancerName = request.form.get('cancer')
+        
+    if cancerName is None:
+        cancerName = ''
+        
     if note == None:
         return 'No info'
     else:
@@ -126,10 +131,15 @@ def Extract():
             result = checkAllcancer(note)
             result_confidence= result.copy()
             for cancer in result.keys():
-                marginaldbname = cancerName.lower()+'.data'
+                if cancerName.strip() != '':
+                    marginaldbname = cancerName.lower()+'.data'
+                else:
+                    marginaldbname=None
                 print 'marginaldbname: ',marginaldbname
-                               
-                marginaldb = keydb_marginal_load(marginaldbname)
+                if marginaldbname is not None:
+                    marginaldb = keydb_marginal_load(marginaldbname)
+                else:
+                    marginaldb = keydb_marginal_load()
                 ########################################
                 # the below code is for getting confidence score. 
                 #########################################                
