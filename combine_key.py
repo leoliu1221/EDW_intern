@@ -11,12 +11,8 @@ from confidence import keydb_marginal_load
 from collections import defaultdict
 st = LancasterStemmer()
 
-def getKey(item):
-    return item[0]
 
-
-
-def sort_key(keydata):
+def sortKey(keydata):
 # collect and sort keydata (in a tuple and string format)
     tup = []
     string = []
@@ -37,7 +33,7 @@ def sort_key(keydata):
     string = sorted(string)
     return tup,string,singleToken
 
-def similar_key(tup,threshold = 0.1):
+def similarKey(tup,threshold = 0.1):
     # find similar keys based on distance between two keys (after applying stemming to each token)
     # threshold = distance threshold to determine the similarity
     simstring = {}
@@ -91,29 +87,39 @@ def combineKey(keydata,simorder):
 
 def cleanKey(singleToken,keydata):
     clean_key = {}
+    equivalent_key = {}
+    
     for item in singleToken:
+        eq_key_list = []
         base_token = defaultdict(list)
         for t in tup:
             if item in t and keydata[t]!="NA":
                 base_token[keydata[t]].append(t)
         for k,v in base_token.items():
+            # k is frequency and v is a list of tuples
             max_len = 0
             for sub_v in v:
                 if len(sub_v)>max_len:
                     max_len = len(sub_v)
                     final_key = sub_v
+            for sub_v in v:
+                if sub_v!=final_key:
+                    eq_key_list.append(sub_v)
+             
+            equivalent_key[final_key] = eq_key_list
             clean_key[final_key] = k
-    return clean_key
+    return clean_key,equivalent_key
             
 if __name__ == '__main__':
     # load key frequency data (tuples of elements in key)
     keydata = keydb_marginal_load('breast.data')
     keydata_orig = keydb_marginal_load('breast.data')
     # string is just for debug (not used)
-    tup,string,singleToken = sort_key(keydata)
-    simstring,simorder = similar_key(tup)
+    tup,string,singleToken = sortKey(keydata)
+    simstring,simorder = similarKey(tup)
     combine_key=combineKey(keydata,simorder)
-    clean_key = cleanKey(singleToken,keydata)    
+    clean_key,equivalent_key = cleanKey(singleToken,keydata)
+      
         
     
 
