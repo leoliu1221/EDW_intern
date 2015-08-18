@@ -98,14 +98,17 @@ def cleanKey(singleToken,keydata):
         for k,v in base_token.items():
             # k is frequency and v is a list of tuples
             max_len = 0
+            # find the final key that has the longest length among same frequency ones
             for sub_v in v:
                 if len(sub_v)>max_len:
                     max_len = len(sub_v)
                     final_key = sub_v
+            # collect equivalent key (same frequency) but not the final key in eq_key_list 
             for sub_v in v:
                 if sub_v!=final_key:
                     eq_key_list.append(sub_v)
-             
+            # add eq_key_list to equivalent_key dictionary 
+            # clean key is the dictionary that collects the final key and its frequency
             equivalent_key[final_key] = eq_key_list
             clean_key[final_key] = k
     return clean_key,equivalent_key
@@ -113,8 +116,8 @@ def cleanKey(singleToken,keydata):
 if __name__ == '__main__':
     # load key frequency data (tuples of elements in key)
     keydata = keydb_marginal_load('breast.data')
-    keydata_orig = keydb_marginal_load('breast.data')
-    # string is just for debug (not used)
+    keydata_orig = keydb_marginal_load('breast.data') # keydata_orig is just for checking (not used)
+    # string is just for checking/debugging (not used)
     tup,string,singleToken = sortKey(keydata)
     simstring,simorder = similarKey(tup)
     combine_key=combineKey(keydata,simorder)
