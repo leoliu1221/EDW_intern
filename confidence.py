@@ -108,7 +108,11 @@ def keydb_destroy(dbName='keydb.data'):
         print 'db destroy',dbName,'succesful'
     else:
         print 'db destroy',dbName,'unsuccessful -- db not found'
-
+def keydb_get_dbs(folderName='./keydb/'):
+    import glob
+    dbs = glob.glob(folderName+'*.data')
+    dbs.extend(glob.glob('*.data'))
+    return [get_name(item) for item in dbs]
 def keydb_add_result(result,dbName='keydb.data'):
     '''
     Args: 
@@ -607,7 +611,7 @@ def keydb_build():
     #lengths = []
     for f in files:
         #destroy the keydb for each data
-        keydb_marginal_destroy(get_name(f)+'.data')
+        #keydb_marginal_destroy(get_name(f)+'.data')
         #continue
         #get data
         data = getData3(f)     
@@ -636,7 +640,9 @@ def keydb_build():
         for value in data:
             i+=1
             tempStart = time.time()
-            
+            #adding the note to db. 
+            #keydb_marginal_add_note(value[1])
+            #adding the note to specific db, namely breast.data etc
             keydb_marginal_add_note(value[1],dbName = get_name(f)+'.data' )
 
             print i,'/',len(data), time.time() - tempStart            
@@ -706,8 +712,8 @@ def keydb_build():
     print(times)
     
 if __name__ == '__main__':
-    pass    
-    #keydb_build()
+    
+    keydb_build()
         
     
     

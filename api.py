@@ -16,7 +16,9 @@ api = Api(app)
 
 @app.route('/')
 def index():
-    return render_template('home.html')
+    from confidence import keydb_get_dbs
+    files = keydb_get_dbs()
+    return render_template('home.html',files = files)
 @app.route('/confidence')
 def confidence():
     return render_template('confidence.html')
@@ -26,11 +28,18 @@ def conf_result():
     key = args['key'] 
     value = args['value']
     cancername = args['cancer']
+    if cancername.strip()=='':
+        cancername  = args.get('cancer_select')
+    if cancername == None:
+        cancername = request.form.get('cancer_select')
+        
     marginaldbname = str(cancername)+'.data'
     if key == None:
         key = request.form.get('key')
         value = request.form.get('value')
         cancername = request.form.get('cancername')
+        if cancername==None:
+            cancername  = request.form.get('cancer_select')
         marginaldbname = str(cancername)+'.data'
     if key==None or value == None:
         
@@ -115,7 +124,9 @@ def Extract():
     args = parser.parse_args()
     note = args['data']
     cancerName = args['cancer']
-    
+    print 'args:',args
+    print 'form:',request.form
+    #should ahve just check form first then the args. 
     if note == None:
         note = request.form.get('data')
         cancerName = request.form.get('cancer')

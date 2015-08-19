@@ -15,7 +15,16 @@
      <label class="label label-primary" for="cancer">put cancertype here</label>
   <input type='text' name="cancer" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='type in cancer type (all lower case) e.g. breast '></input>
   </div></div>
-
+    <div class="row">
+    <div class="col-md-4 col-md-offset-4 top17">
+    <label class="label label-primary" for="cancer">put cancertype here</label>
+    <select id="test_select" name="cancer_select" class="form-control">
+    {% for item in files %}    
+    <option> {{item}}</option>   
+    {% endfor %}
+    </select>
+</div>
+</div>
   <div class="row">
   <div class="col-md-12 top17">
   <label class="label label-primary" for="data">Put pathology note here:</label>

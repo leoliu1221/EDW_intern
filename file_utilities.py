@@ -220,7 +220,7 @@ def match_encounter_id(data, result):
     for key in result.keys():
         result[key]['encounterid'] = data[key][2]
     return result
-    
+  
 def get_name(filePath):
     '''
     e.g. if the filepath is 'C:\\data\\breast.csv
