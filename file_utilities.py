@@ -5,6 +5,7 @@ Created on Wed Jun 24 10:22:37 2015
 @author: Liu and Papis
 """
 import re,json
+from jsonweb.encode import to_object, dumper
 def update(dic1, dic2):
     '''
     Args:
@@ -142,7 +143,7 @@ def getData3(fName=None):
         print rowNum
     return data                  
 
-
+@to_object()
 class Datapoint:
     def __init__(self,message=None):
         if message is None:
@@ -213,6 +214,7 @@ class Datapoint:
             return '<Datapoint : '+self.key+'>'
     def __str__(self):
             return self.key+':'+self.value
+
             
 def match_encounter_id(data, result):
     '''
@@ -237,7 +239,20 @@ def get_name(filePath):
         return 'NOVALUE'
     else:
         return result.split()[-2]
-        
+def dic_to_list(result):
+    '''
+    result should be a dictionary
+        -  cancertype : k-v
+        -  cancertype : k-v
+        ...
+        -  content : k-v
+    '''
+    list_result = []
+    for cancertype in result.keys():
+        for item in result[cancertype]:
+            pass
+            
+    
 if __name__=='__main__':
     pass
     '''
@@ -245,10 +260,11 @@ if __name__=='__main__':
         data = getData3()
 
     s = data[9][1]
-        
+    '''  
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2)
-    '''    
+    print dumper(test)
+    
 
             
     

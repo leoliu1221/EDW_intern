@@ -13,8 +13,8 @@ from collections import defaultdict
 #now comes the global variables
 
 import nltk
-nltk.download('stopwords')
-nltk.download('wordnet')
+#nltk.download('stopwords')
+#nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
 from nltk.stem.snowball import SnowballStemmer
 
@@ -616,6 +616,13 @@ def keydb_build():
         #get data
         data = getData3(f)     
         data,result = get_format_data(data)
+        for cancer in result.keys():
+            if cancer == 'content':
+                continue
+            for key in result[cancer].keys():
+                if len(re.findall('\_',key))>=2:
+                    result.append([cancer,result[cancer][key]])
+        continue
         #lengths.append([f,len(data)])
         #continue
         elapsed = time.time()-start

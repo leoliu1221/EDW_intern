@@ -4,6 +4,7 @@ Created on Thu Aug 06 12:20:59 2015
 
 @author: lliu5
 """
+from file_utilities import dumper,Datapoint
 from get_data_breast import checkAllcancer,get_section
 from flask import Flask,request,render_template
 from flask_restful import Resource,Api,reqparse
@@ -71,7 +72,40 @@ def conf_result():
 ### response = http.post('localhost:5000/cleaner_result','key=interns are dumb')
 ### responce will be something from response. 
 '''
-### not that the below code has been tested and it ran succesfully. 
+######################################
+######################################
+#TODO:
+# making cancer into a code. 
+# universe_id, text, about_type, about_id,suggestions_uri,universe_name, universe_name_variants(array)
+# sending back POST: universe_id = integer, about_type = string, about_id = integer, result = hash
+hash: 
+[
+    {
+        'key':key1, 
+        'value': value1,
+        'origin':original_key_value,
+        'key_score':key_score,
+        'value_score':value_score
+        'sub_keys': 
+        [
+            {
+            'key':subkey1
+            'value':subvalue1
+            'origin':suborigin1
+            'key_score':subkey_score
+            'value_score':subvalue_score
+            'sub_keys': []            
+            }
+        ]
+    }
+]
+
+...
+}
+# transform subkey into primarykey - subkey - value system (subkey can be another primary key for other subkeys as well)
+# clean values and keys after getting results. 
+
+### note that the below code has been tested and it ran succesfully. 
 ### it should run for all cases as well. 
 
 require 'net/http'
@@ -83,7 +117,8 @@ require 'json'
 @port_address = 'cleaner_result'
 
 @content = {
-"key" => "your interns are dumb"
+"data" => "your interns are dumb",
+"cancer" => "thyroid"
 }.to_json
 
 
@@ -98,8 +133,12 @@ thepost = post
 puts thepost
 '''
 
-
-
+@app.route("/jsontest")
+def jsontest():
+    s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
+    test = Datapoint(s2)
+    test2 = [test,test,test,test]
+    return dumper(test2)
 ###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
