@@ -7,10 +7,50 @@ Created on Fri Jul 10 13:41:52 2015
 import re 
 from collections import defaultdict
 from file_utilities import getData3,Datapoint
-from confidence_value import keydb_clean_string
+
 #from get_data_breast import get_format_data
 
-#data3 = getData3()
+
+def clean_string(key,returnString=False):
+    key = key.lower()
+    #clean parenthesis
+    #clean space
+    #clean non-alpha
+    #remove parenthesis, and the text within. 
+    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1) + m.group(2)
+        m = regEx.match(key)
+        #print key
+    #remove left parenthesis and the text within (till the end
+    regEx = re.compile(r'([^\(]*) *(\(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1)
+        m=regEx.match(key)
+        
+    # remove right parenthesis
+    regEx = re.compile(r'(\).*)')
+    if len(re.findall(regEx,key))!=0:
+        return ''
+    
+    #now check if the key is empty
+    key = key.strip()
+    if returnString:
+        return key
+    if key=='':
+        return ''
+    #now remove all non-alpha numeric values, replace by space. 
+    key = re.sub('[^_/0-9a-zA-Z]+', ' ', key)
+    
+    return key
+
+
+
+
 def get_section(text):
     '''
     Find the sections such as A: B: C: ... 
@@ -120,13 +160,12 @@ def get_subcontent(result,datapoint,sub_content):
     j=0
     val = datapoint.value.replace("\t","")
     key = datapoint.key
-    clean_val = keydb_clean_string(val)
+    clean_val = clean_string(val)
+    clean_key = clean_string(key)
     
-    if clean_val!=[]:
-        val = clean_val[0]
     
-    if key!='' or val!='':
-        result[key] = [val,datapoint.origin]
+    if clean_key!='':
+        result[clean_key] = [clean_val,datapoint.origin]
     while j<len(sub_content):
         sub_content[j].key = datapoint.key+"_"+sub_content[j].key
         result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
@@ -178,6 +217,21 @@ def checkAllcancer(note,cut=110,pCut = 40):
         #if len(datapoint.keys())>2:
         result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
+       
+    # remove key_ cases
+    final_result = {}
+
+    for key,val in result.items():
+        datapoint_dict = {}
+       
+        for k in val.keys():
+            split_k = k.rsplit("_",1)
+            if len(split_k)>1 and split_k[1]=="":
+                pass
+            else:
+                datapoint_dict[k]=val[k]
+        final_result[key] = datapoint_dict
+        
     return result
   
     
@@ -271,15 +325,18 @@ def get_datapoint_line(note,cut):
         k = info.key; v = info.value; sub_content = info.sub
         
         #print 'in block',k,v,sub_content
-        if len(k)<=100 and (k!='' or v!=''):
-            clean_val = keydb_clean_string(v)
-            v = v.replace("\t","")
-            if clean_val!=[]:
-                v = clean_val[0]
-            if k!='' or v!='':
-                result[k] = v
+        if len(k)<=95 and (k!='' or v!=''):
+            
+            clean_key = clean_string(k)
+            clean_val = clean_string(v)
+            clean_val = clean_val.replace("\t","")
+            
+            if clean_key!='':                
+                result[clean_key] = clean_val
                 result = get_subcontent(result,info,sub_content)
         i=j
+        
+  
         #print 'result',result
     return result
 
