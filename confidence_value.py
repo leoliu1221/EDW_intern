@@ -259,7 +259,7 @@ def baseDB(dbName = None):
 
 if __name__ == '__main__':
     
-    valdb = baseDB()
+#    valdb = baseDB()
     # input : a key and value pair
     dictInput = {'tumor grade':['3']}
     

@@ -7,6 +7,7 @@ Created on Fri Jul 10 13:41:52 2015
 import re 
 from collections import defaultdict
 from file_utilities import getData3,Datapoint
+from confidence_value import keydb_clean_string
 #from get_data_breast import get_format_data
 
 #data3 = getData3()
@@ -117,7 +118,15 @@ def qa(result):
  
 def get_subcontent(result,datapoint,sub_content):
     j=0
-    result[datapoint.key] = [datapoint.value.replace("\t",""),datapoint.origin]
+    val = datapoint.value.replace("\t","")
+    key = datapoint.key
+    clean_val = keydb_clean_string(val)
+    
+    if clean_val!=[]:
+        val = clean_val[0]
+    
+    if key!='' or val!='':
+        result[key] = [val,datapoint.origin]
     while j<len(sub_content):
         sub_content[j].key = datapoint.key+"_"+sub_content[j].key
         result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
@@ -221,6 +230,7 @@ def get_datapoint_line(note,cut):
 #    for line in lines:
 #        if line.strip()!='':
 #            lineList.append(line)
+            
     result = {}
     ############
     #blocklist is for storing blocks
@@ -248,7 +258,8 @@ def get_datapoint_line(note,cut):
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
             if lineList[j].startswith('\t'):
-                block = block + '\t'+lineList[j].strip()+'\n'
+                tab_tag = re.split('[^\t]+',lineList[j])
+                block = block + tab_tag[0] +lineList[j].strip()+'\n'
             else:
                 break
             j+=1
@@ -258,10 +269,16 @@ def get_datapoint_line(note,cut):
         info = Datapoint(block)
         #print 'info',info
         k = info.key; v = info.value; sub_content = info.sub
+        
         #print 'in block',k,v,sub_content
         if len(k)<=100 and (k!='' or v!=''):
-            result[k] = v.replace("\t","")
-            result = get_subcontent(result,info,sub_content)
+            clean_val = keydb_clean_string(v)
+            v = v.replace("\t","")
+            if clean_val!=[]:
+                v = clean_val[0]
+            if k!='' or v!='':
+                result[k] = v
+                result = get_subcontent(result,info,sub_content)
         i=j
         #print 'result',result
     return result
