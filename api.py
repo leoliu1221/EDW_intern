@@ -4,7 +4,7 @@ Created on Thu Aug 06 12:20:59 2015
 
 @author: lliu5
 """
-from file_utilities import dumper,Datapoint
+from models import Datapoint, dumper
 from get_data_breast import checkAllcancer,get_section
 from flask import Flask,request,render_template
 from flask_restful import Resource,Api,reqparse

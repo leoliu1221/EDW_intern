@@ -6,8 +6,8 @@ Created on Fri Jul 10 13:41:52 2015
 """
 import re 
 from collections import defaultdict
-from file_utilities import getData3,Datapoint
-
+from file_utilities import getData3
+from models import Datapoint
 #from get_data_breast import get_format_data
 
 

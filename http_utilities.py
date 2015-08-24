@@ -9,7 +9,7 @@ import requests,json
 from jsonweb import dumper
 from jsonweb import encode
 #for testing
-from file_utilities import Datapoint
+from models import Datapoint
 #universe_id = integer, about_type = string, about_id = integer, result = hash
 
 def post_json(universe_id,about_type,about_id,result,uri=None):
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2) 
     result = [test,test,test]
-    post_json(universe_id,about_type,about_id,dumper(result))
+    post_json(universe_id,about_type,about_id,result)
 '''
 parser.add_argument('text')
 parser.add_argument('key')
