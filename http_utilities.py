@@ -14,7 +14,7 @@ from models import Datapoint
 
 def post_json(universe_id,about_type,about_id,result,uri=None):
     if uri is None:
-        uri = "http://127.0.0.1:5000/cleaner_result"
+        uri = "http://127.0.0.1:5000/note"
     data = {}
     data['universe_id'] = universe_id
     data['about_type'] = about_type

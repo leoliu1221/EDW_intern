@@ -133,8 +133,14 @@ thepost = post
 puts thepost
 '''
 
-@app.route("/jsontest")
+@app.route("/jsontest",methods=['GET','POST'])
 def jsontest():
+    args = parser.parse_args()
+        
+    
+    
+    
+    
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2)
     test2 = [test,test,test,test]
@@ -147,7 +153,7 @@ def cleaner_result():
     print args
     if key == None:
         key = request.form.get('key')
-    if key == None:
+    if key == None or key.strip() == '':
         return 'No info'
     else:
         result = keydb_clean(key)
@@ -161,6 +167,20 @@ def cleaner():
 
 @app.route('/note',methods=['GET', 'POST'])
 def Extract():
+    
+    
+    
+    '''
+    parser.add_argument('text')
+    parser.add_argument('key')
+    parser.add_argument('about_type')
+    parser.add_argument('value')
+    parser.add_argument('universe_id')
+    parser.add_argument('suggestions_uri')
+    parser.add_argument('universe_name')
+    parser.add_argument('universe_name_variants')
+        
+    '''
     #print request.form
     args = parser.parse_args()
     note = args['text']
@@ -175,7 +195,7 @@ def Extract():
     if cancerName is None:
         cancerName = ''
         
-    if note == None:
+    if note == None or note.strip()=='':
         return 'No info'
     else:
         result = {}
