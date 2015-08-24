@@ -1,11 +1,12 @@
 from jsonweb.encode import to_object, dumper
 from confidence import keydb_marginal_newkey
+from confidence_value import getScore
 from jsonweb import decode, encode
 import re
 
 @encode.to_object()
 class Datapoint:
-    def __init__(self,message=None,marginaldb = None):
+    def __init__(self,message=None,marginaldb = None,valdb = None):
         if message is None:
             self.key = ''
             self.value = ''
@@ -43,11 +44,11 @@ class Datapoint:
             self.key_score = ''
             self.value_score = ''
             self.set_key_score(marginaldb = marginaldb)
-            self.set_value_score()
+            self.set_value_score(valdb = valdb)
     def set_key_score(self,marginaldb):
         self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,dbName = None,add=False)
-    def set_value_score(self):
-        #TODO
+    def set_value_score(self,valdb):
+        self.value_score = getScore(self.key,self.value,valdb = valdb, add=False)
         pass
 
     def find_subs(self,lineList):

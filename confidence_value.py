@@ -9,6 +9,7 @@ from file_utilities import dict_add,getData3
 from nltk.corpus import wordnet as wn
 from get_data_breast import checkAllcancer
 from collections import defaultdict
+from confidence import keydb_marginal_load
 import re
 import numpy as np
 
@@ -118,10 +119,13 @@ def get_collection(data):
     return collection
 
 
-def getScore(key,value,valdb,add=True):
+def getScore(key,value,valdb = None,add=True):
     
     # add new data to the database
     # default is to add a new value to the database
+    if valdb is None:
+        valdb = keydb_marginal_load("Valdb.data")
+        
     if add==True:
         dictInput = {key:[value]}
         valdb = valdb_add(dictInput)       
@@ -222,8 +226,30 @@ def getScore(key,value,valdb,add=True):
         score['Wordcount'] = "NA"
         score['Token'] = "NA"
 
-           
-    return score    
+    # for a new data format (to be combined with Abstractor)
+    # score_type : [0,1] among three types => (1) num, (2) text, (3) num_text
+    # calculate proportion of a particular type of v with respect to the total frequency
+    # The larger, the higher confidence
+    #
+    # score_length : only apply to num_text type (let score of other types to be 1)
+    # calculate proportaion of long or short text with respect to total number of num_text type
+    # The larger, the higher confidence
+    #
+    # score_wordcount : only apply to text type
+    # calculate  absolute value of (word count for v - med of c and then divided by std.dev of c) where c is a vector of wordcount
+    # The smaller, the higher confidence
+    #
+    # score_token : only apply to text type (Note: the value can be negative)
+    # calculate the difference between frequency of particular token and equal portion (1/total number of tokens) where token is value
+    # The larger, the higher confidence
+    
+    score_type = score['Type']      
+    score_length = score['Length']
+    score_wordcount = score['Wordcount']
+    score_token = score['Token']
+   
+    #return {'type':score_type,'length':score_length,'wordcount':score_wordcount,'token':score_token}
+    return ' '.join([str(item) for item in ['type',score_type,'length',score_length,'wordcount',score_wordcount,'token',score_token]])
 
 def getCount(v,lenCutoff = 0.9):
     label = ['total','num','num_text','text','num_text_short','num_text_long']        

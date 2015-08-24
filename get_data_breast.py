@@ -317,7 +317,7 @@ def get_datapoint_line(note,cut):
         j=i+1
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
-            if lineList[j].startswith('\t'):'
+            if lineList[j].startswith('\t'):
                 #block +=linesList[j]+'\n'
                 #tab_tag are the all the tabs existed in lineList[[j]]
                 #e.g. tab_tag = re.split('[^\t]+','\t\t\tsdfs\tfghd')
