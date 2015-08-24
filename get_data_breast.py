@@ -175,6 +175,8 @@ def get_subcontent(result,datapoint,sub_content):
 def checkAllcancer(note,cut=110,pCut = 40):
     '''
     '''
+    # a dictionary of cancerType code 
+    cancerType_code = {"breast":1,"colorectal":2,"melanoma":3,"ovarian":4,"prostatic":5,"pulmonary":6,"skin":7,"thyroid":8,"uterine":9}
     note = note.replace('"','')
     #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
@@ -195,6 +197,10 @@ def checkAllcancer(note,cut=110,pCut = 40):
             
             #now if the cancer type is valid we add the index to start
             if cancerType!='' and cancerType[0].isalpha() :
+                for k,v in cancerType_code.items():
+                    if k in cancerType.lower():
+                        cancerType = cancerType_code[k]
+                        break
                 starts.append([stage.start(),cancerType])
         
     #for the start index in starts:
@@ -232,7 +238,7 @@ def checkAllcancer(note,cut=110,pCut = 40):
                 datapoint_dict[k]=val[k]
         final_result[key] = datapoint_dict
         
-    return result
+    return final_result
   
     
 
