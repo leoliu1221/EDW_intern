@@ -12,6 +12,7 @@ import json
 import traceback
 from confidence_value import getScore
 from confidence import keydb_marginal_load,keydb_marginal_newkey,keydb_clean
+from http_utilities import post_json
 app = Flask(__name__)
 api = Api(app)
 
@@ -136,11 +137,16 @@ puts thepost
 @app.route("/jsontest",methods=['GET','POST'])
 def jsontest():
     args = parser.parse_args()
+    print args
     
-    s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
-    test = Datapoint(s2)
-    test2 = [test,test,test,test]
-    return dumper(test2)
+    universe_id = 0
+    about_type = 'some type'
+    about_id = 0
+    s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
+    test = Datapoint(s2) 
+    result = [test,test,test]
+    end = post_json(universe_id,about_type,about_id,result,uri="http://google.com")
+    return end
 ###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():

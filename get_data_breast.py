@@ -168,7 +168,7 @@ def get_subcontent(result,datapoint,sub_content):
         result[clean_key] = [clean_val,datapoint.origin]
     while j<len(sub_content):
         sub_content[j].key = datapoint.key+"_"+sub_content[j].key
-        result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
+        result.update(get_subcontent(result,sub_content[j],sub_content[j].sub_keys))
         j+=1
     return result
 
@@ -196,13 +196,15 @@ def checkAllcancer(note,cut=110,pCut = 40):
             cancerType = previousText.lstrip(' ').strip()
             
             #now if the cancer type is valid we add the index to start
+            '''            
             if cancerType!='' and cancerType[0].isalpha() :
                 for k,v in cancerType_code.items():
                     if k in cancerType.lower():
                         cancerType = cancerType_code[k]
                         break
-                starts.append([stage.start(),cancerType])
-        
+            '''
+            starts.append([stage.start(),cancerType])
+            
     #for the start index in starts:
     #
     i=0
@@ -333,7 +335,7 @@ def get_datapoint_line(note,cut):
         #print 'block:',block
         info = Datapoint(block)
         #print 'info',info
-        k = info.key; v = info.value; sub_content = info.sub
+        k = info.key; v = info.value; sub_content = info.sub_keys
         
         #print 'in block',k,v,sub_content
         if len(k)<=95 and (k!='' or v!=''):
