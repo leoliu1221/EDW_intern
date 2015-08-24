@@ -275,10 +275,10 @@ if __name__=='__main__':
 
     s = data[9][1]
     '''  
-    s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
-    test = Datapoint(s2)
-    print dumper([test,test,test])
-    
+    #s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
+    #test = Datapoint(s2)
+    #print dumper([test,test,test])
+    pass
 
             
     
