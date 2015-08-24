@@ -6,6 +6,10 @@ Created on Fri Aug 21 13:58:30 2015
 """
 
 import requests,json
+from jsonweb import dumper
+from jsonweb import encode
+#for testing
+from file_utilities import Datapoint
 #universe_id = integer, about_type = string, about_id = integer, result = hash
 
 def post_json(universe_id,about_type,about_id,result,uri=None):
@@ -16,11 +20,18 @@ def post_json(universe_id,about_type,about_id,result,uri=None):
     data['about_type'] = about_type
     data['about_id'] = about_id
     data['result'] = result    
-    r = requests.post(uri, data=(data))
+    r = requests.post(uri, data=dumper(data))
 #or ican use r = requests.post(uri, json=sample_data)
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')
-post_json()
+if __name__ == '__main__':
+    universe_id = 0
+    about_type = 'some type'
+    about_id = 0
+    s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
+    test = Datapoint(s2) 
+    result = [test,test,test]
+    post_json(universe_id,about_type,about_id,dumper(result))
 '''
 parser.add_argument('text')
 parser.add_argument('key')

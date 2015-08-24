@@ -206,7 +206,7 @@ def Extract():
                     #in here we will just try to use our pre-existing libraries. 
                     #namely, if you have breast cancer as cancer, then
                     try:
-                        result_confidence[cancer][k].append(keydb_marginal_newkey(k,value,marginaldb))
+                        result_confidence[cancer][k].append(keydb_marginal_newkey(k,value,marginaldb,marginaldbname,True))
                     except Exception, err:
                         print 'ERROR: key_confidence failed'
                         print err

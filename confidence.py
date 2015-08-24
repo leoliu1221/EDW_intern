@@ -73,11 +73,13 @@ def keydb_init(dbName='keydb.data'):
     return keydb
     
 
-def keydb_load(dbName='keydb.data',keydb_folder = './keydb/'):
+def keydb_load(dbName=None,keydb_folder = './keydb/'):
     '''
     this function looks for data files in keydbFolder or in current directory. 
     the default keydb_folder is './keydb/'    
     '''
+    if dbName is None:
+        dbName = 'keydb.data'
     import os.path,cPickle as pickle
     db = {}
     if os.path.exists(dbName):
@@ -212,10 +214,12 @@ def keydb_marginal_destroy(dbName = 'keydb_marginal.data'):
     keydb_destroy(dbName=dbName)
     
     
-def keydb_marginal_load(dbName='keydb_marginal.data'):
+def keydb_marginal_load(dbName = None):
     '''
     ^^ reusing keydb_load
     '''
+    if dbName is None:
+        dbName='keydb_marginal.data'
     return keydb_load(dbName = dbName)
     
 
@@ -330,7 +334,7 @@ def keydb_marginal_chained(key,marginaldb=None):
     #print 'chain',chain
     return float(marginaldb.get(chain))/total
 
-def keydb_marginal_newkey(key,value,marginaldb=None,add=True):
+def keydb_marginal_newkey(key,value=None,marginaldb=None,dbName = None,add=False):
     ###########################
     #insertring a new key
     # default is to add a new key
@@ -339,11 +343,11 @@ def keydb_marginal_newkey(key,value,marginaldb=None,add=True):
     if '_' in key:
         key = key.split('_')[-1]
     if marginaldb is None:
-        marginaldb = keydb_marginal_load()
+        marginaldb = keydb_marginal_load(dbName)
     
     # add new data 
     if add==True:
-        marginaldb = keydb_marginal_add(key,value,dbname=marginaldb)
+        marginaldb = keydb_marginal_add(key,value,dbName=dbName)
     
     marginal = keydb_marginal_marginal(key,marginaldb=marginaldb)
     chained = keydb_marginal_chained(key,marginaldb=marginaldb)

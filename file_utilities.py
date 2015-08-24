@@ -7,6 +7,7 @@ Created on Wed Jun 24 10:22:37 2015
 import re,json
 from jsonweb.encode import to_object, dumper
 from confidence import keydb_marginal_newkey
+from jsonweb import decode, encode
 def update(dic1, dic2):
     '''
     Args:
@@ -144,7 +145,7 @@ def getData3(fName=None):
         print rowNum
     return data                  
 
-@to_object()
+@encode.to_object()
 class Datapoint:
     def __init__(self,message=None,marginaldb = None):
         if message is None:
@@ -186,7 +187,7 @@ class Datapoint:
             self.set_key_score(marginaldb = marginaldb)
             self.set_value_score()
     def set_key_score(self,marginaldb):
-        self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,add=True)
+        self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,dbName = None,add=False)
     def set_value_score(self):
         #TODO
         pass
@@ -267,7 +268,7 @@ def dic_to_list(result):
             
     
 if __name__=='__main__':
-    pass
+    
     '''
     if not 'data' in locals():    
         data = getData3()
@@ -276,7 +277,7 @@ if __name__=='__main__':
     '''  
     s2 = 'Breast Tumor Markers: (combined with report of S-12-11788)\t_\t\n\tER:\t>95%, strong positive\t\n\tPR:\t  95%, strong positive\t\n\tHER2:\t     0%, score 0, negative\t\n\tKi-67\t10-15%, intermediate\t\n\tp53:\t     0%, negative\t'
     test = Datapoint(s2)
-    print dumper(test)
+    print dumper([test,test,test])
     
 
             
