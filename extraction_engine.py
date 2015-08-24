@@ -182,7 +182,7 @@ def checkAllcancer(note,cut=110,pCut = 40):
     #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
     starts = []
-    result = {}
+    result = []
     #for different cancer staging summary there will be different start index. 
     #we store the start index in variable starts. 
     for stage in stages:
@@ -222,24 +222,27 @@ def checkAllcancer(note,cut=110,pCut = 40):
         datapoint = get_datapoint_line(process_note, cut)
         #print 'datapoint',datapoint
         #if len(datapoint.keys())>2:
-        result[starts[i][1]] = (datapoint)
+#        result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
+        result.append(datapoint)
+    return result
        
     # remove key_ cases
-    final_result = {}
-
-    for key,val in result.items():
-        datapoint_dict = {}
-       
-        for k in val.keys():
-            split_k = k.rsplit("_",1)
-            if len(split_k)>1 and split_k[1]=="":
-                pass
-            else:
-                datapoint_dict[k]=val[k]
-        final_result[key] = datapoint_dict
-        
-    return final_result
+#    final_result = {}
+#
+#    for key,val in result.items():
+#        datapoint_dict = {}
+#       
+#        for k in val.keys():
+#            split_k = k.rsplit("_",1)
+#            if len(split_k)>1 and split_k[1]=="":
+#                pass
+#            else:
+#                datapoint_dict[k]=val[k]
+#        final_result[key] = datapoint_dict
+#        
+#    return final_result
+   
   
     
 
@@ -318,7 +321,7 @@ def get_datapoint_line(note,cut):
         j=i+1
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
-            if lineList[j].startswith('\t'):'
+            if lineList[j].startswith('\t'):
                 #block +=linesList[j]+'\n'
                 #tab_tag are the all the tabs existed in lineList[[j]]
                 #e.g. tab_tag = re.split('[^\t]+','\t\t\tsdfs\tfghd')
@@ -348,9 +351,11 @@ def get_datapoint_line(note,cut):
                 result = get_subcontent(result,info,sub_content)
         i=j
         
+    return info  
   
         #print 'result',result
-    return result
+#    return result
+      
 
 def get_format_data(data = None,fileName=None):
     if data is None:

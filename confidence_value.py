@@ -144,7 +144,7 @@ def getScore(key,value,valdb = None,add=True):
                 
     
     # Type feature: calculate proportion of a particular type of v with respect to the total frequency
-    print "countdict",countdict,"dbVal",dbVal
+    
     score['Type'] = float((countdict['num']*dbVal['num'] + countdict['num_text']*dbVal['num_text'] + countdict['text']*dbVal['text']))/float(dbVal['total'])
   
     # Length feature: only apply to num_text type (let score of other types to be 1)
@@ -162,12 +162,13 @@ def getScore(key,value,valdb = None,add=True):
     # If std.dev(c) which is the denominator is not 0, calculate the score 
     # score = absolute value of (word count for v - med and then divided by std.dev of c)
         if c.std()!=0:
-            score['Wordcount']=abs(float((len(v.split(" "))-med))/float(c.std()))
+            score['Wordcount']=abs(float((len(value.split(" "))-med))/float(c.std()))
     # If std.dev(c) is 0: 
     #   check if word count of v is equal to med then set score to 0 (good case)
     #   otherwise, set score to be 100 (bad case)
         else: 
-            if len(v.split(" "))==med:
+            print 'value',value
+            if len(value.split(" "))==med:
                 score['Wordcount']=0
             else:
                 score['Wordcount'] = 100
@@ -211,7 +212,7 @@ def getScore(key,value,valdb = None,add=True):
         # Calculate the score for each element in the original token list
         for k in list(set(dbVal.keys())-set(label)): 
             #making sure k is always equal to v
-            if k!=v:
+            if k!=value:
                 continue
             if token_combine.get(k) is not None:
                 num_token = token_combine[k]
@@ -293,7 +294,8 @@ def baseDB(dbName = None):
     return valdb
 
 if __name__ == '__main__':
-    
+    pass
+    '''
 #    valdb = baseDB()
     # input : a key and value pair
     dictInput = {'tumor grade':['3']}
@@ -305,4 +307,5 @@ if __name__ == '__main__':
     score = {}
     for k,v in dictInput.iteritems():
         score[k] = getScore(k,v[0],valdb,add=False)
+    '''
     

@@ -3,9 +3,10 @@ from confidence import keydb_marginal_newkey
 from confidence_value import getScore
 from jsonweb import decode, encode
 import re
-
 @encode.to_object()
 class Datapoint:
+    
+
     def __init__(self,message=None,marginaldb = None,valdb = None):
         if message is None:
             self.key = ''
@@ -55,7 +56,7 @@ class Datapoint:
     def set_value_score(self,valdb):
 #        print "key",self.key,"value",self.value
         self.value_score = getScore(self.key,self.value,valdb = valdb, add=True)
-        pass
+        
 
     def find_subs(self,lineList):
 #        print 'in find_subs'
