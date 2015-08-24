@@ -52,6 +52,7 @@ def valdb_add(dbVal,dbName = 'Valdb.data'):
     pickle.dump(db,open(dbName,'w'))
 #    print 'added to db: ',dbName
     return db
+    
 
 
 def keydb_clean_string(key,returnString=False):
@@ -117,7 +118,14 @@ def get_collection(data):
     return collection
 
 
-def getScore(key,value,valdb):
+def getScore(key,value,valdb,add=True):
+    
+    # add new data to the database
+    # default is to add a new value to the database
+    if add==True:
+        dictInput = {key:[value]}
+        valdb = valdb_add(dictInput)       
+    
     score = {}
     dbVal = {}
     dbVal_wordcount = []
@@ -269,5 +277,5 @@ if __name__ == '__main__':
     # compute confidence score for value
     score = {}
     for k,v in dictInput.iteritems():
-        score[k] = getScore(k,v[0],valdb)
+        score[k] = getScore(k,v[0],valdb,add=False)
     
