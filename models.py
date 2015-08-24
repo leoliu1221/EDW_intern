@@ -48,7 +48,8 @@ class Datapoint:
     def set_key_score(self,marginaldb):
         self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,dbName = None,add=False)
     def set_value_score(self,valdb):
-        self.value_score = getScore(self.key,self.value,valdb = valdb, add=False)
+#        print "key",self.key,"value",self.value
+        self.value_score = getScore(self.key,self.value,valdb = valdb, add=True)
         pass
 
     def find_subs(self,lineList):

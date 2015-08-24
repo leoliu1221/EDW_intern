@@ -7,7 +7,6 @@ Created on Thu Aug 13 14:06:07 2015
 
 from file_utilities import dict_add,getData3
 from nltk.corpus import wordnet as wn
-from get_data_breast import checkAllcancer
 from collections import defaultdict
 from confidence import keydb_marginal_load
 import re
@@ -98,6 +97,7 @@ def keydb_clean_string(key,returnString=False):
 
 
 def get_collection(data):
+    from get_data_breast import checkAllcancer
     collection = {}
     i=0
     while i<len(data):
@@ -144,6 +144,7 @@ def getScore(key,value,valdb = None,add=True):
                 
     
     # Type feature: calculate proportion of a particular type of v with respect to the total frequency
+    print "countdict",countdict,"dbVal",dbVal
     score['Type'] = float((countdict['num']*dbVal['num'] + countdict['num_text']*dbVal['num_text'] + countdict['text']*dbVal['text']))/float(dbVal['total'])
   
     # Length feature: only apply to num_text type (let score of other types to be 1)
