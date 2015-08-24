@@ -161,8 +161,8 @@ def cleaner():
 def Extract():
     #print request.form
     args = parser.parse_args()
-    note = args['data']
-    cancerName = args['cancer']
+    note = args['text']
+    cancerName = args['universe_id']
     print 'args:',args
     print 'form:',request.form
     #should ahve just check form first then the args. 
@@ -224,13 +224,16 @@ def Extract():
     print '*'*80,'note','['+str(note)+']'
     if request.method == 'POST':
         return 'post method received'
-            
     return 'extraction in progress'    
 parser =reqparse.RequestParser()
-parser.add_argument('data')
+parser.add_argument('text')
 parser.add_argument('key')
+parser.add_argument('about_type')
 parser.add_argument('value')
-parser.add_argument('cancer')
+parser.add_argument('universe_id')
+parser.add_argument('suggestions_uri')
+parser.add_argument('universe_name')
+parser.add_argument('universe_name_variants')
 
 if __name__=='__main__':
     app.run(debug=True)
