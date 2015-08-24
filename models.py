@@ -43,8 +43,13 @@ class Datapoint:
                 self.sub_keys = []
             self.key_score = ''
             self.value_score = ''
-            self.set_key_score(marginaldb = marginaldb)
-            self.set_value_score(valdb = valdb)
+            try:
+                self.set_key_score(marginaldb = marginaldb)
+                self.set_value_score(valdb = valdb)
+            except Exception, err:
+                print err
+                print 'ERROR: not able to get key score or value score.'
+                print 'score for',self.key,self.value,'is not calculated'
     def set_key_score(self,marginaldb):
         self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,dbName = None,add=False)
     def set_value_score(self,valdb):
