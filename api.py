@@ -144,12 +144,14 @@ def jsontest():
 def cleaner_result():
     args = parser.parse_args()
     key = args['key']
+    print args
     if key == None:
         key = request.form.get('key')
     if key == None:
         return 'No info'
     else:
         result = keydb_clean(key)
+    
     return json.dumps(result)
 
 
