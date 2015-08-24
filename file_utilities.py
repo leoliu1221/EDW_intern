@@ -6,6 +6,7 @@ Created on Wed Jun 24 10:22:37 2015
 """
 import re,json
 from jsonweb.encode import to_object, dumper
+from confidence import keydb_marginal_newkey
 def update(dic1, dic2):
     '''
     Args:
@@ -145,17 +146,19 @@ def getData3(fName=None):
 
 @to_object()
 class Datapoint:
-    def __init__(self,message=None):
+    def __init__(self,message=None,marginaldb = None):
         if message is None:
             self.key = ''
             self.value = ''
-            self.sub = []
+            self.sub_keys = []
             self.origin = ''
+            self.key_score = ''
+            self.value_score = ''
         else:
             if message=='':
                 self.key=''
                 self.value=''
-                self.sub=[]
+                self.sub_keys=[]
                 self.origin = ''
             #take the first line as key-value, and then pass the rest to find subs. 
             lines = message.split('\n')
@@ -175,9 +178,19 @@ class Datapoint:
                 self.value=''
             self.origin = lines[0]
             if len(lines)>1:
-                self.sub = self.find_subs(message.split('\n')[1:])
+                self.sub_keys = self.find_subs(message.split('\n')[1:])
             else:
-                self.sub = []
+                self.sub_keys = []
+            self.key_score = ''
+            self.value_score = ''
+            self.set_key_score(marginaldb = marginaldb)
+            self.set_value_score()
+    def set_key_score(self,marginaldb):
+        self.key_score = keydb_marginal_newkey(self.key,marginaldb = marginaldb,add=True)
+    def set_value_score(self):
+        #TODO
+        pass
+
     def find_subs(self,lineList):
 #        print 'in find_subs'
         #reduce the level by \t. 

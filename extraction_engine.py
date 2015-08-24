@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 17 11:12:16 2015
-
-@author: lliu5
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Fri Jul 10 13:41:52 2015
 
 @author: sqltest
@@ -14,9 +7,50 @@ Created on Fri Jul 10 13:41:52 2015
 import re 
 from collections import defaultdict
 from file_utilities import getData3,Datapoint
+
 #from get_data_breast import get_format_data
 
-#data3 = getData3()
+
+def clean_string(key,returnString=False):
+    key = key.lower()
+    #clean parenthesis
+    #clean space
+    #clean non-alpha
+    #remove parenthesis, and the text within. 
+    regEx = re.compile(r'([^\(]*)\([^\)]*\) *(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1) + m.group(2)
+        m = regEx.match(key)
+        #print key
+    #remove left parenthesis and the text within (till the end
+    regEx = re.compile(r'([^\(]*) *(\(.*)')
+    m = regEx.match(key)
+    while m:
+        #print key
+        key = m.group(1)
+        m=regEx.match(key)
+        
+    # remove right parenthesis
+    regEx = re.compile(r'(\).*)')
+    if len(re.findall(regEx,key))!=0:
+        return ''
+    
+    #now check if the key is empty
+    key = key.strip()
+    if returnString:
+        return key
+    if key=='':
+        return ''
+    #now remove all non-alpha numeric values, replace by space. 
+    key = re.sub('[^_/0-9a-zA-Z]+', ' ', key)
+    
+    return key
+
+
+
+
 def get_section(text):
     '''
     Find the sections such as A: B: C: ... 
@@ -124,7 +158,14 @@ def qa(result):
  
 def get_subcontent(result,datapoint,sub_content):
     j=0
-    result[datapoint.key] = [datapoint.value.replace("\t",""),datapoint.origin]
+    val = datapoint.value.replace("\t","")
+    key = datapoint.key
+    clean_val = clean_string(val)
+    clean_key = clean_string(key)
+    
+    
+    if clean_key!='':
+        result[clean_key] = [clean_val,datapoint.origin]
     while j<len(sub_content):
         sub_content[j].key = datapoint.key+"_"+sub_content[j].key
         result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
@@ -134,6 +175,8 @@ def get_subcontent(result,datapoint,sub_content):
 def checkAllcancer(note,cut=110,pCut = 40):
     '''
     '''
+    # a dictionary of cancerType code 
+    cancerType_code = {"breast":1,"colorectal":2,"melanoma":3,"ovarian":4,"prostatic":5,"pulmonary":6,"skin":7,"thyroid":8,"uterine":9}
     note = note.replace('"','')
     #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
@@ -154,6 +197,10 @@ def checkAllcancer(note,cut=110,pCut = 40):
             
             #now if the cancer type is valid we add the index to start
             if cancerType!='' and cancerType[0].isalpha() :
+                for k,v in cancerType_code.items():
+                    if k in cancerType.lower():
+                        cancerType = cancerType_code[k]
+                        break
                 starts.append([stage.start(),cancerType])
         
     #for the start index in starts:
@@ -176,7 +223,22 @@ def checkAllcancer(note,cut=110,pCut = 40):
         #if len(datapoint.keys())>2:
         result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
-    return result
+       
+    # remove key_ cases
+    final_result = {}
+
+    for key,val in result.items():
+        datapoint_dict = {}
+       
+        for k in val.keys():
+            split_k = k.rsplit("_",1)
+            if len(split_k)>1 and split_k[1]=="":
+                pass
+            else:
+                datapoint_dict[k]=val[k]
+        final_result[key] = datapoint_dict
+        
+    return final_result
   
     
 
@@ -228,6 +290,7 @@ def get_datapoint_line(note,cut):
 #    for line in lines:
 #        if line.strip()!='':
 #            lineList.append(line)
+            
     result = {}
     ############
     #blocklist is for storing blocks
@@ -254,8 +317,14 @@ def get_datapoint_line(note,cut):
         j=i+1
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
-            if lineList[j].startswith('\t'):
-                block = block + '\t'+lineList[j].strip()+'\n'
+            if lineList[j].startswith('\t'):'
+                #block +=linesList[j]+'\n'
+                #tab_tag are the all the tabs existed in lineList[[j]]
+                #e.g. tab_tag = re.split('[^\t]+','\t\t\tsdfs\tfghd')
+                #results in ['\t\t\t', '\t', '']
+                #tab_tag[0] is the first \t, might contain more than 1 \t
+                tab_tag = re.split('[^\t]+',lineList[j])
+                block = block + tab_tag[0] +lineList[j].strip()+'\n'
             else:
                 break
             j+=1
@@ -265,11 +334,20 @@ def get_datapoint_line(note,cut):
         info = Datapoint(block)
         #print 'info',info
         k = info.key; v = info.value; sub_content = info.sub
+        
         #print 'in block',k,v,sub_content
-        if len(k)<=100 and (k!='' or v!=''):
-            result[k] = v.replace("\t","")
-            result = get_subcontent(result,info,sub_content)
+        if len(k)<=95 and (k!='' or v!=''):
+            
+            clean_key = clean_string(k)
+            clean_val = clean_string(v)
+            clean_val = clean_val.replace("\t","")
+            
+            if clean_key!='':                
+                result[clean_key] = clean_val
+                result = get_subcontent(result,info,sub_content)
         i=j
+        
+  
         #print 'result',result
     return result
 
@@ -281,7 +359,7 @@ def get_format_data(data = None,fileName=None):
     while i<len(data):
         
         result[i] = checkAllcancer(data[i][1])
-        result[i]['content'] = get_section(data[i][1])        
+        #result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
     
