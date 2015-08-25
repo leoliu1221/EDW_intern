@@ -182,7 +182,7 @@ def checkAllcancer(note,cut=110,pCut = 40):
     #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
     starts = []
-    result = []
+    result = {}
     #for different cancer staging summary there will be different start index. 
     #we store the start index in variable starts. 
     for stage in stages:
@@ -222,9 +222,9 @@ def checkAllcancer(note,cut=110,pCut = 40):
         datapoint = get_datapoint_line(process_note, cut)
         #print 'datapoint',datapoint
         #if len(datapoint.keys())>2:
-#        result[starts[i][1]] = (datapoint)
+        result[starts[i][1]] = (datapoint)
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
-        result.append(datapoint)
+        
     return result
        
     # remove key_ cases
@@ -295,13 +295,14 @@ def get_datapoint_line(note,cut):
 #        if line.strip()!='':
 #            lineList.append(line)
             
-    result = {}
+    result = []
     ############
     #blocklist is for storing blocks
     #blocks can spread multiple lines. 
     #1 block only contain 1 main data point and key
     #1 block can contain many sub keys and values. 
     blockList = []
+    
     #starting from the first line of linelist
     i=0
     while i<len(lineList):
@@ -337,6 +338,7 @@ def get_datapoint_line(note,cut):
         #print 'block:',block
         info = Datapoint(block)
         #print 'info',info
+        '''
         k = info.key; v = info.value; sub_content = info.sub
         
         #print 'in block',k,v,sub_content
@@ -349,9 +351,11 @@ def get_datapoint_line(note,cut):
             if clean_key!='':                
                 result[clean_key] = clean_val
                 result = get_subcontent(result,info,sub_content)
+        '''
+        result.append(info)
         i=j
         
-    return info  
+    return result
   
         #print 'result',result
 #    return result

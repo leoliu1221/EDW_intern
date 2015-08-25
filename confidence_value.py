@@ -167,7 +167,7 @@ def getScore(key,value,valdb = None,add=True):
     #   check if word count of v is equal to med then set score to 0 (good case)
     #   otherwise, set score to be 100 (bad case)
         else: 
-            print 'value',value
+#            print 'value',value
             if len(value.split(" "))==med:
                 score['Wordcount']=0
             else:
