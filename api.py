@@ -176,8 +176,7 @@ def jsontest():
         #todo: process the notes. 
         #s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
         #test = Datapoint(s2) 
-        #result = [test,test,test]
-        
+        #result = [test,test,test]        
         
     end = post_json(universe_id,about_type,about_id,result,uri=suggestions_uri)
     return end
