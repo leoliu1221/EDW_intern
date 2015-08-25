@@ -136,16 +136,46 @@ puts thepost
 
 @app.route("/jsontest",methods=['GET','POST'])
 def jsontest():
+    '''
+    parser.add_argument('text')
+    parser.add_argument('key')
+    parser.add_argument('about_type')
+    parser.add_argument('value')
+    parser.add_argument('universe_id')
+    parser.add_argument('suggestions_uri')
+    parser.add_argument('universe_name')
+    parser.add_argument('universe_name_variants')
+        
+    '''
     args = parser.parse_args()
-    print args
-    
-    universe_id = 0
-    about_type = 'some type'
-    about_id = 0
-    s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
-    test = Datapoint(s2) 
-    result = [test,test,test]
-    end = post_json(universe_id,about_type,about_id,result,uri="http://google.com")
+    note = args.get('text')
+    about_type = args.get('about_type')
+    universe_id = args.get('universe_id')
+    suggestions_uri = args.get('suggestions_uri')
+    universe_name = args.get('universe_name')
+    universe_name_variants = args.get('universe_name_variants')
+    about_id = args.get('about_id')
+    print note,about_type,universe_id,suggestions_uri,universe_name,universe_name_variants
+    if suggestions_uri is None:
+        suggestions_uri="http://google.com"
+    if universe_id is None:
+        universe_id = 0
+    if about_type is None:
+        about_type = 'some type'
+    if about_id is None:
+        about_id = 0
+    if note is None:
+        s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
+        test = Datapoint(s2) 
+        result = [test,test,test]
+    else:
+        #todo: process the notes. 
+        s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
+        test = Datapoint(s2) 
+        result = [test,test,test]
+        
+        
+    end = post_json(universe_id,about_type,about_id,result,uri=suggestions_uri)
     return end
 ###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
@@ -253,6 +283,7 @@ parser =reqparse.RequestParser()
 parser.add_argument('text')
 parser.add_argument('key')
 parser.add_argument('about_type')
+parser.add_argument('about_id')
 parser.add_argument('value')
 parser.add_argument('universe_id')
 parser.add_argument('suggestions_uri')
