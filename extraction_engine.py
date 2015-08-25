@@ -173,7 +173,7 @@ def get_subcontent(result,datapoint,sub_content):
         j+=1
     return result
 
-def checkAllcancer(note,cut=110,pCut = 40):
+def check_all_cancer(note,cut=110,pCut = 40):
     '''
     '''
     # a dictionary of cancerType code 
@@ -198,10 +198,10 @@ def checkAllcancer(note,cut=110,pCut = 40):
             
             #now if the cancer type is valid we add the index to start
             if cancerType!='' and cancerType[0].isalpha() :
-                for k,v in cancerType_code.items():
-                    if k in cancerType.lower():
-                        cancerType = cancerType_code[k]
-                        break
+               # for k,v in cancerType_code.items():
+               #     if k in cancerType.lower():
+               #         cancerType = cancerType_code[k]
+               #         break
                 starts.append([stage.start(),cancerType])
         
     #for the start index in starts:
@@ -368,7 +368,7 @@ def get_format_data(data = None,fileName=None):
     i=0
     while i<len(data):
         
-        result[i] = checkAllcancer(data[i][1])
+        result[i] = check_all_cancer(data[i][1])
         #result[i]['content'] = get_section(data[i][1])        
         i+=1
     return data,result
