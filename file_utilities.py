@@ -22,7 +22,11 @@ def update(dic1, dic2):
     for key in dic1.keys():
         dic1[key] = list(set(dic1[key]))
     return dic1
-    
+def in_variants(check,variants):
+    for item in variants:
+        if item.lower() in check.lower():
+            return True
+    return False
     
     
 def dict_add(d1,d2):

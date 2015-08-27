@@ -14,6 +14,7 @@ from confidence_value import getScore
 from confidence import keydb_marginal_load,keydb_marginal_newkey,keydb_clean
 from http_utilities import post_json
 from extraction_engine import check_all_cancer
+from file_utilities import in_variants
 app = Flask(__name__)
 api = Api(app)
 
@@ -165,21 +166,28 @@ def jsontest():
         about_type = 'some type'
     if about_id is None:
         about_id = 0
+    if universe_name_variants is None:
+        universe_name_variants = ['breast']
     if note is None:
-        s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
-        test = Datapoint(s2) 
-        result = [test,test,test]
-    else:
-        result = check_all_cancer(note)
-        #filter out the cancer types listed. 
-        return dumper(result)
+        note= '"A.\tRIGHT BREAST, NEEDLE LOCALIZED LUMPECTOMY:\n-\tINFILTRATING DUCTAL CARCINOMA, GRADE 3 OF 3, MEASURING 1.7 CM IN GREATEST DIMENSION.\n-\tDUCTAL CARCINOMA IN SITU (DCIS), SOLID AND COMEDO-TYPES, NUCLEAR GRADE 3, WITH MICROCALCIFICATIONS:\n-\tLYMPHOVASCULAR INVASION IDENTIFIED.\n-\tINVASIVE CARCINOMA AND DCIS ARE PRESENT WITHIN LESS THAN 0.1 CM OF THE SUPERIOR MARGIN ON THE MAIN SPECIMEN (SEE PARTS B-G FOR FINAL STATUS OF MARGINS).\n-\tBIOPSY SITE CHANGES.\n-\tREMAINING BREAST TISSUE WITH USUAL DUCTAL HYPERPLASIA, APOCRINE METAPLASIA, AND SCLEROSING ADENOSIS WITH MICROCALCIFICATIONS.\n\nB.\tRIGHT BREAST, ANTERIOR SUBAREOLAR MARGIN, EXCISION:\n-\tBREAST TISSUE, NO TUMOR IDENTIFIED.\n\nC.\tRIGHT BREAST, LATERAL MARGIN, EXCISION:\n-\tBREAST TISSUE, NO TUMOR IDENTIFIED.\n\nD.\tRIGHT BREAST, MEDIAL MARGIN, EXCISION:\n-\tBREAST TISSUE, NO TUMOR IDENTIFIED.\n\nE.\tRIGHT BREAST, DEEP MARGIN, EXCISION:\n-\tMINUTE FOCUS OF INFILTRATING DUCTAL CARCINOMA, GRADE 3 OF 3, MEASURING LESS THAN 0.1 CM IN GREATEST DIMENSION.\n-\tFINAL MARGIN NEGATIVE FOR TUMOR (0.6 CM FROM TUMOR).\n\nF.\tRIGHT BREAST, INFERIOR MARGIN, EXCISION:\n-\tBREAST TISSUE, NO TUMOR IDENTIFIED.\n\nG.\tRIGHT BREAST, SUPERIOR MARGIN, EXCISION:\n-\tBREAST TISSUE, NO TUMOR IDENTIFIED.\n\nH.\tLYMPH NODES, RIGHT AXILLARY SENTINEL, EXCISION:\n-\tTWO LYMPH NODES, NEGATIVE FOR METASTATIC CARCINOMA (0/2).\n\n\n Invasive Breast Cancer Staging Summary \t\nSpecimen Submitted:\tRight breast needle localized lumpectomy\t\nSpecimen Dimensions:\t4.1 x 3.9 x 1.8 cm\t\nTumor Size:\t1.7 cm\t\n \t(Based on the most representative gross or microscopic measurement of the invasive component only)\t\t\nHistologic Type:\tDuctal\t\nGrade:\t3\t\nLymphatic Vascular Invasion:\tPresent\t\nDCIS as Extensive Intraductal Component:\tAbsent\t\n\tDCIS Measurement/Proportion:\t10%\t\nLCIS:\tAbsent\t\nCalcifications:\tPresent\t\n\tLocations of Calcifications:\tBenign and malignant tissue\t\nMargins of Excision:\t\n\tInvasive Cancer:\tNegative\t\n\tDistance to Margin:\t0.6 cm to deep margin\t\n\tDCIS:\tNegative\t\n\tDistance to Margin:\tWidely free\t\nAxillary Lymph Nodes:\t\t\n\tNumber of Positive Versus Total:\t0/2\t\n\tSize of Largest Metastasis:\tN/A\t\n\tExtranodal Extension:\tN/A\t\nBreast Tumor Markers:\t(Per S-12-14475)\t\n\tER:\tLow Positive; 5%\t\n\tPR:\tLow Positive; 5%\t\n\tHER2:\tNegative; 1+\t\n\tKi-67\tHigh (Unfavorable); 30%\t\n\tp53:\tNegative; 0%\t\nTumor Bank:\tNo\t\nTNM Staging:\tpT1c-N0(SN)-MX\t\nGrading of invasive carcinoma is based on the modified Bloom-Richardson system as described in Protocol for the Examination of Specimens from Patients with Invasive Carcinoma of the Breast, a publication of the College of American Pathologists (CAP), updated on 2009.  The TNM staging is based on the recommendations of the American Joint Commission on Cancer (AJCC, 7th Edition, 2010).\t\n"""\n'
+
+    #process the note since we have cleared everything else. 
+    if note is not None:
+        result_all = check_all_cancer(note)
+        result = []
+        for key in result_all.keys():
+            if  in_variants(key,universe_name_variants):
+                temp = {}
+                temp['galaxy'] = result_all[key]                
+                result.append(temp)
+        #filter out the cancer types listed.
+        end = post_json(universe_id,about_type,about_id,result,uri=suggestions_uri)
+        return end
         #todo: process the notes. 
         #s2 = 'TUMOR TYPE:\t\t\t\t\t\t\tENDOMETRIOID ADENOCARCINOMA\n\tSIZE:\t\t\t\t\t\t\t\t0.5 CM THICKNESS\n\tFIGO GRADE\t\t\t\t\t\t\n\t\tOVERALL:\t\t\t\t\t\t1\n\t\tARCHITECTURAL:\t\t\t\tGLANDULAR\n\t\tNUCLEAR:\t\t\t\t\t\tLOW-GRADE\t'   
         #test = Datapoint(s2) 
         #result = [test,test,test]        
         
-    end = post_json(universe_id,about_type,about_id,result,uri=suggestions_uri)
-    return end
 ###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
