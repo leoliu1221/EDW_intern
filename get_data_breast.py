@@ -223,8 +223,13 @@ def checkAllcancer(note,cut=110,pCut = 40):
         datapoint = get_datapoint_line(process_note, cut)
         #print 'datapoint',datapoint
         #if len(datapoint.keys())>2:
-        result[starts[i][1]] = (datapoint)
-#        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
+        if result.get(starts[i][1]) is None:
+            result[starts[i][1]] = (datapoint)
+        else:
+            n=1
+            while result.get(starts[i][1]+' '+str(n)) is not None:
+                n+=1
+            result[starts[i][1]+' '+str(n)] = datapoint
        
     # remove key_ cases
     final_result = {}

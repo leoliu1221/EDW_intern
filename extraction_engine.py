@@ -220,11 +220,17 @@ def check_all_cancer(note,cut=110,pCut = 40):
         #print process_note
         # check that # captured datapoint is greater than 2 (if it's not, it's most likely that the returned datapoint is irrelavant)
         datapoint = get_datapoint_line(process_note, cut)
-        #print 'datapoint',datapoint
-        #if len(datapoint.keys())>2:
-        result[starts[i][1]] = (datapoint)
+        # if the result already have the same cancer, 
+        # e.g. there are 2 breast cancer, then
+        # take 1 of the breast cancer into breast cancer1
+        if result.get(starts[i][1]) is None:
+            result[starts[i][1]] = (datapoint)
+        else:
+            n=1
+            while result.get(starts[i][1]+' '+str(n)) is not None:
+                n+=1
+            result[starts[i][1]+' '+str(n)] = datapoint
 #        result[starts[i][1]]=(get_datapoint_line(process_note, cut))
-        
     return result
        
     # remove key_ cases
