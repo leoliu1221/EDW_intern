@@ -9,8 +9,8 @@ import time,re
 from file_utilities import dict_add,get_name
 
 import nltk
-#nltk.download('stopwords')
-#nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
 from nltk.stem.snowball import SnowballStemmer
 
