@@ -25,6 +25,8 @@ def post_json(universe_id,about_type,about_id,result,uri=None):
 #or ican use r = requests.post(uri, json=sample_data)
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')
+    print '*'*100
+    print dumper(data)
     return dumper(data)
     
 if __name__ == '__main__':
