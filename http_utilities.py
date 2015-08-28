@@ -19,8 +19,8 @@ def post_json(universe_id,about_type,about_id,result,uri=None):
     data['universe_id'] = universe_id
     data['about_type'] = about_type
     data['about_id'] = about_id
-    data['result'] = result    
     data['source'] = 'liu_papis_nlp'
+    data['result'] = result    
     r = requests.post(uri, data=dumper(data))
 #or ican use r = requests.post(uri, json=sample_data)
     print(r.status_code, r.reason)
