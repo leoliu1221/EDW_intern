@@ -21,7 +21,8 @@ def post_json(universe_id,about_type,about_id,result,uri=None):
     data['about_id'] = about_id
     data['source'] = 'liu_papis_nlp'
     data['result'] = result    
-    r = requests.post(uri, data=dumper(data))
+    headers = {'content-type':'application/json'}
+    r = requests.post(uri, data=dumper(data),headers = headers)
 #or ican use r = requests.post(uri, json=sample_data)
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')
