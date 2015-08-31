@@ -17,17 +17,40 @@ from nltk.stem.snowball import SnowballStemmer
 #see which languages are supported:
 #print(" ".join(SnowballStemmer.languages))
 LANGUAGE= 'english'
+#snow ball stemmer is better than commonly used other stemmers. Because its in the middle of aggresive and passive. (some stemmers are too aggresive and some are too passive) 
 stemmer = SnowballStemmer(LANGUAGE)
 
 #Uasage: top_dict(keydb_marginal_load('breast.data'),20)
-def top_dict(dict,num):
+def top_dict(target,num):
+    '''
+    Args:
+        target: a dictionary of key - number pairs. 
+        num: represents top n keys you want to return. 
+    Returns: 
+        Sorted top num keys and values. 
+    '''
     if num<=0:
         return []
-    temp_arr = [[dict[key],key] for key in dict.keys()]
+    temp_arr = [[target[key],key] for key in target.keys()]
     return sorted(temp_arr,reverse=True)[0:num]
     
 def keydb_clean(key,returnString=False):
-    
+    '''
+    This function cleans a string. 
+    Default: 
+        Returns a list of non-parenthesized, or half parenthesized, no-stop wrods, stemmed word component list. 
+        
+    Args: 
+        key: a  string 
+        returnString: A boolean indicating whether to return a string or array
+    Returns: 
+        A list of components of cleaned input string. 
+    Usage: 
+        keydb_clean('your interns are dumb',False) -- [u'dumb', u'intern'] u here means unicode. 
+        keydb_clean('your interns are dumb',True) -- 'your interns are dumb'
+    Note: 
+        Specify return a string will have different behaviour. It only cleans parenthesis if return string. 
+    '''
     from nltk.corpus import stopwords
     #clean parenthesis
     #clean space
@@ -67,6 +90,13 @@ def keydb_clean(key,returnString=False):
     return sorted(no_stop_words)
 
 def keydb_init(dbName='keydb.data'):
+    '''
+    This functions like a constructor for keydb
+    Args:
+        dbName a string of file name or file path with filename
+    Returns: 
+        dictinoary keydb
+    '''
     keydb = keydb_load(dbName = dbName)
     if len(keydb)==0:
         keydb_add({},dbName = dbName)
@@ -77,6 +107,11 @@ def keydb_load(dbName=None,keydb_folder = './keydb/'):
     '''
     this function looks for data files in keydbFolder or in current directory. 
     the default keydb_folder is './keydb/'    
+    Args:
+        dbName: a string of file that has keydb
+        keydb_folder: a string of filepath that contains keydb default: './keydb/'
+    Returns: 
+        keydb - a dict of result. 
     '''
     if dbName is None:
         dbName = 'keydb.data'
@@ -92,11 +127,12 @@ def keydb_load(dbName=None,keydb_folder = './keydb/'):
         print 'db load',dbName,'unsuccessful -- db not found'
     return db
     
-def keydb_destroy(dbName='keydb.data'):
+def keydb_destroy(dbName='keydb.data',dbFolder = './keydb/'):
     '''
     This function destroys the given file. 
     Args:
         dbName: string of db file location
+        dbFolder: the folder otherthan base directory to look for keydb
     Returns: 
         None
     '''
@@ -104,9 +140,22 @@ def keydb_destroy(dbName='keydb.data'):
     if os.path.exists(dbName):
         os.remove(dbName)
         print 'db destroy',dbName,'succesful'
+    elif os.path.exists(dbFolder+dbName):
+        os.remove(dbFolder+dbName)
+        print 'db destroy',dbFolder+dbName,'succesful'
     else:
         print 'db destroy',dbName,'unsuccessful -- db not found'
 def keydb_get_dbs(folderName='./keydb/'):
+    '''
+    for earlier versions, when we did not have data input. 
+    This functions gets all the .data files. 
+    Returns: 
+        a list of filesNames for .data files in specified folder names. 
+    E.g.
+    if you have a folder ./keydb/ and 1 file called test.data, 
+    then 
+    keydb_get_dbs(folderName='./keydb/')  -> [test]
+    '''    
     import glob
     dbs = glob.glob(folderName+'*.data')
     dbs.extend(glob.glob('*.data'))
@@ -126,24 +175,32 @@ def keydb_add_result(result,dbName='keydb.data'):
     db = keydb_add(db)
     return db
 
-def keydb_add(freqDict,dbName='keydb.data'):
+def keydb_add(freqDict,dbName='keydb.data',dbFolder='./keydb/'):
     '''
+    This function checks for same directory first and then dbFolder for the database specified. 
+    If found, then add the dict to the database. 
+    if not found, then add empty dict to current directory with the dbName specified. 
     Args:
         freqDict: the processed frequency dictinoary 
         dbName: The physical storage for the database
+        dbFolder: the foler where db was placed in. 
     Returns:
-        None
+        dictionary of the keydb 
     '''
     import os.path,cPickle as pickle
+    dbPath = dbName
     if os.path.exists(dbName):
         db = pickle.load(open(dbName,'r'))
+        dbPath = dbName
+    elif os.path.exists(dbFolder+dbName):
+        db = pickle.load(open(dbFolder+dbName,'r'))
+        dbPath = dbFolder + dbName
     else:
         db = {}
     db = dict_add(db,freqDict)
-    pickle.dump(db,open(dbName,'w'))
-    #print 'added to db: ',dbName
+    pickle.dump(db,open(dbPath,'w'))
+    #print 'added to db: ',dbPath
     return db
-    #return db
 
 def keydb_get_note(note,dbName='keydb.data'):
     '''
@@ -223,7 +280,17 @@ def keydb_marginal_load(dbName = None):
     return keydb_load(dbName = dbName)
     
 
-def keydb_marginal_add(key=None,value=None,dbName='keydb_marginal.data',noteDict = None):
+def keydb_marginal_add(key=None,value=None,dbName='keydb_marginal.data',noteDict = None,dbFolder = './keydb/'):
+    '''
+    add a new key to keydb_marginal library
+    Args: 
+        key:a string of key. 
+        value: a string of value. 
+        dbName: the file name for db -- this requires file name because we will write back to file. 
+        noteDict: provides batch process for a note dictionary
+    Returns: 
+        Dictionary after adding the new key-value pair or after adding a dictionary of key-value pairs. 
+    '''    
     if noteDict is None:
         #if a note dict does not present
         if key is None or value is None:
@@ -235,7 +302,7 @@ def keydb_marginal_add(key=None,value=None,dbName='keydb_marginal.data',noteDict
                 marginal_dict[k]=0
             marginal_dict[k] += value
         
-        return keydb_add(marginal_dict,dbName=dbName)
+        return keydb_add(marginal_dict,dbName=dbName,dbFolder = dbFolder)
     else:
         #this is for adding a note dict. 
         
@@ -246,16 +313,27 @@ def keydb_marginal_add(key=None,value=None,dbName='keydb_marginal.data',noteDict
                 if marginal_dict.get(k)==None:
                     marginal_dict[k]=0
                 marginal_dict[k]+=value
-        return keydb_add(marginal_dict,dbName = dbName)
+        return keydb_add(marginal_dict,dbName = dbName,dbFolder = dbFolder)
         
         
 def keydb_marginal_add_data(data,dbName='keydb_marginal.data'):
+    '''
+    data is the data we got from get_data_breast or extraction_engine. 
+    dbName is the name of our keydb
+    Returns:
+        The added dictinoary of keydb.  
+    '''    
     for value in data.values():
+        #note that the value[1] is the actual note. value[0] is a number representing the number of the note. .
         note = value[1]
         keydb_marginal_add_note(note,dbName=dbName)
     return keydb_marginal_load()
     
 def keydb_marginal_add_note(note,dbName='keydb_marginal.data'):
+    '''
+    Args: 
+        Note is an actual note of the 
+    '''    
     #first get the keydb from keydb_get_note 
     #now keydb stores all frequencies of keys
     keydb = keydb_get_note(note,dbName = dbName)
@@ -275,6 +353,19 @@ def keydb_marginal_add_db(keydb,dbName='keydb_marginal.data'):
     return keydb_marginal_load(dbName = dbName)
 
 def keydb_marginal_core(key):
+    '''
+    core function for adding and creating keydb library. 
+    There are 2 constants in key
+    'datapoint_count' and 'note_count'
+    e.g. if you have ['a','b','c'] as your input key, then
+    (a,),(b,),(c,),(a,b,),(a,c,),(b,c,),(a,b,c,) will all be added to the returning list 
+    Note that all those tuples are sorted. Meaning there will never be (b,a) instead of (a,b) and this is how we keep our database clean. 
+    Args: 
+        key: a string of key. 
+        Note: this key will be cleaned by keydb_clean therefore we can get a list of tokens
+    Returns: 
+        a list of those values above. (a list of tuples. )    
+    '''
     ###############################################
     #for single key
     ###############################################
@@ -295,6 +386,14 @@ def keydb_marginal_core(key):
     return resultKeys
     
 def keydb_marginal_marginal(key,marginaldb = None):
+    '''
+    Args:
+        Key: a strnig of key
+        marginaldb :the keydb_marginal database
+    Returns: 
+        The marginal probability of the given key. 
+        return maringal('abc') = p(a) * p(b) * p(c)
+    '''
     ###########################
     #getting the marginal probability
     ##########################
@@ -319,6 +418,15 @@ def keydb_marginal_chained(key,marginaldb=None):
     ###########################
     #getting the chanied probability
     ##########################
+    '''
+    Args:
+        Key: a strnig of key
+        marginaldb :the keydb_marginal database
+    Returns: 
+        The chained probability of the given key. 
+        return chained('abc') = p(tuple('a','b','c',))
+  
+    '''    
     if '_' in key:
         key = key.split('_')[-1]
     if marginaldb is None:
@@ -339,6 +447,15 @@ def keydb_marginal_newkey(key,value=None,marginaldb=None,dbName = None,add=False
     #insertring a new key
     # default is to add a new key
     ##########################
+    '''
+   Args:
+        Key: a strnig of key
+        dbName: the name of the db file
+        add: True then add it to db, False then not. 
+        marginaldb: the db to read key stats info from.
+    Returns: 
+        The string representatino of marginal chained marginal/chained values for a key
+    '''
     result = 0
     if '_' in key:
         key = key.split('_')[-1]
@@ -371,6 +488,7 @@ def keydb_build():
     '''
     this function is for building all keydbs from all csvs from /data folder. 
     when the build finishes, you will have all *.data where * is the cancer name. 
+    batch building all libraries under the same directory. (not keydb directory)    
     '''
     from get_data_breast import get_format_data
     from file_utilities import getData3
@@ -495,10 +613,6 @@ def keydb_build():
             db=dict_add(db,keydb_get_note(record))
         keydb_add(db)
         '''
-            
-        
-        
-        
         elapsed = time.time()-start0
         print 'finished exectuing. elapsed time=',elapsed,'s'
         times.append(['total time '+get_name(f),elapsed])

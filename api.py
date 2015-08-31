@@ -20,14 +20,30 @@ api = Api(app)
 
 @app.route('/')
 def index():
+    '''
+    Returns: 
+        render home.html. 
+    '''
     from confidence import keydb_get_dbs
     files = keydb_get_dbs()
     return render_template('home.html',files = files)
 @app.route('/confidence')
 def confidence():
+    '''
+    returns:
+        render confidence.html
+    '''
     return render_template('confidence.html')
 @app.route('/conf_result',methods=['GET','POST'])
 def conf_result():
+    '''
+    deprecated. 
+    returns the confidence result. 
+    Keyscore and value score. 
+    1. get arguments from parser
+    2. use arguments to feed into our keydb_marginal_newkey and get_score from confidenceval
+    3. return the result in json format. 
+    '''
     args = parser.parse_args()
     key = args['key'] 
     value = args['value']
@@ -139,14 +155,14 @@ puts thepost
 @app.route("/jsontest",methods=['GET','POST'])
 def jsontest():
     '''
-    parser.add_argument('text')
-    parser.add_argument('key')
-    parser.add_argument('about_type')
-    parser.add_argument('value')
-    parser.add_argument('universe_id')
-    parser.add_argument('suggestions_uri')
-    parser.add_argument('universe_name')
-    parser.add_argument('universe_name_variants')
+    Main access point. 
+    1. get the arguments from parser
+    2. give default values to those arguments if not exists
+    3. process all arguments, getting key score and value score from inside of datapoint datastrcture.     
+    4. post the json result back to the uri specified in suggestions_uri field. if not given, will post back to google.     
+    5. Also returns the json result sychronously.     
+    #TODO
+    future operations require creating a new thread for each post received access.     
         
     '''
     args = parser.parse_args()
@@ -193,6 +209,8 @@ def jsontest():
 ###################################################
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
+    '''
+    '''
     args = parser.parse_args()
     key = args['key']
     print args
@@ -212,21 +230,13 @@ def cleaner():
 
 @app.route('/note',methods=['GET', 'POST'])
 def Extract():
-    
-    
-    
     '''
-    parser.add_argument('text')
-    parser.add_argument('key')
-    parser.add_argument('about_type')
-    parser.add_argument('value')
-    parser.add_argument('universe_id')
-    parser.add_argument('suggestions_uri')
-    parser.add_argument('universe_name')
-    parser.add_argument('universe_name_variants')
-        
+    depracted. Use jsontest instead. 
+    this is a nice web interface for testing. 
+    user only needs to input text and a univerid, 
+    Returns: 
+        json formated result from given text and universe_id
     '''
-    #print request.form
     args = parser.parse_args()
     note = args['text']
     cancerName = args['universe_id']
