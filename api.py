@@ -161,6 +161,7 @@ def jsontest():
     3. process all arguments, getting key score and value score from inside of datapoint datastrcture.     
     4. post the json result back to the uri specified in suggestions_uri field. if not given, will post back to google.     
     5. Also returns the json result sychronously.     
+    
     #TODO
     future operations require creating a new thread for each post received access.     
         
@@ -210,6 +211,7 @@ def jsontest():
 @app.route('/cleaner_result',methods=['GET','POST'])
 def cleaner_result():
     '''
+    return json result after cleaning. 
     '''
     args = parser.parse_args()
     key = args['key']
@@ -302,6 +304,7 @@ def Extract():
     if request.method == 'POST':
         return 'post method received'
     return 'extraction in progress'    
+    
 parser =reqparse.RequestParser()
 parser.add_argument('text')
 parser.add_argument('key')

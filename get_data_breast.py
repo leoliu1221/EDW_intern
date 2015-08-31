@@ -262,8 +262,12 @@ def get_datapoint_line(note,cut):
     while l<len(lines):
         lineList.append(lines[l])
         tnmKeys = re.findall('(tnm|tmn)[)]* staging(?i)', lines[l])
-
+        #tnm keys are id to determining the end of a section of note. 
+        #if at the end of a section, then break the while loop. 
+        #after breaking, lineList will contain one section. 
         if len(tnmKeys)>0:
+            #note this regex is different in that it has ':'
+            #this deal with the situation when tnm staging is directly after the tnm staging line. 
             tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[l])
             if len(tnmKeys)>0:
                 break
@@ -275,7 +279,9 @@ def get_datapoint_line(note,cut):
                 lNext+=1
                 if lNext>=len(lines):
                     break
+            #Ok i admit this code sucks. I myself dont really know why there is a break here. 
             break 
+            #ther rest wont take any effect because of the above break statement
             tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[lNext])
             
             # if the line contain "... staging:", the line is appended and stop. Otherwise, append the following line until the next empty line
@@ -291,12 +297,6 @@ def get_datapoint_line(note,cut):
     
     #now linelist contains any line input till it finds tnm staging. 
     #print lineList
-            
-#    lines = note.split("\n")
-#    lineList = []
-#    for line in lines:
-#        if line.strip()!='':
-#            lineList.append(line)
             
     result = {}
     ############
@@ -325,11 +325,6 @@ def get_datapoint_line(note,cut):
         while j<len(lineList):
             lineList[j] = lineList[j].replace('    ','\t')
             if lineList[j].startswith('\t'):
-                #block +=linesList[j]+'\n'
-                #tab_tag are the all the tabs existed in lineList[[j]]
-                #e.g. tab_tag = re.split('[^\t]+','\t\t\tsdfs\tfghd')
-                #results in ['\t\t\t', '\t', '']
-                #tab_tag[0] is the first \t, might contain more than 1 \t
                 tab_tag = re.split('[^\t]+',lineList[j])
                 block = block + tab_tag[0] +lineList[j].strip()+'\n'
             else:
@@ -343,7 +338,7 @@ def get_datapoint_line(note,cut):
         k = info.key; v = info.value; sub_content = info.sub_keys
         
         #print 'in block',k,v,sub_content
-        if len(k)<=95 and (k!='' or v!=''):
+        if len(k)<=95 and (k.strip()!='' or v!=''):
             
             clean_key = clean_string(k)
             clean_val = clean_string(v)
@@ -353,8 +348,6 @@ def get_datapoint_line(note,cut):
                 result[clean_key] = clean_val
                 result = get_subcontent(result,info,sub_content)
         i=j
-        
-  
         #print 'result',result
     return result
 

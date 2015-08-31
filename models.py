@@ -6,7 +6,7 @@ import re
 @encode.to_object()
 class Datapoint:
     
-
+    #constrctor 
     def __init__(self,message=None,marginaldb = None,valdb = None):
         if message is None:
             self.key = ''

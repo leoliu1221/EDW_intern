@@ -132,52 +132,24 @@ def get_section(text):
                 break
     
     return result
-            
-            
-def qa(result):
-    '''
-    checking for code quality. 
-    How many \t were recognized, and how many did not find. Print out the numbers. 
-    Args: 
-        result -- the result dict
-    Returns:
-        None        
-    '''        
-    countTab = 0
-    countEmpty = 0
-    for row,item in result.items():
-        if len(item.keys())==0:
-            countEmpty +=1
-            print row,'has empty result'
-        for key in item.keys():
-            if '\t' in key:
-                countTab+=1
-                print row, 'has tab as a detection in',key,'next char:',item[key][0]=='\n'
-    print 'tab count:',countTab
-    print 'empty count:',countEmpty
-
- 
-def get_subcontent(result,datapoint,sub_content):
-    j=0
-    val = datapoint.value.replace("\t","")
-    key = datapoint.key
-    clean_val = clean_string(val)
-    clean_key = clean_string(key)
-    
-    
-    if clean_key!='':
-        result[clean_key] = [clean_val,datapoint.origin]
-    while j<len(sub_content):
-        sub_content[j].key = datapoint.key+"_"+sub_content[j].key
-        result.update(get_subcontent(result,sub_content[j],sub_content[j].sub))
-        j+=1
-    return result
 
 def check_all_cancer(note,cut=110,pCut = 40):
     '''
+    Args: 
+        note: a string of pathology note. 
+        pCut: for finding cancer type for each start. 
+    Returns: 
+        A dictionary of cancer type -> Datapoint. 
+    IMPORTANT NOTES:
+        steps involved: 
+        1. finds staging summary keywords and append it to starts (a note can have several staging summaries.)
+        2. for each staging summary, feed process_datapoint_line so process_datapoint_line will get all the key-value pairs for each start
+        3. Use an outside dictionary to store all dictionaries stored from step2, and then return the result. 
+    The usage is simple: just check_all_cancer(note) will gets you all the datapoints. 
     '''
     # a dictionary of cancerType code 
-    cancerType_code = {"breast":1,"colorectal":2,"melanoma":3,"ovarian":4,"prostatic":5,"pulmonary":6,"skin":7,"thyroid":8,"uterine":9}
+    # cancer type note is not used. 
+    #cancerType_code = {"breast":1,"colorectal":2,"melanoma":3,"ovarian":4,"prostatic":5,"pulmonary":6,"skin":7,"thyroid":8,"uterine":9}
     note = note.replace('"','')
     #stages contrain all matches containing staging summary keyword. 
     stages = re.finditer(re.compile('staging summary(?i)'),note)
@@ -222,7 +194,7 @@ def check_all_cancer(note,cut=110,pCut = 40):
         datapoint = get_datapoint_line(process_note, cut)
         # if the result already have the same cancer, 
         # e.g. there are 2 breast cancer, then
-        # take 1 of the breast cancer into breast cancer1
+        # take 1 of the breast cancer into breast cancer 1
         if result.get(starts[i][1]) is None:
             result[starts[i][1]] = (datapoint)
         else:
@@ -253,6 +225,23 @@ def check_all_cancer(note,cut=110,pCut = 40):
     
 
 def get_datapoint_line(note,cut):
+    '''
+    Args:
+        note: a string of note
+        cut:  a cut that we stopped using. 
+    Returns: 
+        the results of a given note 
+    IMPORTANT NOTE:
+        The note has been cut till the first cancer staging. 
+        This code finds the first tnm staging keyword
+        and then process all key-value pairs between start to 'tnm staging blablabla'
+        Steps involved: 
+        1. use linebreaks to seperate all lines
+        2. find tnm staging blablabla and then cut the whole note based on that
+        3. for each line generate blocks
+        4. process blocks on the fly and add datapoint result to result
+        5. after gathering all datapoint, return result. 
+    '''
     #cut off tnm staging +cut, or to the end of the line
 #    try:
 #        tnm_index = re.search('(tnm|tmn)[)]* staging(?i)', note).start()
@@ -278,6 +267,8 @@ def get_datapoint_line(note,cut):
                 lNext+=1
                 if lNext>=len(lines):
                     break
+            #not sure why there is a break here. 
+            #the rest of the code will definately not get processed. 
             break 
             tnmKeys = re.findall('(tnm|tmn)[)]* staging:(?i)', lines[lNext])
             
