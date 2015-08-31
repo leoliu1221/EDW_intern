@@ -57,3 +57,6 @@ Lastly make sure the website works and we will send you the original seed datafi
 EDIT:
 1. if using virtual env make sure pip install -r requirements.txt after activate virtualenv, and make sure virtualenv is under the application folder. 
 2. if using virtual env, after step1, you will need to modify the wsgi file by adding import sys;sys.path.insert(0,"flask app root path") before import app as application
+
+Some more examples that i found super useful:
+https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
