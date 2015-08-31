@@ -31,10 +31,12 @@ def in_variants(check,variants):
     
 def dict_add(d1,d2):
     '''
-    
-
-
-
+    add two dictionaries, assuming the values are all number/array. (because we used + to add those values. )
+    Args: 
+        d1: dictionary1
+        d2: dictionary2
+    Returns: 
+        result: the combined dictinary with value added for same key. 
     '''
     if d1==None:
         return d2
@@ -150,6 +152,9 @@ def getData3(fName=None):
             
 def match_encounter_id(data, result):
     '''
+    NOT USED IN API OR CONFIDENCE
+    match encoutnerid to note. 
+    
     '''
     for key in result.keys():
         result[key]['encounterid'] = data[key][2]
@@ -170,20 +175,7 @@ def get_name(filePath):
     if len(result.split())<2:
         return 'NOVALUE'
     else:
-        return result.split()[-2]
-def dic_to_list(result):
-    '''
-    result should be a dictionary
-        -  cancertype : k-v
-        -  cancertype : k-v
-        ...
-        -  content : k-v
-    '''
-    list_result = []
-    for cancertype in result.keys():
-        for item in result[cancertype]:
-            pass
-            
+        return result.split()[-2]            
     
 if __name__=='__main__':
     
