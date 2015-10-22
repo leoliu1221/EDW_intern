@@ -34,4 +34,6 @@ def cleaner():
     return render_template('anniversary.html')
 
 if __name__=='__main__':
-    app.run(debug=True)
+    from send_txt import email
+    email(address='2243100552@messaging.sprintpcs.com',content='this is working right?')
+    #app.run(debug=True)
