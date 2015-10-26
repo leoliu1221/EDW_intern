@@ -1,0 +1,10 @@
+cancer
+cancers
+carcinoma
+sarcoma
+melanoma
+lymphoma
+neoplasm
+malignant tumors
+adenocarcinoma
+mucinous carcinoma

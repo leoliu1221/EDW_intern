@@ -1,0 +1,78 @@
+    lung
+Ia	T1a	N0	M0
+Ia  T1b	N0	M0
+Ib	T2a	N0	M0
+IIa	T1a	N1	M0
+IIa T1b	N1	M0
+T2a	N1	M0
+T2b	N0	M0
+IIb	T2b	N1	M0
+IIb T3	N0	M0
+IIIa	T1	N2	M0
+IIIa T2	N2	M0
+IIIa T3	N2	M0
+IIIa T3	N1	M0
+IIIa T4	N0	M0
+IIIa T4	N1	M0
+IIIb	T4	N2	M0
+IIIb T1	N3	M0
+IIIb T2	N3	M0
+IIIb T3	N3	M0
+IIIb T4	N3	M0
+IV	M1a 
+IV M1b
+colon
+0	Tis	N0	M0	
+I	T1	N0	M0
+I 	T2	N0	M0
+IIA	T3	N0	M0
+IIB	T4a	N0	M0
+IIC	T4b	N0	M0
+IIIA T1 N1 M0
+IIIA T1 N1c M0
+IIIA T2 N1 M0
+IIIA T2 N1c M0
+IIIA T1	N2a	M0
+IIIB T3 n1c m0
+IIIb t3 n1 m0
+IIIb t4 n1 m0
+IIIb t4 n1c m0
+IIIb t2 n2a m0
+IIIb t3 n2a m0
+IIIb t1 n2b m0
+IIIb t2 n2b m0
+IIIC	T4a	N2a	M0	
+IIIC t3 n2b m0
+iiic t4a n2b m0
+iiic t4b n1 m0
+iiic t4b n2 m0
+IVA	M1a
+IVB	M1b
+skin
+0 tis n0 m0
+i t1 n0 m0
+ii t2 n0 m0
+ii t3 n0 m0
+iii t4 n0 m0
+iii n1 m0
+iv m1
+breast
+0	Tis	N0	M0
+IA	T1	N0	M0
+IB	T0	N1mi	M0
+IB	T1	N1mi	M0
+IIA	T0	N1	M0
+ IIA	T1	N1	M0
+IIA 	T2	N0	M0
+IIB	T2	N1	M0
+IIB 	T3	N0	M0
+IIIA	T0	N2	M0
+IIIA 	T1	N2	M0
+IIIA 	T2	N2	M0
+IIIA 	T3	N1	M0
+IIIA 	T3	N2	M0
+IIIB	T4	N0	M0
+IIIB 	T4	N1	M0
+IIB 	T4	N2	M0
+IIIC	N3	M0
+IV		M1

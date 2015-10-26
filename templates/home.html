@@ -1,45 +1,38 @@
 <!-- extend base layout -->
 {% extends "template.html" %}
 {% block title %}
-<title> Haircut_reminder</title>
+<title> EDW - note_extractor</title>
 {% endblock %}
 {% block css %}
 <link href="/static/css/margin-top.css" rel="stylesheet">
 {% endblock %}
-            {% block pagename %}
-            Haircut_reminder
-            {% endblock %}
 {% block content %}
+
+<div class="form-group">
 <form name="dataForm" id="dataForm" action="note" method="POST">
 <div class="row">
 <div class="col-md-4 col-md-offset-4 top17">
-     <label class="label label-primary" for="name">Name</label>
-  <input type='text' name="name" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='How shall we call you '></input>
+     <label class="label label-primary" for="cancer">put cancertype here</label>
+  <input type='text' name="cancer" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='type in cancer type (all lower case) e.g. breast '></input>
   </div></div>
-
     <div class="row">
     <div class="col-md-4 col-md-offset-4 top17">
-    <label class="label label-primary" for="phone#">Phone#</label>
-  <input type='text' name="phone#" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='What number shall we text you '></input>
+    <label class="label label-primary" for="cancer">put cancertype here</label>
+    <select id="test_select" name="cancer_select" class="form-control">
+    {% for item in files %}    
+    <option> {{item}}</option>   
+    {% endfor %}
+    </select>
 </div>
 </div>
-    <div class="row">
-    <div class="col-md-4 col-md-offset-4 top17">
-    <label class="label label-primary" for="location">Location</label>
-  <input type='text' name="location" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='What location you want this to happen '></input>
-</div>
-</div>
-        <div class="row">
-    <div class="col-md-4 col-md-offset-4 top17">
-    <label class="label label-primary" for="reccurence">recurrence</label>
-  <input type='text' name="reccurence" class="form-control" form="dataForm" rows="20" id="dataText" placeholder='How often do you want to be reminded'></input>
-</div>
-</div>
-      <div class="row">
-<div class="col-md-4 col-md-offset-4 top30">
-  <input class="btn btn-default form-control" name="submitbutton" id="submitbutton" type="submit" value="Submit"></input>
+  <div class="row">
+  <div class="col-md-12 top17">
+  <label class="label label-primary" for="data">Put pathology note here:</label>
+  <textarea name="data" class="form-control" form="dataForm" rows="20" id="dataText"></textarea>
+    <input class="btn btn-default form-control" name="submitbutton" id="submitbutton" type="submit" value="Submit">
+</form>
 </div></div>
-
+</div>
 
 
 
